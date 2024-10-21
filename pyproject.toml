@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "draftsmith-flask"
+version = "0.1.0"
+description = ""
+authors = ["ryan <exogenesis@protonmail.com>"]
+license = "GPL"
+readme = "README.md"
+packages = [{include = "*", from="src"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+requests = "^2.32.3"
+Flask = "^3.0.3"
+
+[tool.poetry.group.dev.dependencies]
+vulture = "^2.13"
+pytest = "^8.3.3"
+ruff = "^0.7.0"
+pyright = "^1.1.385"
+pytype = "^2024.10.11"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry.scripts]
+ait = "main:app"
