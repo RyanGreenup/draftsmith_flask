@@ -11,6 +11,7 @@ packages = [{include = "*", from="src"}]
 python = "^3.11"
 requests = "^2.32.3"
 Flask = "^3.0.3"
+typer = "^0.12.5"
 
 [tool.poetry.group.dev.dependencies]
 vulture = "^2.13"
