@@ -49,6 +49,21 @@ def note_detail(note_id):
         "note_detail.html", note=note, tree_html=tree_html, note_path=note_path or []
     )
 
+@app.route("/edit/<int:note_id>")
+def edit_note(note_id):
+    all_notes = get_notes()
+    note = get_note(all_notes, note_id)
+    notes_tree = get_notes_tree()
+    tree_html = build_notes_tree_html(notes_tree)
+    tree_html = Markup(tree_html)
+
+    # Find the path to the current note
+    note_path = find_note_path(notes_tree, note_id)
+
+    return render_template(
+        "note_edit.html", note=note, tree_html=tree_html, note_path=note_path or []
+    )
+
 
 def make_html(text: str) -> str:
     html_body = markdown.markdown(
