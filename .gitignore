@@ -1,2 +1,3 @@
 .aider*
 src/api/__pycache__
+node_modules
