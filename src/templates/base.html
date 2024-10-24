@@ -1,33 +1,18 @@
+<!-- src/templates/base.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notes</title>
-    <!-- Include the Stylesheet for the Markdown -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/markdown.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.css') }}">
+  {% include 'head.html' %}
 </head>
 <body>
-    <div class="markdown" id="markdown-content">
-        {{ content|safe }}
-    </div>
+  {% include 'navbar.html' %}
 
-  <h1 class="text-3xl font-bold underline">
-    Hello world!
-  </h1>
+  <main>
+    {% block content %}
+    <!-- Specific page content will go here -->
+    {% endblock %}
+  </main>
 
-    <!-- Note links list -->
-
-    <ul class="menu menu-vertical lg:menu-horizontal bg-base-200 rounded-box">
-        {% for note in all_notes %}
-            <li><a class="link link-primary" href="{{ url_for('note_detail', note_id=note.id) }}">{{ note.title }}</a></li>
-        {% endfor %}
-    </ul>
-
-    <div id="footer">
-        {{ footer }}
-    </div>
+  {% include 'footer.html' %}
 </body>
 </html>
-
