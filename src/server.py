@@ -10,6 +10,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def root():
+    # TODO this should display a page called Index or a Boilerplate
     # # Get all the notes
     all_notes = get_notes()
     s = "\n".join([s.title for s in all_notes])
@@ -17,9 +18,10 @@ def root():
     s = f"```json\n{s}\n```"
     content = f"# My Notes\n## All Notes in Corpus\n {s}"
     md = make_html(content)
+    note = get_note(all_notes, 1)
     print(f"Dir: {os.getcwd()}")
     print(f"content: {os.listdir('./src/')}")
-    return render_template("base.html", content=md, footer="Bar", all_notes=all_notes)
+    return render_template("note_detail.html", note=note, content=md, footer="Bar", all_notes=all_notes)
 
 
 @app.route("/note/<int:note_id>")

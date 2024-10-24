@@ -3,8 +3,6 @@ serve:
 sass:
     cd src/static
     npx sass --no-source-map src/static/styles:src/static/css
-    # TODO this needs to do all
-    # npx tailwindcss -i ./src/input.css -o ./src/output.css --watch
     build/compile_css.py
 
 format:

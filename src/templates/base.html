@@ -18,9 +18,10 @@
   </h1>
 
     <!-- Note links list -->
-    <ul>
+
+    <ul class="menu menu-vertical lg:menu-horizontal bg-base-200 rounded-box">
         {% for note in all_notes %}
-            <li><a href="{{ url_for('note_detail', note_id=note.id) }}">{{ note.title }}</a></li>
+            <li><a class="link link-primary" href="{{ url_for('note_detail', note_id=note.id) }}">{{ note.title }}</a></li>
         {% endfor %}
     </ul>
 

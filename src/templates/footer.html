@@ -1,0 +1,29 @@
+<footer class="footer bg-base-200 text-base-content p-10">
+  <aside>
+    <img src="{{ url_for('static', filename='media/logo.png') }}" width="80px">
+    <p>
+      Structured thinking since 2024
+    </p>
+  </aside>
+  <nav>
+    <h6 class="footer-title">Backlinks</h6>
+    <!-- TODO -->
+    {% for note in all_notes %}
+    <a href="{{ url_for('note_detail', note_id=note.id) }}">{{ note.title }}</a>
+    {% endfor %}
+  </nav>
+  <nav>
+    <h6 class="footer-title">Tags</h6>
+    <a class="link link-hover">Python</a>
+    <a class="link link-hover">University</a>
+    <a class="link link-hover">Jobs</a>
+
+  </nav>
+  <!-- TODO Use Embeddings to Identify Similar Notes -->
+  <nav>
+    <h6 class="footer-title">Similar Notes</h6>
+    <a class="link link-hover">Foo</a>
+    <a class="link link-hover">Bar</a>
+    <a class="link link-hover">Baz</a>
+  </nav>
+</footer>

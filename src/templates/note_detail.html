@@ -1,35 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ note.title }}</title>
-    <!-- Include the Stylesheet for the Markdown -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/markdown.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.css') }}">
+  {% include 'head.html' %}
 </head>
 <body>
-    <div class="markdown" id="markdown-content">
-        <div class="page-title">
-          {{ note.title }} <code>#{{ note.id }}</code>
-        </div>
-        {{ note.content|safe }}
-    </div>
-
-  <h1 class="text-3xl font-bold underline">
-    Hello world!
-  </h1>
-
-    <!-- Note links list -->
-    <ul>
-        {% for note in all_notes %}
-            <li><a href="{{ url_for('note_detail', note_id=note.id) }}">{{ note.title }}</a></li>
-        {% endfor %}
-    </ul>
-
-    <div id="footer">
-        {{ footer }}
-    </div>
+  {% include 'body.html' %}
 </body>
 </html>
-
