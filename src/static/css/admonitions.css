@@ -1,0 +1,91 @@
+.admonition {
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 4px;
+  font-family: Arial, sans-serif;
+}
+.admonition .admonition-title {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.admonition.note {
+  border-left: 4px solid #4c9aff;
+  background-color: #f7faff;
+}
+.admonition.note .admonition-title {
+  color: #2557a1;
+}
+.admonition.tip {
+  border-left: 4px solid #4caf50;
+  background-color: #f0faf0;
+}
+.admonition.tip .admonition-title {
+  color: #2e7d32;
+}
+.admonition.important {
+  border-left: 4px solid #ff9800;
+  background-color: #fff8e1;
+}
+.admonition.important .admonition-title {
+  color: #f57c00;
+}
+.admonition.warning {
+  border-left: 4px solid #f44336;
+  background-color: #ffebee;
+}
+.admonition.warning .admonition-title {
+  color: #d32f2f;
+}
+.admonition.caution {
+  border-left: 4px solid #ffeb3b;
+  background-color: #fffde7;
+}
+.admonition.caution .admonition-title {
+  color: #fbc02d;
+}
+.admonition p {
+  margin: 0;
+  color: #333;
+}
+.admonition p + p {
+  margin-top: 10px;
+}
+
+.dark-mode .admonition.note {
+  border-left-color: #80bfff;
+  background-color: #1a2740;
+}
+.dark-mode .admonition.note .admonition-title {
+  color: #bbdfff;
+}
+.dark-mode .admonition.tip {
+  border-left-color: #77d977;
+  background-color: #1a3326;
+}
+.dark-mode .admonition.tip .admonition-title {
+  color: #a8e3a8;
+}
+.dark-mode .admonition.important {
+  border-left-color: #ffb84d;
+  background-color: #332a1a;
+}
+.dark-mode .admonition.important .admonition-title {
+  color: #ffd480;
+}
+.dark-mode .admonition.warning {
+  border-left-color: #ff6b6b;
+  background-color: #402424;
+}
+.dark-mode .admonition.warning .admonition-title {
+  color: #ff9e9e;
+}
+.dark-mode .admonition.caution {
+  border-left-color: #ffe066;
+  background-color: #403a26;
+}
+.dark-mode .admonition.caution .admonition-title {
+  color: #ffea99;
+}
+.dark-mode .admonition p {
+  color: #ddd;
+}

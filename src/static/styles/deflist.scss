@@ -1,0 +1,18 @@
+dl {
+  margin: 20px 0; // Add some vertical space around the list
+  padding: 0;
+
+  dt {
+    font-weight: bold; // Make terms bold
+    color: #333; // Dark gray for terms
+    margin-top: 10px; // Add space above each term
+  }
+
+  dd {
+    margin-left: 20px; // Indent descriptions
+    margin-bottom: 10px; // Space below each description
+    color: #555; // Medium gray for descriptions
+    line-height: 1.4; // Improve readability with line height
+  }
+}
+

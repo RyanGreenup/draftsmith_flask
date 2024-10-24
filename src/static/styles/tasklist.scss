@@ -1,0 +1,20 @@
+.task-list {
+  list-style: none; // Remove default list styling
+
+  .task-list-item {
+    padding: 8px 12px; // Add padding for better spacing
+    border-bottom: 1px solid #ddd; // Light bottom border for separation
+    font-size: 1em; // Base font size adjustment
+    line-height: 1.5; // Comfortable line spacing
+
+    &:last-child {
+      border-bottom: none; // Remove bottom border from last item
+    }
+
+    input[type="checkbox"] {
+      margin-right: 10px; // Space between checkbox and text
+      cursor: not-allowed; // Show disabled cursor for checkbox
+    }
+  }
+}
+

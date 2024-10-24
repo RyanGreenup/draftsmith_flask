@@ -1,0 +1,15 @@
+dl {
+  margin: 20px 0;
+  padding: 0;
+}
+dl dt {
+  font-weight: bold;
+  color: #333;
+  margin-top: 10px;
+}
+dl dd {
+  margin-left: 20px;
+  margin-bottom: 10px;
+  color: #555;
+  line-height: 1.4;
+}
