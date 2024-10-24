@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notes</title>
+    <title>{{ note.title }}</title>
     <!-- Include the Stylesheet for the Markdown -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/markdown.css') }}">
 </head>
 <body>
     <div class="markdown" id="markdown-content">
-        {{ content|safe }}
+        <div class="page-title">
+          {{ note.title }} <code>#{{ note.id }}</code>
+        </div>
+        {{ note.content|safe }}
     </div>
 
     <!-- Note links list -->

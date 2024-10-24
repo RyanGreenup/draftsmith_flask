@@ -10,6 +10,29 @@
   padding: 20px;
   border: 2px solid #e1e4e8;
 
+
+  $base-font-size: 16px;
+  $heading-font-family: 'Linux Libertine', 'Georgia', serif;
+  $heading-color: #333;
+  $heading-margin-bottom: 0.5em;
+  $page-title-font-size: 2.75 * $base-font-size; // Adjust as needed, equivalent to 44px
+  $page-title-font-weight: bold;
+  $page-title-color: #111; // Darker than standard heading color
+  $page-title-margin-bottom: 0.75em;
+  $page-title-margin-top: 0; // Start right at the top or adjust for any desired top margin
+
+  .page-title {
+    font-family: $heading-font-family;
+    font-weight: $page-title-font-weight;
+    font-size: $page-title-font-size;
+    color: $page-title-color;
+    margin-top: $page-title-margin-top;
+    margin-bottom: $page-title-margin-bottom;
+    text-align: center; // Center-aligning can often suit document titles
+  }
+
+
+
   h1, h2, h3, h4, h5, h6 {
     margin-top: 24px;
     margin-bottom: 16px;

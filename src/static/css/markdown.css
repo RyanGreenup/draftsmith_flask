@@ -10,6 +10,15 @@
   padding: 20px;
   border: 2px solid #e1e4e8;
 }
+.markdown .page-title {
+  font-family: "Linux Libertine", "Georgia", serif;
+  font-weight: bold;
+  font-size: 44px;
+  color: #111;
+  margin-top: 0;
+  margin-bottom: 0.75em;
+  text-align: center;
+}
 .markdown h1, .markdown h2, .markdown h3, .markdown h4, .markdown h5, .markdown h6 {
   margin-top: 24px;
   margin-bottom: 16px;
