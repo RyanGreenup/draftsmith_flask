@@ -91,13 +91,13 @@ from pydantic import ValidationError
 def build_notes_tree_html(notes_tree: List[NoteTreeModel]) -> str:
     def render_note(note: NoteTreeModel) -> str:
         html = f'<li><a href="/note/{note.id}">{note.title}</a>'
-        
+
         if note.children:
             html += '\n<details open>\n<summary>\n<ul>'
             for child in note.children:
                 html += render_note(child)
             html += '</ul>\n</summary>\n</details>'
-        
+
         html += '</li>'
         return html
 
