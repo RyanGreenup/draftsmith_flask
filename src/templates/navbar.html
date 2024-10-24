@@ -12,6 +12,11 @@
     <a class="btn btn-ghost text-xl">
       {{ note.title }}: #{{ note.id }}
     </a>
+  </div>
+  <div class="flex-1 justify-center">
+    {% include 'search_bar.html' %}
+  </div>
+  <div class="flex-none">
     {% include 'breadcrumbs.html' %}
   </div>
   {% include 'right_navbar_button.html' %}
