@@ -1,28 +1,4 @@
-<ul class="menu bg-base-200 text-base-content min-h-full w-80 p-4">
+<div class="menu bg-base-200 text-base-content min-h-full w-80 p-4">
   <!-- Sidebar content here -->
-  {% for note in all_notes %}
-  <li><a href="{{ url_for('note_detail', note_id=note.id) }}">{{ note.title }}</a>
-    {% endfor %}
-
-
-  <li><a>Item 1</a></li>
-  <li>
-    <details open>
-      <summary>Parent</summary>
-      <ul>
-        <li><a>Submenu 1</a></li>
-        <li><a>Submenu 2</a></li>
-        <li>
-          <details open>
-            <summary>Parent</summary>
-            <ul>
-              <li><a>Submenu 1</a></li>
-              <li><a>Submenu 2</a></li>
-            </ul>
-          </details>
-        </li>
-      </ul>
-    </details>
-  </li>
-  <li><a>Item 3</a></li>
-</ul>
+  {{ tree_html }}
+</div>

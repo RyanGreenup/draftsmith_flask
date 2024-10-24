@@ -88,6 +88,26 @@ from typing import List
 import requests
 from pydantic import ValidationError
 
+def build_notes_tree_html(notes_tree: List[NoteTreeModel]) -> str:
+    def render_note(note: NoteTreeModel) -> str:
+        html = f'<li><a href="/note/{note.id}">{note.title}</a>'
+        
+        if note.children:
+            html += '\n<details open>\n<summary>\n<ul>'
+            for child in note.children:
+                html += render_note(child)
+            html += '</ul>\n</summary>\n</details>'
+        
+        html += '</li>'
+        return html
+
+    html = '<ul>'
+    for note in notes_tree:
+        html += render_note(note)
+    html += '</ul>'
+
+    return html
+
 def get_notes_tree(base_url: str = "http://localhost:37238") -> List[NoteTreeModel]:
     """
     Retrieve the notes tree by sending a GET request.
