@@ -121,11 +121,6 @@ def get_notes_tree(base_url: str = "http://localhost:37238") -> List[NoteTreeMod
                 "title": "Foo",
                 "type": "subpage"
               },
-              {
-                "id": 2,
-                "title": "Foo",
-                "type": "subpage"
-              }
             ]
           }
         ]
