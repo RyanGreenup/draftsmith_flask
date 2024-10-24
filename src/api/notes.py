@@ -6,6 +6,16 @@ from pydantic import ValidationError
 from typing import List, Optional
 import json
 import requests
+from typing import List
+import requests
+from urllib.parse import quote
+from pydantic import ValidationError
+from pydantic import BaseModel
+from typing import List
+
+class NoteSearchResultModel(BaseModel):
+    id: int
+    title: str
 
 
 class NoteTreeModel(BaseModel):
@@ -176,6 +186,41 @@ def find_note_path(
             if result:
                 return result
     return None
+
+
+
+def search_notes(
+    query: str, base_url: str = "http://localhost:37238"
+) -> List[NoteSearchResultModel]:
+    """
+    Search for notes based on a query string by sending a GET request.
+
+    Args:
+        query (str): The search query string.
+        base_url (str): The base URL of the API (default: "http://localhost:37238").
+
+    Returns:
+        List[NoteSearchResultModel]: A list of notes that match the search criteria.
+
+    Example json Response:
+        >>> search_notes("updated content").model_dump()
+        [{"id": 2, "title": "Foo"}]
+    """
+    encoded_query = quote(query)
+    url = f"{base_url}/notes/search?q={encoded_query}"
+    response = requests.get(url)
+    response.raise_for_status()  # Raise an error for bad responses
+    search_results_data = response.json()
+
+    try:
+        # Validate and parse the search results
+        search_results = NoteSearchResultModel.model_validate(search_results_data, each_item=True)
+    except ValidationError as e:
+        # Handle validation error
+        print(f"Error validating data: {e}")
+        raise
+
+    return search_results
 
 
 if __name__ == "__main__":
