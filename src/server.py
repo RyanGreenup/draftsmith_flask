@@ -1,4 +1,5 @@
-from flask import Flask, render_template, Markup
+from flask import Flask, render_template
+from markupsafe import Markup
 import os
 import markdown
 from api.notes import get_notes, get_note, get_notes_tree, build_notes_tree_html
