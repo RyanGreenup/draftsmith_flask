@@ -2,7 +2,7 @@ from flask import Flask, render_template
 from markupsafe import Markup
 import os
 import markdown
-from api.notes import get_notes, get_note, get_notes_tree, build_notes_tree_html
+from api.notes import get_notes, get_note, get_notes_tree, build_notes_tree_html, find_note_path
 
 
 app = Flask(__name__)
@@ -35,7 +35,10 @@ def note_detail(note_id):
     tree_html = build_notes_tree_html(notes_tree)
     tree_html = Markup(tree_html)
 
-    return render_template("note_detail.html", note=note, tree_html=tree_html)
+    # Find the path to the current note
+    note_path = find_note_path(notes_tree, note_id)
+
+    return render_template("note_detail.html", note=note, tree_html=tree_html, note_path=note_path)
 
 
 def make_html(text: str) -> str:

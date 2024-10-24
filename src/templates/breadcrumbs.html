@@ -1,9 +1,13 @@
 <!-- Breadcrumbs -->
 <div class="breadcrumbs text-sm">
   <ul>
-    <li><a>Home</a></li>
-    <li><a>Documents</a></li>
-    <li>Add Document</li>
+    <li><a href="/">Home</a></li>
+    {% if note_path %}
+      {% for parent in note_path[:-1] %}
+        <li><a href="{{ url_for('note_detail', note_id=parent.id) }}">{{ parent.title }}</a></li>
+      {% endfor %}
+      <li>{{ note_path[-1].title }}</li>
+    {% endif %}
   </ul>
 </div>
 <!-- End Breadcrumbs -->

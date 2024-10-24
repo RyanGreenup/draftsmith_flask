@@ -159,6 +159,20 @@ def get_notes_tree(base_url: str = "http://localhost:37238") -> List[NoteTreeMod
     return notes_tree
 
 
+def find_note_path(notes_tree: List[NoteTreeModel], target_id: int, current_path: List[NoteTreeModel] = None) -> List[NoteTreeModel]:
+    if current_path is None:
+        current_path = []
+    
+    for note in notes_tree:
+        new_path = current_path + [note]
+        if note.id == target_id:
+            return new_path
+        if note.children:
+            result = find_note_path(note.children, target_id, new_path)
+            if result:
+                return result
+    return None
+
 if __name__ == '__main__':
     tree = get_notes_tree()
     print(json.dumps([item.model_dump() for item in tree], indent=2))
