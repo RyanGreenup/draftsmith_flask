@@ -7,12 +7,14 @@ figure {
   background-color: #f8f9fa;
   text-align: center;
 }
+
 figure img {
   max-width: 100%;
   height: auto;
   display: block;
   border-bottom: 1px solid #aaa;
 }
+
 figure figcaption {
   font-size: 0.9em;
   color: #555;

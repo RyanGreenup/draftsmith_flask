@@ -1,4 +1,5 @@
 /* Basic body styles */
+
 body {
   font-family: "Georgia", serif;
   font-size: 16px;
@@ -11,11 +12,13 @@ body {
 
 .wrapper {
   max-width: 900px;
-  margin: 0 auto; /* Centers content */
+  margin: 0 auto;
+  /* Centers content */
   padding: 20px;
 }
 
 /* Heading styles */
+
 h1, h2, h3, h4, h5, h6 {
   color: #2c3e50;
   margin-top: 24px;
@@ -53,6 +56,7 @@ h6 {
 }
 
 /* Paragraph and text elements */
+
 p {
   margin-bottom: 16px;
 }
@@ -83,6 +87,7 @@ blockquote {
 }
 
 /* Lists */
+
 ul, ol {
   padding-left: 40px;
   margin-bottom: 16px;
@@ -109,6 +114,7 @@ pre {
 }
 
 /* Table styles */
+
 table {
   width: 100%;
   margin-bottom: 16px;
@@ -127,12 +133,14 @@ th {
 }
 
 /* Image styles */
+
 img {
   max-width: 100%;
   height: auto;
 }
 
 /* Inline styles for overall consistency */
+
 hr {
   border: 0;
   border-top: 1px solid #d8d8d8;

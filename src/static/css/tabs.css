@@ -1,6 +1,7 @@
 /*
 Source: <https://facelessuser.github.io/pymdown-extensions/extensions/tabbed/#styling-with-css-css>
 */
+
 .tabbed-set {
   position: relative;
   display: flex;
@@ -8,9 +9,11 @@ Source: <https://facelessuser.github.io/pymdown-extensions/extensions/tabbed/#st
   margin: 1em 0;
   border-radius: 0.1rem;
 }
+
 .tabbed-set > input {
   display: none;
 }
+
 .tabbed-set label {
   width: auto;
   padding: 0.9375em 1.25em 0.78125em;
@@ -23,15 +26,18 @@ Source: <https://facelessuser.github.io/pymdown-extensions/extensions/tabbed/#st
   cursor: pointer;
   transition: background-color 250ms, color 250ms;
 }
+
 .tabbed-set .tabbed-content {
   width: 100%;
   display: none;
   box-shadow: 0 -0.05rem #ddd;
 }
+
 .tabbed-set input {
   position: absolute;
   opacity: 0;
 }
+
 .tabbed-set input:checked:nth-child(n+1) + label {
   color: red;
   border-color: red;
@@ -43,6 +49,7 @@ Source: <https://facelessuser.github.io/pymdown-extensions/extensions/tabbed/#st
     display: block;
   }
 }
+
 @media print {
   .tabbed-content {
     display: contents;

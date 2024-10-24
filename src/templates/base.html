@@ -6,11 +6,16 @@
     <title>Notes</title>
     <!-- Include the Stylesheet for the Markdown -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/markdown.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.css') }}">
 </head>
 <body>
     <div class="markdown" id="markdown-content">
         {{ content|safe }}
     </div>
+
+  <h1 class="text-3xl font-bold underline">
+    Hello world!
+  </h1>
 
     <!-- Note links list -->
     <ul>

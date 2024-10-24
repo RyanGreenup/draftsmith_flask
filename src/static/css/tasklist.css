@@ -1,15 +1,18 @@
 .task-list {
   list-style: none;
 }
+
 .task-list .task-list-item {
   padding: 8px 12px;
   border-bottom: 1px solid #ddd;
   font-size: 1em;
   line-height: 1.5;
 }
+
 .task-list .task-list-item:last-child {
   border-bottom: none;
 }
+
 .task-list .task-list-item input[type=checkbox] {
   margin-right: 10px;
   cursor: not-allowed;
