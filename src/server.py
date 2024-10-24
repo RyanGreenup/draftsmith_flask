@@ -1,13 +1,14 @@
 from flask import Flask, render_template
 from markupsafe import Markup
 import markdown
-from api.notes import (
+from api.get.notes import (
     get_notes,
     get_note,
     get_notes_tree,
     build_notes_tree_html,
     find_note_path,
 )
+from render.render_markdown import make_html
 
 
 app = Flask(__name__)
@@ -49,6 +50,7 @@ def note_detail(note_id):
         "note_detail.html", note=note, tree_html=tree_html, note_path=note_path or []
     )
 
+
 @app.route("/edit/<int:note_id>")
 def edit_note(note_id):
     all_notes = get_notes()
@@ -63,48 +65,6 @@ def edit_note(note_id):
     return render_template(
         "note_edit.html", note=note, tree_html=tree_html, note_path=note_path or []
     )
-
-
-def make_html(text: str) -> str:
-    html_body = markdown.markdown(
-        text,
-        extensions=[
-            "attr_list",
-            # "markdown_captions",
-            "def_list",
-            "nl2br",
-            "toc",
-            "sane_lists",
-            "pymdownx.tasklist",
-            "pymdownx.inlinehilite",
-            "pymdownx.blocks.tab",
-            "abbr",
-            "md_in_html",
-            "markdown_gfm_admonition",
-            "codehilite",
-            "fenced_code",
-            "tables",
-            "pymdownx.superfences",
-            "pymdownx.blocks.details",
-            "admonition",
-            "toc",
-            # TODO Make base_url configurable to share between preview and editor
-            # WikiLinkExtension(base_url=os.getcwd() + os.path.sep, end_url=".md"),
-            "md_in_html",
-            "footnotes",
-            "meta",
-        ],
-        extension_configs={
-            "codehilite": {
-                "css_class": "highlight",
-                "linenums": False,
-                "guess_lang": False,
-            }
-        },
-    )
-
-    # return f"<div class='markdown'>{html_body}</div>"
-    return html_body
 
 
 if __name__ == "__main__":
