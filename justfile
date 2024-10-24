@@ -3,3 +3,7 @@ serve:
 sass:
     cd src/static
     npx sass --no-source-map src/static/styles:src/static/css
+
+format:
+    ruff format      src
+    ruff check --fix src
