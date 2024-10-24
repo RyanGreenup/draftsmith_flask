@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
+<div class="navbar bg-base-100">
+  <a class="btn btn-primary">Save</a>
+</div>
+
 <textarea class="textarea textarea-primary" placeholder="Bio"></textarea>
-  {% include 'body.html' %}
+{% include 'body.html' %}
 {% endblock %}
