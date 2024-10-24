@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-       <!--- Include the
-       <link rel="stylesheet" href="{{ url_for('static', filename='styles/markdown.css') }}">
+    <!--- Include the Stylesheet for the Markdown -->
+       <!-- <link rel="stylesheet" href="{{ url_for('static', filename='styles/markdown-global.css') }}"> -->
+    <style>
+    {{ css }}
+    </style>
 </head>
 <body>
-    <div id="markdown">
+    <div class="markdown" id="markdown-content">
         {{ content|safe }}
     </div>
     <div id="footer">
