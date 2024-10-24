@@ -15,7 +15,7 @@ class NoteTreeModel(BaseModel):
 
     class Config:
         # For nested/recursive models, this is necessary
-        orm_mode = True
+        from_attributes = True
 
 
 class NoteModel(BaseModel):
@@ -103,8 +103,8 @@ def get_notes_tree(base_url: str = "http://localhost:37238") -> List[NoteTreeMod
     notes_tree_data = response.json()
 
     try:
-        # Validate and parse the data
-        notes_tree = NoteTreeModel.model_validate(notes_tree_data)
+        # Validate and parse the data as a list of NoteTreeModel
+        notes_tree = [NoteTreeModel.model_validate(item) for item in notes_tree_data]
     except ValidationError as e:
         # Handle validation error
         print(f"Error validating data: {e}")
@@ -115,4 +115,4 @@ def get_notes_tree(base_url: str = "http://localhost:37238") -> List[NoteTreeMod
 
 if __name__ == '__main__':
     tree = get_notes_tree()
-    print(json.dumps(tree.model_dump(), indent=2))
+    print(json.dumps([item.model_dump() for item in tree], indent=2))
