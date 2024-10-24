@@ -97,6 +97,38 @@ def get_notes_tree(base_url: str = "http://localhost:37238") -> List[NoteTreeMod
 
     Returns:
         List[NoteTreeModel]: The parsed and validated response from the server.
+
+    Example json Response:
+        >>> get_notes_tree().model_dump()
+        [
+          {
+            "id": 3,
+            "title": "Foo",
+            "type": ""
+          },
+          {
+            "id": 4,
+            "title": "New Note Title",
+            "type": ""
+          },
+          {
+            "id": 1,
+            "title": "First note",
+            "type": "",
+            "children": [
+              {
+                "id": 2,
+                "title": "Foo",
+                "type": "subpage"
+              },
+              {
+                "id": 2,
+                "title": "Foo",
+                "type": "subpage"
+              }
+            ]
+          }
+        ]
     """
     url = f"{base_url}/notes/tree"
     response = requests.get(url)
