@@ -3,6 +3,19 @@ from flask import abort
 from typing import List
 from pydantic import BaseModel, TypeAdapter
 from datetime import datetime
+from typing import Optional
+from pydantic import BaseModel
+from datetime import datetime
+
+class NoteTreeModel(BaseModel):
+    id: int
+    title: str
+    type: Optional[str] = ""  # Assuming type is a string and can be empty
+    children: Optional[List['NoteTreeModel']] = None
+
+    class Config:
+        # For nested/recursive models, this is necessary
+        orm_mode = True
 
 
 class NoteModel(BaseModel):
@@ -69,3 +82,37 @@ def get_note(all_notes: List[NoteModel], note_id: int) -> NoteModel:
         abort(404)
 
     return note
+
+from typing import List
+import requests
+from pydantic import ValidationError
+
+def get_notes_tree(base_url: str = "http://localhost:37238") -> List[NoteTreeModel]:
+    """
+    Retrieve the notes tree by sending a GET request.
+
+    Args:
+        base_url (str): The base URL of the API (default: "http://localhost:37238").
+
+    Returns:
+        List[NoteTreeModel]: The parsed and validated response from the server.
+    """
+    url = f"{base_url}/notes/tree"
+    response = requests.get(url)
+    response.raise_for_status()  # Raise an error for bad responses
+    notes_tree_data = response.json()
+
+    try:
+        # Validate and parse the data
+        notes_tree = NoteTreeModel.model_validate(notes_tree_data)
+    except ValidationError as e:
+        # Handle validation error
+        print(f"Error validating data: {e}")
+        raise
+
+    return notes_tree
+
+
+if __name__ == '__main__':
+    tree = get_notes_tree()
+    print(json.dumps(tree.model_dump(), indent=2))
