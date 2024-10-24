@@ -3,8 +3,7 @@ from flask import abort
 from pydantic import BaseModel
 from pydantic import TypeAdapter
 from pydantic import ValidationError
-from typing import List
-from typing import Optional
+from typing import List, Optional
 import json
 import requests
 
@@ -163,8 +162,8 @@ def get_notes_tree(base_url: str = "http://localhost:37238") -> List[NoteTreeMod
 def find_note_path(
     notes_tree: List[NoteTreeModel],
     target_id: int,
-    current_path: List[NoteTreeModel] = None,
-) -> List[NoteTreeModel]:
+    current_path: Optional[List[NoteTreeModel]] = None
+) -> Optional[List[NoteTreeModel]]:
     if current_path is None:
         current_path = []
 

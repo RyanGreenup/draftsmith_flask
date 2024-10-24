@@ -46,7 +46,7 @@ def note_detail(note_id):
     note_path = find_note_path(notes_tree, note_id)
 
     return render_template(
-        "note_detail.html", note=note, tree_html=tree_html, note_path=note_path
+        "note_detail.html", note=note, tree_html=tree_html, note_path=note_path or []
     )
 
 
