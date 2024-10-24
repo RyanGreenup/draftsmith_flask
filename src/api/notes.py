@@ -1,18 +1,19 @@
+from datetime import datetime
+from flask import abort
+from pydantic import BaseModel
+from pydantic import TypeAdapter
+from pydantic import ValidationError
+from typing import List
+from typing import Optional
 import json
 import requests
-from flask import abort
-from typing import List
-from pydantic import BaseModel, TypeAdapter
-from datetime import datetime
-from typing import Optional
-from pydantic import BaseModel
-from datetime import datetime
+
 
 class NoteTreeModel(BaseModel):
     id: int
     title: str
     type: Optional[str] = ""  # Assuming type is a string and can be empty
-    children: Optional[List['NoteTreeModel']] = None
+    children: Optional[List["NoteTreeModel"]] = None
 
     class Config:
         # For nested/recursive models, this is necessary
@@ -71,6 +72,8 @@ def get_notes(base_url: str = "http://localhost:37238") -> List[NoteModel]:
     return notes
 
 
+# TODO this should use an api endpoint to fetch a single note
+# TODO there should be an API endpoint to fetch the tree of titles and that's all
 def get_note(all_notes: List[NoteModel], note_id: int) -> NoteModel:
     all_notes = get_notes()
     # Logic to fetch and render the specific note based on note_id
@@ -84,17 +87,14 @@ def get_note(all_notes: List[NoteModel], note_id: int) -> NoteModel:
 
     return note
 
-from typing import List
-import requests
-from pydantic import ValidationError
 
 def build_notes_tree_html(notes_tree: List[NoteTreeModel]) -> str:
     def render_note(note: NoteTreeModel) -> str:
         if note.children:
-            html = f'<li>\n<details open>\n<summary>{note.title}</summary>\n<ul>'
+            html = f"<li>\n<details open>\n<summary>{note.title}</summary>\n<ul>"
             for child in note.children:
                 html += render_note(child)
-            html += '</ul>\n</details>\n</li>'
+            html += "</ul>\n</details>\n</li>"
         else:
             html = f'<li><a href="/note/{note.id}">{note.title}</a></li>'
         return html
@@ -102,9 +102,10 @@ def build_notes_tree_html(notes_tree: List[NoteTreeModel]) -> str:
     html = '<ul class="menu bg-base-200 rounded-box w-56">'
     for note in notes_tree:
         html += render_note(note)
-    html += '</ul>'
+    html += "</ul>"
 
     return html
+
 
 def get_notes_tree(base_url: str = "http://localhost:37238") -> List[NoteTreeModel]:
     """
@@ -159,10 +160,14 @@ def get_notes_tree(base_url: str = "http://localhost:37238") -> List[NoteTreeMod
     return notes_tree
 
 
-def find_note_path(notes_tree: List[NoteTreeModel], target_id: int, current_path: List[NoteTreeModel] = None) -> List[NoteTreeModel]:
+def find_note_path(
+    notes_tree: List[NoteTreeModel],
+    target_id: int,
+    current_path: List[NoteTreeModel] = None,
+) -> List[NoteTreeModel]:
     if current_path is None:
         current_path = []
-    
+
     for note in notes_tree:
         new_path = current_path + [note]
         if note.id == target_id:
@@ -173,6 +178,7 @@ def find_note_path(notes_tree: List[NoteTreeModel], target_id: int, current_path
                 return result
     return None
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     tree = get_notes_tree()
     print(json.dumps([item.model_dump() for item in tree], indent=2))
