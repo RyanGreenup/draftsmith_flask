@@ -1,5 +1,22 @@
+
+<!--- This should be refactored into a macro with note_edit.html -->
 {% extends 'base.html' %}
 
 {% block content %}
-  {% include 'markdown-content.html' %}
+
+<script>
+    {% include 'js/keyboard_submit.js' %}
+</script>
+
+<div class="container max-w-lg px-4">
+    <form id="content-edit-form" action="{{ url_for('create_note_page') }}" method="POST">
+        <div class="navbar bg-base-100">
+            <input type="submit" class="btn btn-primary" value="Save">
+         </div>
+        <label class="input input-bordered flex items-center gap-2">
+            <input type="text" name="title" class="grow w-screen" placeholder="Descriptive Titles (Use / to infer Heirarchy (TODO))" />
+        </label>
+        <textarea name="content" class="font-mono text-sm textarea textarea-primary textarea-lg w-screen"></textarea>
+    </form>
+</div>
 {% endblock %}

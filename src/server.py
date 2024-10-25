@@ -10,6 +10,7 @@ from api.get.notes import (
     get_full_titles
 )
 from api.put.notes import update_server_note
+from api.post.notes import create_note
 from render.render_markdown import make_html
 from render.render_markdown import Markdown
 
@@ -77,20 +78,41 @@ def edit_note(note_id):
         "note_edit.html", note=note, note_html=html_content, tree_html=tree_html, note_path=note_path or []
     )
 
+@app.route("/create/<string:title>")
+def create_note_page(title, methods=["GET", "POST"]):
+    if request.method == "GET":
+        # TODO allow splittting the title on slash to infer heirarchy
+        notes_tree = get_notes_tree()
+        tree_html = build_notes_tree_html(notes_tree)
+        tree_html = Markup(tree_html)
+
+        return render_template("note_create.html")
+    elif request.method == "POST":
+        content = request.form.get('content')
+        title = request.form.get('title')
+        # TODO url should be configurable
+        response = create_note(url="http://localhost:37238/notes", title=title, content=content)
+        # TODO the API should return the ID of the new note
+        id = response.get('id')
+        if id:
+            return redirect(url_for("note_detail", note_id=id))
+        else:
+            return redirect(url_for("root"))
+
 
 # TODO Implement title
-@app.route("/edit/<int:note_id>", methods=["POST"])
+@app.route("/edit/<int:note_id>", methods=["POST", "PUT"])
 def update_note(note_id):
+    title = request.form.get('title')
+    content = request.form.get('content')
     if request.method == "POST":
-        title = request.form.get('title')
-        content = request.form.get('content')
-
-        # Here you would add logic to update the note with the provided id, title, and content.
-        # TODO
-
         update_server_note(note_id, title=title, content=content)
         # Refresh the page to show the updated note
-        return redirect(url_for("note_detail", note_id=note_id))
+    elif request.method == "PUT":
+        create_note(url="http://localhost:37238/notes", title=title, content=content)
+        update_server_note(note_id, title=title, content=content)
+        # Refresh the page to show the updated note
+    return redirect(url_for("note_detail", note_id=note_id))
 
 
 
