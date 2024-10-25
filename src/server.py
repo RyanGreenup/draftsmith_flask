@@ -12,7 +12,7 @@ from api.get.notes import (
 from api.put.notes import update_server_note
 from api.post.notes import create_note
 from api.delete.notes import delete_note
-from api.post.note_hierarchy import create_note_hierarchy
+from api.post.note_hierarchy import update_note_hierarchy
 from render.render_markdown import Markdown
 
 
@@ -187,7 +187,7 @@ def move_note(note_id):
         new_parent_id = request.form.get("new_parent_id")
         try:
             new_parent_id = int(new_parent_id)
-            result = create_note_hierarchy(new_parent_id, note_id, "subpage")
+            result = update_note_hierarchy(new_parent_id, note_id, "subpage")
             flash("Note moved successfully", "success")
         except ValueError:
             flash("Invalid parent ID", "error")
