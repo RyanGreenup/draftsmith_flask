@@ -11,6 +11,7 @@ from api.get.notes import (
 )
 from api.put.notes import update_server_note
 from render.render_markdown import make_html
+from render.render_markdown import Markdown
 
 
 
@@ -30,7 +31,8 @@ def root():
     s = "\n".join([str(note.model_dump()) for note in all_notes])
     s = f"```json\n{s}\n```"
     content = f"# My Notes\n## All Notes in Corpus\n {s}"
-    md = make_html(content)
+    md_obj = Markdown(content)
+    md = md_obj.make_html()
     note = get_note(1)
 
     return render_template(
@@ -50,10 +52,11 @@ def note_detail(note_id):
     note_path = find_note_path(notes_tree, note_id)
 
     # Parse the markdown content
-    note.content = make_html(note.content)
+    md_obj = Markdown(note.content)
+    html_content = md_obj.make_html()
 
     return render_template(
-        "note_detail.html", note=note, note_html=make_html(note.content), tree_html=tree_html, note_path=note_path or []
+        "note_detail.html", note=note, note_html=html_content, tree_html=tree_html, note_path=note_path or []
     )
 
 
@@ -67,9 +70,11 @@ def edit_note(note_id):
 
     # Find the path to the current note
     note_path = find_note_path(notes_tree, note_id)
+    md_obj = Markdown(note.content)
+    html_content = md_obj.make_html()
 
     return render_template(
-        "note_edit.html", note=note, note_html=make_html(note.content), tree_html=tree_html, note_path=note_path or []
+        "note_edit.html", note=note, note_html=html_content, tree_html=tree_html, note_path=note_path or []
     )
 
 
@@ -109,7 +114,9 @@ def search():
     full_titles = get_full_titles(notes_tree)
     # Render the content for display
     for note in notes:
-        note.content = make_html(note.content)
+        md_obj = Markdown(note.content)
+        html_content = md_obj.make_html()
+        note.content = html_content
         # use a div to protect certain things
         note.content = "<div>" + note.content[:200] + "</div> ..."
         note.title = full_titles[note.id]
