@@ -3,22 +3,26 @@
     <li>
       <details>
         <summary>Actions</summary>
-        {% if note is defined %}
+    {% if note %}
     <li>
       <div class="btn btn-sm btn-block btn-ghost justify-start">
         {% include 'buttons/edit.html' %}
       </div>
     </li>
+    {% endif %}
     <li>
       <div class="btn btn-sm btn-block btn-ghost justify-start">
         {% include 'buttons/new.html' %}
       </div>
     </li>
+    {% if note %}
     <li>
       <div class="btn btn-sm btn-block btn-ghost justify-start">
         <a href="{{ url_for('move_note', note_id=note.id) }}">Move</a>
       </div>
     </li>
+    {% endif %}
+    {% if note %}
     <li>
       <div class="btn btn-sm btn-block btn-ghost justify-start">
         <form action="{{ url_for('delete_note_page', note_id=note.id) }}" method="POST"
