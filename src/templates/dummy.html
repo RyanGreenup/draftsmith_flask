@@ -1,0 +1,63 @@
+<!--- This is used as a placeholder for css that I may use inside the markdown --->
+
+
+<div tabindex="0" class="collapse collapse-arrow border-base-300 bg-base-200 border">
+  <div class="collapse-title text-xl font-medium">Focus me to see content</div>
+  <div class="collapse-content">
+    <p>tabindex="0"
+
+
+
+<details>
+
+```py
+@app.route("/note/<int:note_id>/move", methods=["GET", "POST"])
+def move_note(note_id):
+    if request.method == "GET":
+        return render_template("move_note.html", note_id=note_id)
+    elif request.method == "POST":
+        new_parent_id = request.form.get("new_parent_id")
+        try:
+            new_parent_id = int(new_parent_id)
+            result = update_note_hierarchy(new_parent_id, note_id, "subpage")
+            flash("Note moved successfully", "success")
+        except ValueError:
+            flash("Invalid parent ID", "error")
+        except Exception as e:
+            flash(f"An error occurred: {str(e)}", "error")
+        return redirect(url_for("note_detail", note_id=note_id))
+
+
+```
+
+</details>
+
+
+
+
+
+</p>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
