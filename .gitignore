@@ -4,3 +4,4 @@ node_modules
 src/api
 src/render
 src/api/get/__pycache__
+src/render/__pycache__
