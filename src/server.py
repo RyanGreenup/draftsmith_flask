@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from markupsafe import Markup
 from api.get.notes import (
     get_notes,
@@ -11,6 +11,7 @@ from api.get.notes import (
 )
 from api.put.notes import update_server_note
 from api.post.notes import create_note
+from api.delete.notes import delete_note
 from render.render_markdown import Markdown
 
 
@@ -155,6 +156,21 @@ def search():
         tree_html=tree_html,
         note=None,
     )
+
+
+@app.route("/note/<int:note_id>/delete", methods=["POST"])
+def delete_note_page(note_id):
+    try:
+        response = delete_note(note_id)
+        if response.get("message") == "Note deleted successfully":
+            flash("Note deleted successfully", "success")
+            return redirect(url_for("root"))
+        else:
+            flash("Failed to delete note", "error")
+            return redirect(url_for("note_detail", note_id=note_id))
+    except Exception as e:
+        flash(f"An error occurred: {str(e)}", "error")
+        return redirect(url_for("note_detail", note_id=note_id))
 
 
 if __name__ == "__main__":
