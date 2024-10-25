@@ -1,1 +1,10 @@
-<a href="{{ url_for('create_note_page') }}">Create New Note</a>
+<script>
+  {% include 'js/keyboard_new.js' %}
+</script>
+
+
+
+
+
+<a href="{{ url_for('create_note_page') }}" data-create-link>Create New Note</a>
+
