@@ -178,5 +178,12 @@ def delete_note_page(note_id):
         return redirect(url_for("note_detail", note_id=note_id))
 
 
+def move_note():
+    # Create a popup to type in an id number as text
+    # upon submission, validate the text matches an id
+    # Set that id as the new parent
+    return ""
+
+
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
