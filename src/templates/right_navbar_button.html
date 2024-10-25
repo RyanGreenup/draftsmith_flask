@@ -14,9 +14,10 @@
         {% include 'buttons/new.html' %}
       </div>
     </li>
-    <div class="btn btn-sm btn-block btn-ghost justify-start">
-      <a href="{{ url_for('move_note') }}">Move</a>
-    </div>
+    <li>
+      <div class="btn btn-sm btn-block btn-ghost justify-start">
+        <a href="{{ url_for('move_note', note_id=note.id) }}">Move</a>
+      </div>
     </li>
     <li>
       <div class="btn btn-sm btn-block btn-ghost justify-start">

@@ -12,6 +12,7 @@ from api.get.notes import (
 from api.put.notes import update_server_note
 from api.post.notes import create_note
 from api.delete.notes import delete_note
+from api.post.note_hierarchy import create_note_hierarchy
 from render.render_markdown import Markdown
 
 
@@ -178,11 +179,21 @@ def delete_note_page(note_id):
         return redirect(url_for("note_detail", note_id=note_id))
 
 
-def move_note():
-    # Create a popup to type in an id number as text
-    # upon submission, validate the text matches an id
-    # Set that id as the new parent
-    return ""
+@app.route("/note/<int:note_id>/move", methods=["GET", "POST"])
+def move_note(note_id):
+    if request.method == "GET":
+        return render_template("move_note.html", note_id=note_id)
+    elif request.method == "POST":
+        new_parent_id = request.form.get("new_parent_id")
+        try:
+            new_parent_id = int(new_parent_id)
+            result = create_note_hierarchy(new_parent_id, note_id, "subpage")
+            flash("Note moved successfully", "success")
+        except ValueError:
+            flash("Invalid parent ID", "error")
+        except Exception as e:
+            flash(f"An error occurred: {str(e)}", "error")
+        return redirect(url_for("note_detail", note_id=note_id))
 
 
 if __name__ == "__main__":
