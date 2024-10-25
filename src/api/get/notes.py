@@ -102,6 +102,8 @@ def get_note(note_id: int) -> NoteModel:
 
 
 def build_notes_tree_html(notes_tree: List[NoteTreeModel]) -> str:
+    # sort the notes tree by title (TODO add an order field)
+    notes_tree.sort(key=lambda x: x.title)
     def render_note(note: NoteTreeModel) -> str:
         if note.children:
             html = f"<li>\n<details open>\n<summary>{note.title}</summary>\n<ul>"
