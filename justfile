@@ -10,12 +10,10 @@ format:
     ruff check --fix src
 
 install-deps:
-    poetry install
+    # poetry install
     npm install
     mkdir -p ./src/static/css/ ./src/static/js/
-    cp ./node_modules/katex/dist/katex.css ./src/static/css/
-    cp ./node_modules/katex/dist/katex.min.js ./src/static/js/
-    cp ./node_modules/katex/dist/contrib/auto-render.min.js ./src/static/js/
+    cp -r ./node_modules/katex ./src/static/
 
 tailwind-init:
     npm install -D tailwindcss
