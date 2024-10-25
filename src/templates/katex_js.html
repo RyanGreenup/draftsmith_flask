@@ -1,0 +1,17 @@
+<!-- The js must be included after the body so it's included here. However, the CSS is in `head.html`. -->
+
+<script src="{{ url_for('static', filename='katex/dist/katex.min.js') }}"></script>
+<script src="{{ url_for('static', filename='katex/dist/contrib/auto-render.min.js') }}"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: "\\(", right: "\\)", display: false},
+        {left: "\\[", right: "\\]", display: true},
+        {left: "$$", right: "$$", display: true},
+        {left: "$", right: "$", display: false}
+      ],
+      throwOnError: false
+    });
+  });
+</script>
