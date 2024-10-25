@@ -1,25 +1,25 @@
 <div class="navbar bg-base-100">
-  <div class="flex-none">
-    <!-- Toggle button for Drawer -->
+  <div class="navbar-start">
     <label for="my-drawer-2" class="btn btn-square btn-ghost lg:hidden">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
         class="inline-block h-5 w-5 stroke-current">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
       </svg>
     </label>
-  </div>
-  <div class="flex-1">
     {% if note is defined %}
       {% if note.title is defined and note.title and note.id is defined and note.id %}
-      <a class="btn btn-ghost text-xl">
-        {{ note.title }}: #{{ note.id }}
+      <a href="{{ url_for('note_detail', note_id=note.id) }}" class="btn btn-ghost text-xl">
+        {{ note.title }} <span class="text-sm ml-2">#{{ note.id }}</span>
       </a>
       {% else %}
-      <a class="btn btn-ghost text-xl">
-        New Note
-      </a>
+      <span class="btn btn-ghost text-xl">New Note</span>
       {% endif %}
     {% endif %}
   </div>
-  {% include 'right_navbar_button.html' %}
+  <div class="navbar-center hidden lg:flex">
+    {% include 'search_bar.html' %}
+  </div>
+  <div class="navbar-end">
+    {% include 'right_navbar_button.html' %}
+  </div>
 </div>

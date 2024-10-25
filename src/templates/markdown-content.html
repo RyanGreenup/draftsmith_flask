@@ -1,27 +1,25 @@
-<div class="navbar bg-base-100">
-  {% include 'edit_button.html' %}
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">{{ note.title }} <span class="text-sm text-gray-500">#{{ note.id }}</span></h1>
+    {% include 'edit_button.html' %}
+  </div>
+  <div class="markdown prose lg:prose-xl" id="markdown-content">
+    {{ note_html|safe }}
+  </div>
 </div>
-<div class="markdown" id="markdown-content">
-  <div class="page-title"> {{ note.title }} <code>#{{ note.id }}</code> </div>
-  {{ note_html|safe }}
-</div>
-
-
-<!-- This should go at the end -->
 
 <script src="{{ url_for('static', filename='katex/dist/katex.min.js') }}"></script>
 <script src="{{ url_for('static', filename='katex/dist/contrib/auto-render.min.js') }}"></script>
 <script>
   document.addEventListener("DOMContentLoaded", function() {
-     renderMathInElement(document.body, {
-         // Customize auto-renderer options here if necessary
-         delimiters: [
-             {left: "\\(", right: "\\)", display: false},
-             {left: "\\[", right: "\\]", display: true},
-             {left: "$$", right: "$$", display: true},
-             {left: "$", right: "$", display: false}
-         ],
-         // Other options can be set here
-     });
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: "\\(", right: "\\)", display: false},
+        {left: "\\[", right: "\\]", display: true},
+        {left: "$$", right: "$$", display: true},
+        {left: "$", right: "$", display: false}
+      ],
+      throwOnError: false
+    });
   });
 </script>

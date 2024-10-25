@@ -1,15 +1,11 @@
-<!-- Breadcrumbs -->
-<div class="breadcrumbs text-sm">
-  <ul>
-    <li><a href="/">
-        {% include 'icons/home.html' %}
-      </a></li>
+<div class="text-sm breadcrumbs">
+  <ul class="flex flex-wrap items-center">
+    <li><a href="/" class="text-primary">{% include 'icons/home.html' %}</a></li>
     {% if note_path %}
-    {% for parent in note_path[:-1] %}
-    <li><a href="{{ url_for('note_detail', note_id=parent.id) }}">{{ parent.title }}</a></li>
-    {% endfor %}
-    <li>{{ note_path[-1].title }}</li>
+      {% for parent in note_path[:-1] %}
+        <li><a href="{{ url_for('note_detail', note_id=parent.id) }}" class="text-primary">{{ parent.title }}</a></li>
+      {% endfor %}
+      <li class="text-gray-600">{{ note_path[-1].title }}</li>
     {% endif %}
   </ul>
 </div>
-<!-- End Breadcrumbs -->

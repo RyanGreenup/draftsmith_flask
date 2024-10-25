@@ -1,29 +1,32 @@
 <footer class="footer bg-base-200 text-base-content p-10">
-  <aside>
-    <img src="{{ url_for('static', filename='media/logo.png') }}" width="80px">
-    <p>
-      Structured thinking since 2024
-    </p>
-  </aside>
-  <nav>
-    <h6 class="footer-title">Backlinks</h6>
-    <!-- TODO -->
-    {% for note in all_notes %}
-    <a href="{{ url_for('note_detail', note_id=note.id) }}">{{ note.title }}</a>
-    {% endfor %}
-  </nav>
-  <nav>
-    <h6 class="footer-title">Tags</h6>
-    <a class="link link-hover">Python</a>
-    <a class="link link-hover">University</a>
-    <a class="link link-hover">Jobs</a>
-
-  </nav>
-  <!-- TODO Use Embeddings to Identify Similar Notes -->
-  <nav>
-    <h6 class="footer-title">Similar Notes</h6>
-    <a class="link link-hover">Foo</a>
-    <a class="link link-hover">Bar</a>
-    <a class="link link-hover">Baz</a>
-  </nav>
+  <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+    <aside>
+      <img src="{{ url_for('static', filename='media/logo.png') }}" alt="Logo" class="w-20 h-20 mb-2">
+      <p class="text-sm">Structured thinking since 2024</p>
+    </aside>
+    <nav>
+      <h6 class="footer-title">Backlinks</h6>
+      <ul class="space-y-1">
+        {% for note in all_notes[:5] %}
+          <li><a href="{{ url_for('note_detail', note_id=note.id) }}" class="link link-hover">{{ note.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+    <nav>
+      <h6 class="footer-title">Tags</h6>
+      <ul class="space-y-1">
+        <li><a class="link link-hover">Python</a></li>
+        <li><a class="link link-hover">University</a></li>
+        <li><a class="link link-hover">Jobs</a></li>
+      </ul>
+    </nav>
+    <nav>
+      <h6 class="footer-title">Similar Notes</h6>
+      <ul class="space-y-1">
+        <li><a class="link link-hover">Foo</a></li>
+        <li><a class="link link-hover">Bar</a></li>
+        <li><a class="link link-hover">Baz</a></li>
+      </ul>
+    </nav>
+  </div>
 </footer>
