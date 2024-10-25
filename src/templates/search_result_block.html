@@ -1,0 +1,20 @@
+<div class="mb-6">
+  <div class="mb-4">
+    <h3 class="text-lg font-bold">{{ result.title }}</h3>
+    <div class="card-actions">
+      <div class="badge badge-outline">Tag 1</div>
+      <div class="badge badge-outline">Tag 2</div>
+    </div>
+    <!-- <p class="text-sm text-base-content text-opacity-70">Tags?</p> -->
+  </div>
+  <div class="mb-2">
+    {{ result.content|safe }}
+  </div>
+  <div class="card-actions">
+
+    <a href="{{ url_for('note_detail', note_id=result.id) }}">
+      <button class="btn btn-primary btn-sm">View</button>
+    </a>
+  </div>
+</div>
+

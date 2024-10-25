@@ -13,6 +13,7 @@ from pydantic import ValidationError
 from pydantic import BaseModel
 from typing import List
 
+
 class NoteSearchResultModel(BaseModel):
     id: int
     title: str
@@ -38,7 +39,7 @@ class NoteModel(BaseModel):
 
 
 # TODO base_url should be an argument for the CLI
-def get_notes(base_url: str = "http://localhost:37238") -> List[NoteModel]:
+def get_notes(base_url: str = "http://localhost:37238", ids: List[int] | None = None) -> List[NoteModel]:
     """
     Retrieve a list of notes from the API.
 
@@ -78,12 +79,15 @@ def get_notes(base_url: str = "http://localhost:37238") -> List[NoteModel]:
     notes = adapter.validate_python(notes_data)
     print(repr(notes))
 
+    if ids:
+        notes = [note for note in notes if note.id in ids]
+
     return notes
 
 
 # TODO this should use an api endpoint to fetch a single note
 # TODO there should be an API endpoint to fetch the tree of titles and that's all
-def get_note(all_notes: List[NoteModel], note_id: int) -> NoteModel:
+def get_note(note_id: int) -> NoteModel:
     all_notes = get_notes()
     # Logic to fetch and render the specific note based on note_id
     # For example, you might filter the note from `all_notes` or fetch it from a database.
@@ -203,8 +207,8 @@ def search_notes(
         List[NoteSearchResultModel]: A list of notes that match the search criteria.
 
     Example json Response:
-        >>> search_notes("updated content").model_dump()
-        [{"id": 2, "title": "Foo"}]
+        >>> search_notes("updated content")
+        [NoteSearchResultModel(id=2, title="Foo")]
     """
     encoded_query = quote(query)
     url = f"{base_url}/notes/search?q={encoded_query}"
@@ -214,7 +218,10 @@ def search_notes(
 
     try:
         # Validate and parse the search results
-        search_results = NoteSearchResultModel.model_validate(search_results_data, each_item=True)
+        if search_results_data:
+            search_results = [NoteSearchResultModel.model_validate(item) for item in search_results_data]
+        else:
+            search_results = []
     except ValidationError as e:
         # Handle validation error
         print(f"Error validating data: {e}")

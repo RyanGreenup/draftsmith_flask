@@ -1,0 +1,23 @@
+<div class="navbar bg-base-100">
+</div>
+<div class="markdown" id="markdown-content">
+  <h2 class="text-2xl font-bold mb-4">Search Results for "{{ query }}"</h2>
+  <ul>
+    {% for result in search_results %}
+    <li>
+      <div class="card bg-base-100  shadow-xl">
+        <div class="card-body">
+          <!-- Repeat this block for each result -->
+          {% include 'search_result_block.html' %}
+          <!-- End result block -->
+        </div>
+      </div>
+    </li>
+    {% else %}
+    <li>No results found.</li>
+    {% endfor %}
+  </ul>
+</div>
+
+
+

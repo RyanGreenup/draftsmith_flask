@@ -1,14 +1,15 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for
 from markupsafe import Markup
-import markdown
 from api.get.notes import (
     get_notes,
     get_note,
     get_notes_tree,
     build_notes_tree_html,
     find_note_path,
+    search_notes
 )
 from render.render_markdown import make_html
+
 
 
 app = Flask(__name__)
@@ -28,7 +29,7 @@ def root():
     s = f"```json\n{s}\n```"
     content = f"# My Notes\n## All Notes in Corpus\n {s}"
     md = make_html(content)
-    note = get_note(all_notes, 1)
+    note = get_note(1)
 
     return render_template(
         "note_detail.html", note=note, content=md, footer="Bar", tree_html=tree_html
@@ -38,7 +39,7 @@ def root():
 @app.route("/note/<int:note_id>")
 def note_detail(note_id):
     all_notes = get_notes()
-    note = get_note(all_notes, note_id)
+    note = get_note(note_id)
     notes_tree = get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree)
     tree_html = Markup(tree_html)
@@ -54,7 +55,7 @@ def note_detail(note_id):
 @app.route("/edit/<int:note_id>")
 def edit_note(note_id):
     all_notes = get_notes()
-    note = get_note(all_notes, note_id)
+    note = get_note(note_id)
     notes_tree = get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree)
     tree_html = Markup(tree_html)
@@ -65,6 +66,35 @@ def edit_note(note_id):
     return render_template(
         "note_edit.html", note=note, tree_html=tree_html, note_path=note_path or []
     )
+
+
+@app.route("/search")
+def search():
+    query = request.args.get('q', '')
+    if not query:
+        return redirect(url_for('root'))
+
+    search_results = search_notes(query)
+    notes_tree = get_notes_tree()
+    tree_html = build_notes_tree_html(notes_tree)
+    tree_html = Markup(tree_html)
+
+    ids = [n.id for n in search_results]
+    # TODO this should return the tree and construct the nested title
+    # Maybe regail this to the server?
+    notes = [get_note(i) for i in ids]
+    # Render the content for display
+    for note in notes:
+        note.content = make_html(note.content)[:100]
+
+    return render_template(
+        "note_search.html",
+        query=query,
+        search_results=notes,
+        tree_html=tree_html,
+        note=None
+    )
+
 
 
 if __name__ == "__main__":
