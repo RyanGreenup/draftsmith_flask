@@ -78,14 +78,14 @@ def edit_note(note_id):
         "note_edit.html", note=note, note_html=html_content, tree_html=tree_html, note_path=note_path or []
     )
 
-@app.route("/create", methods=["GET", "POST"])
+@app.route("/notes/create", methods=["GET", "POST"])
 def create_note_page():
     if request.method == "GET":
         notes_tree = get_notes_tree()
         tree_html = build_notes_tree_html(notes_tree)
         tree_html = Markup(tree_html)
 
-        return render_template("note_create.html", tree_html=tree_html)
+        return render_template("note_create.html", tree_html=tree_html, title="")
     elif request.method == "POST":
         content = request.form.get('content')
         title = request.form.get('title')
