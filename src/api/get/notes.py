@@ -6,7 +6,7 @@ from pydantic import ValidationError
 from typing import List, Optional
 import json
 import requests
-from typing import List
+from typing import List, Dict
 import requests
 from urllib.parse import quote
 from pydantic import ValidationError
@@ -119,6 +119,28 @@ def build_notes_tree_html(notes_tree: List[NoteTreeModel]) -> str:
 
     return html
 
+
+def get_full_titles(notes_tree: List[NoteTreeModel]) -> Dict[int, str]:
+    def traverse_and_build_titles(note: NoteTreeModel, parent_title: str = '') -> Dict[int, str]:
+        # Build the full title for the current note
+        full_title = f"{parent_title}/{note.title}".strip('/')
+
+        # Prepare the result entry for the current note
+        result = {note.id: full_title}
+
+        # Recursively process children, updating the result dictionary
+        if note.children:
+            for child in note.children:
+                result.update(traverse_and_build_titles(child, full_title))
+
+        return result
+
+    # Perform traversal for each root note in the top-level list
+    all_full_titles = {}
+    for root_note in notes_tree:
+        all_full_titles.update(traverse_and_build_titles(root_note))
+
+    return all_full_titles
 
 def get_notes_tree(base_url: str = "http://localhost:37238") -> List[NoteTreeModel]:
     """

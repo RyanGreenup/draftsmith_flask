@@ -6,7 +6,8 @@ from api.get.notes import (
     get_notes_tree,
     build_notes_tree_html,
     find_note_path,
-    search_notes
+    search_notes,
+    get_full_titles
 )
 from render.render_markdown import make_html
 
@@ -74,6 +75,8 @@ def search():
     if not query:
         return redirect(url_for('root'))
 
+    # TODO maybe API should include a field with and withot the full name to
+    # Save multiple requests?
     search_results = search_notes(query)
     notes_tree = get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree)
@@ -83,9 +86,12 @@ def search():
     # TODO this should return the tree and construct the nested title
     # Maybe regail this to the server?
     notes = [get_note(i) for i in ids]
+    full_titles = get_full_titles(notes_tree)
     # Render the content for display
     for note in notes:
         note.content = make_html(note.content)[:100]
+        note.title = full_titles[note.id]
+
 
     return render_template(
         "note_search.html",
