@@ -15,6 +15,7 @@ install-deps:
     mkdir -p ./src/static/css/ ./src/static/js/
     cp ./node_modules/katex/dist/katex.css ./src/static/css/
     cp ./node_modules/katex/dist/katex.min.js ./src/static/js/
+    cp ./node_modules/katex/dist/contrib/auto-render.min.js ./src/static/js/
 
 tailwind-init:
     npm install -D tailwindcss
