@@ -9,6 +9,7 @@ from api.get.notes import (
     search_notes,
     get_full_titles
 )
+from api.put.notes import update_server_note
 from render.render_markdown import make_html
 
 
@@ -48,8 +49,11 @@ def note_detail(note_id):
     # Find the path to the current note
     note_path = find_note_path(notes_tree, note_id)
 
+    # Parse the markdown content
+    note.content = make_html(note.content)
+
     return render_template(
-        "note_detail.html", note=note, tree_html=tree_html, note_path=note_path or []
+        "note_detail.html", note=note, note_html=make_html(note.content), tree_html=tree_html, note_path=note_path or []
     )
 
 
@@ -65,8 +69,24 @@ def edit_note(note_id):
     note_path = find_note_path(notes_tree, note_id)
 
     return render_template(
-        "note_edit.html", note=note, tree_html=tree_html, note_path=note_path or []
+        "note_edit.html", note=note, note_html=make_html(note.content), tree_html=tree_html, note_path=note_path or []
     )
+
+
+# TODO Implement title
+@app.route("/edit/<int:note_id>", methods=["POST"])
+def update_note(note_id):
+    if request.method == "POST":
+        title = request.form.get('title')
+        content = request.form.get('content')
+
+        # Here you would add logic to update the note with the provided id, title, and content.
+        # TODO
+
+        update_server_note(note_id, title=title, content=content)
+        # Refresh the page to show the updated note
+        return redirect(url_for("note_detail", note_id=note_id))
+
 
 
 @app.route("/search")
@@ -89,7 +109,9 @@ def search():
     full_titles = get_full_titles(notes_tree)
     # Render the content for display
     for note in notes:
-        note.content = make_html(note.content)[:100]
+        note.content = make_html(note.content)
+        # use a div to protect certain things
+        note.content = "<div>" + note.content[:200] + "</div> ..."
         note.title = full_titles[note.id]
 
 
@@ -100,6 +122,7 @@ def search():
         tree_html=tree_html,
         note=None
     )
+
 
 
 

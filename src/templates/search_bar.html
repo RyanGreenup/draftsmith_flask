@@ -1,5 +1,8 @@
-<form action="{{ url_for('search') }}" method="GET" class="input input-bordered flex items-center gap-2">
-  <input type="text" name="q" class="grow" placeholder="Search" />
+<!--- TODO the icon should be inside --->
+<!--- See <https://daisyui.com/components/input/> --->
+
+<form action="{{ url_for('search') }}" method="GET">
+  <input type="text" name="q" placeholder="Search" class="input input-bordered w-full max-w-xs" />
   <button type="submit">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="h-4 w-4 opacity-70">
       <path fill-rule="evenodd"
@@ -8,4 +11,6 @@
     </svg>
   </button>
 </form>
+
+
 

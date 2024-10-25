@@ -1,6 +1,4 @@
 .textarea-primary {
-  width: 410px;
-  /* Sets width to 100% of its container */
+  width: 80em;
   height: 800px;
-  /* Sets height to 200 pixels */
 }
