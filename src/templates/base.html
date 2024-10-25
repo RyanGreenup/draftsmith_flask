@@ -12,7 +12,11 @@
     <div class="drawer lg:drawer-open">
       <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
       <div class="drawer-content">
-        {% include 'search_bar.html' %}
+
+        <div class="container mx-auto">
+          {% include 'search_bar.html' %}
+          {% include 'breadcrumbs.html' %}
+        </div>
         <!-- BEGIN Page content here -->
         {% block content %}
         <!-- Specific page content will go here -->
