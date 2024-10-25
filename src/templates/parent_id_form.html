@@ -1,0 +1,12 @@
+<!-- This is the form that allows changing the parent ID of a note. -->
+<!--- It can't be used to change the parent ID to a note that doesn't exist. -->
+<!--- So it can't be used when creating a new note, as that note doesn't yet have an id. -->
+<form action="{{ url_for('move_note', note_id=note.id) }}" method="POST">
+    <div class="container mx-auto px-4 py-8">
+        <label for="new_parent_id" class="input input-bordered flex items-center gap-2">
+            <input type="number" id="new_parent_id" name="new_parent_id" placeholder="Change Parent ID" required>
+        </label>
+        <button type="submit", class="btn btn-primary">Move</button>
+    </div>
+</form>
+

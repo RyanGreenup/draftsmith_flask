@@ -16,6 +16,8 @@
         </label>
         <textarea name="content" class="font-mono text-sm textarea textarea-primary textarea-lg w-screen">{{ note.content }}</textarea>
     </form>
+
+    {% include 'parent_id_form.html' %}
 </div>
 
 {% include 'markdown-content.html' %}
