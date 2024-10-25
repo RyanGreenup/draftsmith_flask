@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  {% include 'markdown-content.html' %}
   <div class="mt-4">
     <a href="{{ url_for('edit_note', note_id=note.id) }}" class="btn btn-primary">Edit Note</a>
     <a href="{{ url_for('create_note_page') }}" class="btn btn-success">Create New Note</a>
@@ -9,4 +8,5 @@
       <button type="submit" class="btn btn-danger">Delete Note</button>
     </form>
   </div>
+  {% include 'markdown-content.html' %}
 {% endblock %}
