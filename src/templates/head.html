@@ -1,6 +1,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ note.title }}</title>
+{% if note is defined %}
+  {% if note.title is defined and note.title %}
+    <title>{{ note.title }}</title>
+  {% else %}
+    <title>Untitled Note</title>
+  {% endif %}
+{% endif %}
 <!-- Include the Stylesheet for the Markdown -->
 <link rel="stylesheet" href="{{ url_for('static', filename='katex/dist/katex.min.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/markdown.css') }}">

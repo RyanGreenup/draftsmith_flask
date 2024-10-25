@@ -7,13 +7,11 @@ from api.get.notes import (
     build_notes_tree_html,
     find_note_path,
     search_notes,
-    get_full_titles
+    get_full_titles,
 )
 from api.put.notes import update_server_note
 from api.post.notes import create_note
-from render.render_markdown import make_html
 from render.render_markdown import Markdown
-
 
 
 app = Flask(__name__)
@@ -43,7 +41,6 @@ def root():
 
 @app.route("/note/<int:note_id>")
 def note_detail(note_id):
-    all_notes = get_notes()
     note = get_note(note_id)
     notes_tree = get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree)
@@ -57,13 +54,16 @@ def note_detail(note_id):
     html_content = md_obj.make_html()
 
     return render_template(
-        "note_detail.html", note=note, note_html=html_content, tree_html=tree_html, note_path=note_path or []
+        "note_detail.html",
+        note=note,
+        note_html=html_content,
+        tree_html=tree_html,
+        note_path=note_path or [],
     )
 
 
 @app.route("/edit/<int:note_id>")
 def edit_note(note_id):
-    all_notes = get_notes()
     note = get_note(note_id)
     notes_tree = get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree)
@@ -75,8 +75,13 @@ def edit_note(note_id):
     html_content = md_obj.make_html()
 
     return render_template(
-        "note_edit.html", note=note, note_html=html_content, tree_html=tree_html, note_path=note_path or []
+        "note_edit.html",
+        note=note,
+        note_html=html_content,
+        tree_html=tree_html,
+        note_path=note_path or [],
     )
+
 
 @app.route("/notes/create", methods=["GET", "POST"])
 def create_note_page():
@@ -87,12 +92,14 @@ def create_note_page():
 
         return render_template("note_create.html", tree_html=tree_html, title="")
     elif request.method == "POST":
-        content = request.form.get('content')
-        title = request.form.get('title')
+        content = request.form.get("content")
+        title = request.form.get("title")
         # TODO url should be configurable
-        response = create_note(url="http://localhost:37238/notes", title=title, content=content)
+        response = create_note(
+            url="http://localhost:37238/notes", title=title, content=content
+        )
         # TODO the API should return the ID of the new note
-        id = response.get('id')
+        id = response.get("id")
         if id:
             return redirect(url_for("note_detail", note_id=id))
         else:
@@ -102,8 +109,8 @@ def create_note_page():
 # TODO Implement title
 @app.route("/edit/<int:note_id>", methods=["POST", "PUT"])
 def update_note(note_id):
-    title = request.form.get('title')
-    content = request.form.get('content')
+    title = request.form.get("title")
+    content = request.form.get("content")
     if request.method == "POST":
         update_server_note(note_id, title=title, content=content)
         # Refresh the page to show the updated note
@@ -114,12 +121,11 @@ def update_note(note_id):
     return redirect(url_for("note_detail", note_id=note_id))
 
 
-
 @app.route("/search")
 def search():
-    query = request.args.get('q', '')
+    query = request.args.get("q", "")
     if not query:
-        return redirect(url_for('root'))
+        return redirect(url_for("root"))
 
     # TODO maybe API should include a field with and withot the full name to
     # Save multiple requests?
@@ -142,16 +148,13 @@ def search():
         note.content = "<div>" + note.content[:200] + "</div> ..."
         note.title = full_titles[note.id]
 
-
     return render_template(
         "note_search.html",
         query=query,
         search_results=notes,
         tree_html=tree_html,
-        note=None
+        note=None,
     )
-
-
 
 
 if __name__ == "__main__":

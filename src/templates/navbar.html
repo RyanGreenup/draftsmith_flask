@@ -9,10 +9,16 @@
     </label>
   </div>
   <div class="flex-1">
-    {% if note.title is defined and note.title and note.id is defined and note.id %}
-    <a class="btn btn-ghost text-xl">
-      {{ note.title }}: #{{ note.id }}
-    </a>
+    {% if note is defined %}
+      {% if note.title is defined and note.title and note.id is defined and note.id %}
+      <a class="btn btn-ghost text-xl">
+        {{ note.title }}: #{{ note.id }}
+      </a>
+      {% else %}
+      <a class="btn btn-ghost text-xl">
+        New Note
+      </a>
+      {% endif %}
     {% endif %}
   </div>
   {% include 'right_navbar_button.html' %}
