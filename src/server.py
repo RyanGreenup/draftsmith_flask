@@ -19,6 +19,10 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'  # Replace with a real secret key
 
 
+@app.context_processor
+def inject_all_notes():
+    return dict(all_notes=get_notes())
+
 @app.route("/")
 def root():
     # Get all the notes
