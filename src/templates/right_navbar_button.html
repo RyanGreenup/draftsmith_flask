@@ -1,6 +1,29 @@
 <div class="flex-none">
   <ul class="menu menu-horizontal px-1">
-    <li><a>Actions</a></li>
+    <li>
+      <details>
+        <summary>Actions</summary>
+        {% if note is defined %}
+        <li>
+        <div class="btn btn-sm btn-block btn-ghost justify-start">
+          {% include 'buttons/edit.html' %}
+          </div>
+        </li>
+        <li>
+        <div class="btn btn-sm btn-block btn-ghost justify-start">
+          {% include 'buttons/new.html' %}
+          </div>
+        </li>
+        <li>
+        <div class="btn btn-sm btn-block btn-ghost justify-start">
+    <form action="{{ url_for('delete_note_page', note_id=note.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this note? This action cannot be undone.');">
+      <button type="submit">Delete Note</button>
+    </form>
+        </div>
+        </li>
+        {% endif %}
+      </details>
+    </li>
     <li>
       <details>
         <summary>Themes</summary>
