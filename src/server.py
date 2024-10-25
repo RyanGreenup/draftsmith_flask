@@ -16,6 +16,7 @@ from render.render_markdown import Markdown
 
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key_here'  # Replace with a real secret key
 
 
 @app.route("/")
