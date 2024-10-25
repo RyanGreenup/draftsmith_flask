@@ -78,15 +78,14 @@ def edit_note(note_id):
         "note_edit.html", note=note, note_html=html_content, tree_html=tree_html, note_path=note_path or []
     )
 
-@app.route("/create/<string:title>")
-def create_note_page(title, methods=["GET", "POST"]):
+@app.route("/create", methods=["GET", "POST"])
+def create_note_page():
     if request.method == "GET":
-        # TODO allow splittting the title on slash to infer heirarchy
         notes_tree = get_notes_tree()
         tree_html = build_notes_tree_html(notes_tree)
         tree_html = Markup(tree_html)
 
-        return render_template("note_create.html")
+        return render_template("note_create.html", tree_html=tree_html)
     elif request.method == "POST":
         content = request.form.get('content')
         title = request.form.get('title')
