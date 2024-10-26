@@ -10,6 +10,7 @@ from api.get.notes import (
     find_note_path,
     search_notes,
     get_full_titles,
+    get_recent_notes,
 )
 from api.put.notes import update_server_note
 from api.post.notes import create_note
