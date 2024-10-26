@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, current_app, abort
 from markupsafe import Markup
+from urllib.parse import quote
 import os
 from api.assets.upload import upload_file
 from api.get.notes import (
@@ -14,9 +15,11 @@ from api.get.notes import (
 )
 from api.put.notes import update_server_note
 from api.post.notes import create_note
+from api.assets.list import get_asset_id
 from api.delete.notes import delete_note
 from api.post.note_hierarchy import update_note_hierarchy
 from render.render_markdown import Markdown
+import requests
 
 
 app = Flask(__name__)
@@ -106,7 +109,7 @@ def create_note_page():
         title = request.form.get("title")
         # TODO url should be configurable
         response = create_note(
-            url="http://localhost:37238/notes", title=title, content=content
+            url=current_app.config['API_BASE_URL'], title=title, content=content
         )
         # TODO the API should return the ID of the new note
         id = response.get("id")
@@ -125,7 +128,7 @@ def update_note(note_id):
         update_server_note(note_id, title=title, content=content)
         # Refresh the page to show the updated note
     elif request.method == "PUT":
-        create_note(url="http://localhost:37238/notes", title=title, content=content)
+        create_note(url=current_app.config['API_BASE_URL'], title=title, content=content)
         update_server_note(note_id, title=title, content=content)
         # Refresh the page to show the updated note
     return redirect(url_for("note_detail", note_id=note_id))
@@ -202,7 +205,6 @@ def move_note(note_id):
 def upload_asset():
     if request.method == 'POST':
         file = request.files.get('file')
-        note_id = request.form.get('note_id')
         description = request.form.get('description')
 
         if file:
@@ -213,7 +215,7 @@ def upload_asset():
                 file.save(file_path)
 
                 try:
-                    result = upload_file(file_path, description)
+                    result = upload_file(file_path, base_url=current_app.config['API_BASE_URL'], description=description)
                     flash(f"File uploaded successfully. asset_id: {result.id}, server_filename: {result.filename} API: {result.message}", 'success')
                     # TODO maybe return to the original page?
                 except Exception as e:
@@ -229,6 +231,43 @@ def upload_asset():
     tree_html = build_notes_tree_html(notes_tree)
     tree_html = Markup(tree_html)
     return render_template('upload_asset.html', tree_html=tree_html)
+
+
+# TODO how to handle the API URL
+@app.route('/m/<string:maybe_id>', methods=['GET'])
+def get_asset_new(maybe_id):
+    return get_asset(maybe_id)
+
+@app.route('/m/<string:maybe_id>', methods=['GET'])
+def get_asset(maybe_id):
+    """
+    Retrieve an asset by ID or filename and redirect to its download URL.
+
+    Args:
+        maybe_id (str): The asset ID or filename.
+
+    Returns:
+        Response: A redirection to the asset's download URL or a 404 error if not found.
+    """
+    api_url = current_app.config['API_BASE_URL']
+
+    if maybe_id.isdigit():
+        # It's an ID
+        id = int(maybe_id)
+    else:
+        # Assume `maybe_id` is a filename and find the corresponding ID
+        id = get_asset_id(api_url, maybe_id)
+        if id is None:
+            abort(404, description="Asset not found.")
+
+    # Construct the download URL
+    download_url = f"{api_url}/assets/{id}/download"
+
+    print(f"{download_url=}")
+
+    # Redirect to the download URL
+    return redirect(download_url)
+
 
 @app.route("/recent")
 def recent_pages():
