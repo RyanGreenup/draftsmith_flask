@@ -3,46 +3,46 @@
     <li>
       <details>
         <summary>Actions</summary>
-      <ul tabindex="0" class="dropdown-content bg-base-300 rounded-box z-[1] w-52 p-2 shadow-2xl">
-    {% if note %}
-    <li>
-      <div class="btn btn-sm btn-block btn-ghost justify-start">
-        {% include 'buttons/edit.html' %}
-      </div>
-    </li>
-    {% endif %}
-    <li>
-      <div class="btn btn-sm btn-block btn-ghost justify-start">
-        {% include 'buttons/new.html' %}
-      </div>
-    </li>
-    {% if note %}
-    <li>
-      <div class="btn btn-sm btn-block btn-ghost justify-start">
-        <a href="{{ url_for('move_note', note_id=note.id) }}">Move</a>
-      </div>
-    </li>
-    {% endif %}
-    {% if note %}
-    <li>
-      <div class="btn btn-sm btn-block btn-ghost justify-start">
-        <form action="{{ url_for('delete_note_page', note_id=note.id) }}" method="POST"
-          onsubmit="return confirm('Are you sure you want to delete this note? This action cannot be undone.');">
-          <button type="submit">Delete Note</button>
-        </form>
-      </div>
-    </li>
-    {% endif %}
-        <li>
-          Upload Asset
-        </li>
-        <li>
-          Delete Asset (TODO use the CLI for now)
-        </li>
-        <li>
-          View Assets
-        </li>
-      </ul>
+        <ul tabindex="0" class="dropdown-content bg-base-300 rounded-box z-[1] w-52 p-2 shadow-2xl">
+          {% if note %}
+          <li>
+            <div class="btn btn-sm btn-block btn-ghost justify-start">
+              {% include 'buttons/edit.html' %}
+            </div>
+          </li>
+          {% endif %}
+          <li>
+            <div class="btn btn-sm btn-block btn-ghost justify-start">
+              {% include 'buttons/new.html' %}
+            </div>
+          </li>
+          {% if note %}
+          <li>
+            <div class="btn btn-sm btn-block btn-ghost justify-start">
+              <a href="{{ url_for('move_note', note_id=note.id) }}">Move</a>
+            </div>
+          </li>
+          {% endif %}
+          {% if note %}
+          <li>
+            <div class="btn btn-sm btn-block btn-ghost justify-start">
+              <form action="{{ url_for('delete_note_page', note_id=note.id) }}" method="POST"
+                onsubmit="return confirm('Are you sure you want to delete this note? This action cannot be undone.');">
+                <button type="submit">Delete Note</button>
+              </form>
+            </div>
+          </li>
+          {% endif %}
+          <li>
+            Upload Asset
+          </li>
+          <li>
+            Delete Asset (TODO use the CLI for now)
+          </li>
+          <li>
+            View Assets
+          </li>
+        </ul>
       </details>
     </li>
     <li>
