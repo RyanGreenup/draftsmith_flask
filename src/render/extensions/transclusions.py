@@ -6,11 +6,12 @@ import re
 from re import Pattern
 from api.get.notes import get_notes, get_note
 from render.math_store import MathStore
+from render.regex_patterns import TRANSCLUSION_PATTERN
 
 MAX_DEPTH = 10
 
 class IncludeFilePreprocessor(Preprocessor):
-    INCLUDE_RE = re.compile(r'!\[\[([^\]]+)\]\]')
+    TRANSCLUSION_PATTERN = TRANSCLUSION_PATTERN
 
     def __init__(self, md, max_depth: int):
         super().__init__(md)
@@ -23,7 +24,7 @@ class IncludeFilePreprocessor(Preprocessor):
 
         new_lines = []
         for line in lines:
-            m = self.INCLUDE_RE.search(line)
+            m = self.TRANSCLUSION_PATTERN.search(line)
             if m:
                 id = m.group(1)
                 if id.isdigit():
