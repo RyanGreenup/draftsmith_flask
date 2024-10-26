@@ -268,6 +268,31 @@ def search_notes(
     return search_results
 
 
+def get_recent_notes(base_url: str = "http://localhost:37238", limit: int = 10) -> List[NoteModel]:
+    """
+    Retrieve a list of recent notes from the API, sorted by modification date.
+
+    Args:
+        base_url (str): The base URL of the API (default: "http://localhost:37238").
+        limit (int): The maximum number of notes to retrieve (default: 10).
+
+    Returns:
+        List[NoteModel]: A list of recent notes, sorted by modification date.
+    """
+    url = f"{base_url}/notes"
+    response = requests.get(url)
+    response.raise_for_status()
+    notes_data = response.json()
+
+    adapter = TypeAdapter(List[NoteModel])
+    notes = adapter.validate_python(notes_data)
+
+    # Sort notes by modified_at date in descending order
+    sorted_notes = sorted(notes, key=lambda x: x.modified_at, reverse=True)
+
+    # Return only the specified number of notes
+    return sorted_notes[:limit]
+
 if __name__ == "__main__":
     tree = get_notes_tree()
     print(json.dumps([item.model_dump() for item in tree], indent=2))

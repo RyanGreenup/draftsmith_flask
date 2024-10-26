@@ -229,6 +229,18 @@ def upload_asset():
     tree_html = Markup(tree_html)
     return render_template('upload_asset.html', tree_html=tree_html)
 
+@app.route("/recent")
+def recent_pages():
+    recent_notes = get_recent_notes(limit=20)  # Adjust the limit as needed
+    notes_tree = get_notes_tree()
+    tree_html = build_notes_tree_html(notes_tree)
+    tree_html = Markup(tree_html)
+
+    return render_template(
+        "recent_pages.html",
+        recent_notes=recent_notes,
+        tree_html=tree_html,
+    )
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
