@@ -23,7 +23,8 @@ import os
 from pathlib import Path
 import re
 from markdown.extensions.wikilinks import WikiLinkExtension
-
+from render.extensions.transclusions import IncludeTransclusions
+from render.math_store import MathStore
 
 # from regex_patterns import INLINE_MATH_PATTERN, BLOCK_MATH_PATTERN
 from render.regex_patterns import INLINE_MATH_PATTERN, BLOCK_MATH_PATTERN
@@ -34,6 +35,7 @@ def make_html(text: str) -> str:
     html_body = markdown.markdown(
         text,
         extensions=[
+            IncludeTransclusions(),
             "attr_list",
             # "markdown_captions",
             "def_list",
@@ -58,6 +60,7 @@ def make_html(text: str) -> str:
             "md_in_html",
             "footnotes",
             "meta",
+            IncludeTransclusions(),
         ],
         extension_configs={
             "codehilite": {
@@ -79,30 +82,18 @@ class Markdown:
         self.css_path = css_path
         self.dark_mode = dark_mode
         self.text = text
-        self.math_blocks = []
+        self.math_store = MathStore()
 
-    def _preserve_math(self, match):
-        math = match.group(0)
-        placeholder = f"MATH_PLACEHOLDER_{len(self.math_blocks)}"
-        self.math_blocks.append(math)
-        return placeholder
-
-    def _restore_math(self, text):
-        for i, math in enumerate(self.math_blocks):
-            placeholder = f"MATH_PLACEHOLDER_{i}"
-            text = text.replace(placeholder, math)
-        return text
 
     def make_html(self) -> str:
         # Preserve math environments
-        text = BLOCK_MATH_PATTERN.sub(self._preserve_math, self.text)
-        text = INLINE_MATH_PATTERN.sub(self._preserve_math, text)
+        text = self.math_store.preserve_math(self.text)
 
         # Generate the markdown with extensions
         html_body = markdown.markdown(
             text,
             extensions=[
-                # IncludeFileExtension(base_path=os.getcwd()),
+                IncludeTransclusions(),
                 "attr_list",
                 # ImageWithFigureExtension(),
                 # "markdown_captions",
@@ -139,7 +130,7 @@ class Markdown:
         )
 
         # Restore math environments
-        html_body = self._restore_math(html_body)
+        html_body = self.math_store.restore_math(html_body)
 
         return html_body
 
