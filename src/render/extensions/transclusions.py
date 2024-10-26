@@ -61,7 +61,7 @@ class IncludeFilePreprocessor(Preprocessor):
                         restored_html = self.math_store.restore_math(included_html)
 
                         if self.inject_daisy_card_css:
-                            restored_html = self.wrap_with_css(f"<a href='/note/{id}'>↱ #{id}</a>", restored_html)
+                            restored_html = self.wrap_with_css(f"<a href='/note/{id}'>↱ #{id}</a><span class='text-sm text-gray-500'> | <a href='/edit/{id}'>Edit</a></span>", restored_html)
 
                         # Add the parsed HTML to new_lines
                         new_lines.append(restored_html)
