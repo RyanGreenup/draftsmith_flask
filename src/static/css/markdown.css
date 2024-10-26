@@ -11,6 +11,7 @@
   padding: 20px;
   /* border: 2px solid #e1e4e8; */
   /* $heading-color: #333; */
+  /* Needed for tailwind css */
 }
 
 .markdown .page-title {
@@ -66,9 +67,16 @@
   border-left: 0.25em solid #e1e4e8;
 }
 
-.markdown ul, .markdown ol {
+.markdown ul {
   padding-left: 2em;
   margin-bottom: 16px;
+  list-style-type: disc;
+}
+
+.markdown ol {
+  padding-left: 2em;
+  margin-bottom: 16px;
+  list-style-type: decimal;
 }
 
 .markdown li {

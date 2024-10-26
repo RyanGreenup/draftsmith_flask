@@ -76,10 +76,20 @@
     border-left: 0.25em solid #e1e4e8;
   }
 
-  ul, ol {
+  /* Needed for tailwind css */
+
+  ul {
     padding-left: 2em;
     margin-bottom: 16px;
+    list-style-type: disc;
   }
+
+  ol {
+    padding-left: 2em;
+    margin-bottom: 16px;
+    list-style-type: decimal;
+  }
+
 
   li {
     margin-bottom: 0.3em;
@@ -125,5 +135,12 @@
     max-width: 100%;
     box-sizing: border-box;
   }
+
+
+
+
+
 }
+
+
 

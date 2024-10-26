@@ -13,10 +13,24 @@ MAX_DEPTH = 10
 class IncludeFilePreprocessor(Preprocessor):
     TRANSCLUSION_PATTERN = TRANSCLUSION_PATTERN
 
-    def __init__(self, md, max_depth: int):
+    def __init__(self, md, max_depth: int, inject_daisy_card_css: bool = True):
         super().__init__(md)
         self.max_depth = max_depth
         self.math_store = MathStore()
+        self.inject_daisy_card_css = inject_daisy_card_css
+
+
+
+    def wrap_with_css(self, title: str, content: str) -> str:
+        return  f"""
+<div class="card bg-base-100 w-96 shadow-xl">
+  <div class="card-body">
+    <b class="card-title">{title}</b>
+    <p>
+      {content}
+    </p>
+  </div>
+</div>"""
 
     def run(self, lines, depth=0):
         if depth >= self.max_depth:
@@ -30,7 +44,7 @@ class IncludeFilePreprocessor(Preprocessor):
                 if id.isdigit():
                     try:
                         note = get_note(int(id))
-                        file_content = f"[↱ #{id}](/note/{id})\n" + note.content
+                        file_content = note.content
 
                         # Preserve math in the file content
                         preserved_content = self.math_store.preserve_math(file_content)
@@ -45,6 +59,9 @@ class IncludeFilePreprocessor(Preprocessor):
                         # Convert and restore math environments
                         included_html = included_md.convert("\n".join(included_lines))
                         restored_html = self.math_store.restore_math(included_html)
+
+                        if self.inject_daisy_card_css:
+                            restored_html = self.wrap_with_css(f"<a href='/note/{id}'>↱ #{id}</a>", restored_html)
 
                         # Add the parsed HTML to new_lines
                         new_lines.append(restored_html)
