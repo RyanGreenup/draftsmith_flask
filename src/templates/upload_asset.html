@@ -3,13 +3,6 @@
 {% block content %}
 <div class="container mx-auto px-4">
     <h1 class="text-2xl font-bold mb-4">Upload Asset</h1>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }} mb-4">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
     <form action="{{ url_for('upload_asset') }}" method="post" enctype="multipart/form-data" class="mb-4">
         <div class="mb-4">
             <label for="file" class="block mb-2">Choose file:</label>
