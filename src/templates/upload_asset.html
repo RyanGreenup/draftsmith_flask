@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Asset</title>
+</head>
+<body>
+    <h1>Upload Asset</h1>
+    <form action="{{ url_for('upload_asset_page') }}" method="post" enctype="multipart/form-data">
+        <label for="file">Choose file:</label>
+        <input type="file" id="file" name="file" required><br><br>
+        
+        <label for="note_id">Note ID:</label>
+        <input type="number" id="note_id" name="note_id" required><br><br>
+        
+        <label for="description">Description (optional):</label>
+        <textarea id="description" name="description"></textarea><br><br>
+        
+        <input type="submit" value="Upload">
+    </form>
+</body>
+</html>
