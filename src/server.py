@@ -202,7 +202,7 @@ if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
 
 @app.route('/upload-asset', methods=['GET', 'POST'])
-def upload_asset_page():
+def upload_asset():
     if request.method == 'POST':
         file = request.files.get('file')
         note_id = request.form.get('note_id')
