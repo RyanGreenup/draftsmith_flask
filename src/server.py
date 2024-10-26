@@ -201,7 +201,7 @@ def move_note(note_id):
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
 
-@app.route('/upload_asset', methods=['GET', 'POST'])
+@app.route('/upload-asset', methods=['GET', 'POST'])
 def upload_asset_page():
     if request.method == 'POST':
         file = request.files.get('file')
