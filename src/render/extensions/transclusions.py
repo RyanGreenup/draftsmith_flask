@@ -23,7 +23,7 @@ class IncludeFilePreprocessor(Preprocessor):
 
     def wrap_with_css(self, title: str, content: str) -> str:
         return  f"""
-<div class="card bg-base-100 w-96 shadow-xl">
+<div class="card bg-base-100 w-xl shadow-xl">
   <div class="card-body">
     <b class="card-title">{title}</b>
     <p>
