@@ -7,3 +7,4 @@ src/api/delete/__pycache__
 src/api/post/__pycache__
 src/api/put/__pycache__
 src/render/extensions/__pycache__
+src/api/assets/__pycache__

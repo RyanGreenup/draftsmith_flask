@@ -10,22 +10,17 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
-    <form action="{{ url_for('upload_asset_page') }}" method="post" enctype="multipart/form-data" class="mb-4">
+    <form action="{{ url_for('upload_asset') }}" method="post" enctype="multipart/form-data" class="mb-4">
         <div class="mb-4">
             <label for="file" class="block mb-2">Choose file:</label>
             <input type="file" id="file" name="file" required class="input input-bordered w-full">
         </div>
-        
-        <div class="mb-4">
-            <label for="note_id" class="block mb-2">Note ID:</label>
-            <input type="number" id="note_id" name="note_id" required class="input input-bordered w-full">
-        </div>
-        
+
         <div class="mb-4">
             <label for="description" class="block mb-2">Description (optional):</label>
             <textarea id="description" name="description" class="textarea textarea-bordered w-full"></textarea>
         </div>
-        
+
         <button type="submit" class="btn btn-primary">Upload</button>
     </form>
 </div>

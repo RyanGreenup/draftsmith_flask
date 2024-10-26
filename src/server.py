@@ -197,35 +197,39 @@ def move_note(note_id):
             flash(f"An error occurred: {str(e)}", "error")
         return redirect(url_for("note_detail", note_id=note_id))
 
-
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0")
-
-@app.route('/upload-asset', methods=['GET', 'POST'])
+@app.route('/upload_asset', methods=['GET', 'POST'])
 def upload_asset():
     if request.method == 'POST':
         file = request.files.get('file')
         note_id = request.form.get('note_id')
         description = request.form.get('description')
-        
-        if file and note_id:
-            filename = file.filename
-            file_path = os.path.join('temp', filename)
-            os.makedirs('temp', exist_ok=True)  # Ensure the temp directory exists
-            file.save(file_path)
-            
-            try:
-                result = upload_file(file_path, int(note_id), description)
-                flash(f"File uploaded successfully. {result.message}", 'success')
-                return redirect(url_for('note_detail', note_id=note_id))
-            except Exception as e:
-                flash(f"Error uploading file: {str(e)}", 'error')
-            finally:
-                os.remove(file_path)  # Clean up the temporary file
+
+        if file:
+            if (filename := file.filename):
+                filename = file.filename
+                file_path = os.path.join('temp', filename)
+                os.makedirs('temp', exist_ok=True)  # Ensure the temp directory exists
+                file.save(file_path)
+
+                try:
+                    result = upload_file(file_path, description)
+                    flash(f"File uploaded successfully. asset_id: {result.id}, server_filename: {result.filename} API: {result.message}", 'success')
+                    # TODO maybe return to the original page?
+                except Exception as e:
+                    flash(f"Error uploading file: {str(e)}", 'error')
+                finally:
+                    os.remove(file_path)  # Clean up the temporary file
+            else:
+                flash("Please provide a file. Unable to get a filename", 'error')
         else:
-            flash("Please provide both a file and a note ID.", 'error')
-    
+            flash("Please provide a file.", 'error')
+
     notes_tree = get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree)
     tree_html = Markup(tree_html)
     return render_template('upload_asset.html', tree_html=tree_html)
+
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0")
+

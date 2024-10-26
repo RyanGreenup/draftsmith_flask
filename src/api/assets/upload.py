@@ -9,13 +9,12 @@ class UploadResponseModel(BaseModel):
     id: int
     message: str
 
-def upload_file(file_path: str, note_id: int, description: Optional[str] = None, base_url: str = "http://localhost:37238") -> UploadResponseModel:
+def upload_file(file_path: str, description: Optional[str] = None, base_url: str = "http://localhost:37238") -> UploadResponseModel:
     """
     Upload a file to the API.
 
     Args:
         file_path (str): The path to the file to be uploaded.
-        note_id (int): The ID of the note to associate the file with.
         description (Optional[str]): An optional description of the file.
         base_url (str): The base URL of the API (default: "http://localhost:37238").
 
@@ -33,8 +32,7 @@ def upload_file(file_path: str, note_id: int, description: Optional[str] = None,
 
     # Prepare the multipart form data
     fields = {
-        'file': (os.path.basename(file_path), open(file_path, 'rb')),
-        'note_id': str(note_id)
+        'file': (os.path.basename(file_path), open(file_path, 'rb'))
     }
     if description:
         fields['description'] = description
@@ -56,7 +54,7 @@ def upload_file(file_path: str, note_id: int, description: Optional[str] = None,
 if __name__ == "__main__":
     # Example usage
     try:
-        result = upload_file("/path/to/your/file.txt", note_id=1, description="Sample upload")
+        result = upload_file("/path/to/your/file.txt", description="Sample upload")
         print(result.model_dump())
     except requests.exceptions.RequestException as e:
         print(f"Error uploading file: {e}")
