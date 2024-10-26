@@ -4,10 +4,19 @@
 <div class="container mx-auto px-4">
     <h1 class="text-2xl font-bold mb-4">Upload Asset</h1>
     <form action="{{ url_for('upload_asset') }}" method="post" enctype="multipart/form-data" class="mb-4">
-        <div class="mb-4">
-            <label for="file" class="block mb-2">Choose file:</label>
-            <input type="file" id="file" name="file" required class="input input-bordered w-full">
-        </div>
+
+        <label class="form-control w-full max-w-xs">
+          <div class="label">
+            <span class="label-text">Pick a file</span>
+            <span class="label-text-alt">Alt label</span>
+          </div>
+          <input type="file" id="file" name="file" required class="file-input file-input-bordered w-full max-w-xs" />
+          <div class="label">
+            <span class="label-text-alt">Alt label</span>
+            <span class="label-text-alt">Alt label</span>
+          </div>
+        </label>
+
 
         <div class="mb-4">
             <label for="description" class="block mb-2">Description (optional):</label>
