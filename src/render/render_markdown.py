@@ -25,6 +25,7 @@ import re
 from markdown.extensions.wikilinks import WikiLinkExtension
 from render.extensions.transclusions import IncludeTransclusions
 from render.math_store import MathStore
+from render.extensions.labelled_wikilinks import NoteLinkExtension
 
 # from regex_patterns import INLINE_MATH_PATTERN, BLOCK_MATH_PATTERN
 from render.regex_patterns import INLINE_MATH_PATTERN, BLOCK_MATH_PATTERN
@@ -36,6 +37,7 @@ def make_html(text: str) -> str:
         text,
         extensions=[
             IncludeTransclusions(),
+            NoteLinkExtension(),
             "attr_list",
             # "markdown_captions",
             "def_list",
@@ -94,6 +96,7 @@ class Markdown:
             text,
             extensions=[
                 IncludeTransclusions(),
+                NoteLinkExtension(),
                 "attr_list",
                 # ImageWithFigureExtension(),
                 # "markdown_captions",
