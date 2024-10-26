@@ -105,13 +105,14 @@ def build_notes_tree_html(notes_tree: List[NoteTreeModel]) -> str:
     # sort the notes tree by title (TODO add an order field)
     notes_tree.sort(key=lambda x: x.title)
     def render_note(note: NoteTreeModel) -> str:
+        hyperlink = f'<a href="/note/{note.id}">{note.title}</a>'
         if note.children:
-            html = f"<li>\n<details open>\n<summary>{note.title}</summary>\n<ul>"
+            html = f"<li><details open><summary>{hyperlink}</summary>\n<ul>"
             for child in note.children:
                 html += render_note(child)
             html += "</ul>\n</details>\n</li>"
         else:
-            html = f'<li><a href="/note/{note.id}">{note.title}</a></li>'
+            html = f'<li>{hyperlink}</li>'
         return html
 
     html = '<ul class="menu bg-base-200 rounded-box w-56">'
