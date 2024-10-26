@@ -51,3 +51,19 @@ def create_note(url: str, title: str|None, content: str|None) -> Dict[str, Any]:
     response = requests.post(url, json=note_data, headers=headers)
     return response.json()
 
+import requests
+from typing import Dict, Any, Optional
+
+def create_note(url: str, title: str|None, content: str|None) -> Dict[str, Any]:
+    data = {
+        "title": title,
+        "content": content
+    }
+    response = requests.post(f"{url}/notes", json=data)
+    response.raise_for_status()  # This will raise an exception for HTTP errors
+    
+    try:
+        return response.json()
+    except requests.exceptions.JSONDecodeError:
+        # If the response is not valid JSON, return the text content
+        return {"error": "Invalid JSON response", "content": response.text}
