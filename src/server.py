@@ -107,20 +107,24 @@ def create_note_page():
     elif request.method == "POST":
         content = request.form.get("content")
         title = request.form.get("title")
-        response = create_note(
-            url=current_app.config['API_BASE_URL'], title=title, content=content
-        )
-        
-        if "error" in response:
-            flash(f"Error creating note: {response['error']}", "error")
+        try:
+            response = create_note(
+                url=current_app.config['API_BASE_URL'], title=title, content=content
+            )
+            
+            if "error" in response:
+                flash(f"Error creating note: {response['error']}", "error")
+                return redirect(url_for("create_note_page"))
+            
+            id = response.get("id")
+            if id:
+                return redirect(url_for("note_detail", note_id=id))
+            else:
+                flash("Error creating note: No ID returned", "error")
+                return redirect(url_for("create_note_page"))
+        except requests.exceptions.RequestException as e:
+            flash(f"Error creating note: {str(e)}", "error")
             return redirect(url_for("create_note_page"))
-        
-        id = response.get("id")
-        if id:
-            return redirect(url_for("note_detail", note_id=id))
-        else:
-            flash("Error creating note: No ID returned", "error")
-            return redirect(url_for("root"))
 
 
 # TODO Implement title
