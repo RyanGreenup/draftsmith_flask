@@ -74,11 +74,11 @@ Check out our [Contribution Guidelines](CONTRIBUTING.md) to get started.
 
 ## 📜 License
 
-Draftsmith is open-source software licensed under the MIT license. See the [LICENSE](LICENSE) file for more details.
+Draftsmith is open-source software licensed under the GPL license.
 
 ## 🙏 Acknowledgements
 
-A big thank you to all our contributors and the open-source community for making Draftsmith possible.
+A big thank you to all the open source projects that went into making this, including Postgres, Go, Flask, Tailwind and DaisyUI, Flask and the open-source community for making Draftsmith possible.
 
 ---
 
