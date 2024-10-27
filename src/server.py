@@ -80,6 +80,15 @@ def note_detail(note_id):
         backlinks=backlinks,
     )
 
+@app.context_processor
+def inject_backlinks():
+    def get_backlinks_for_current_note():
+        if 'note_id' in request.view_args:
+            note_id = request.view_args['note_id']
+            return get_note_backlinks(note_id)
+        return []
+    return dict(backlinks=get_backlinks_for_current_note())
+
 
 @app.route("/edit/<int:note_id>")
 def edit_note(note_id):
