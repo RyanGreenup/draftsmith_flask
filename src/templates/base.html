@@ -4,6 +4,9 @@
 
 <head>
   {% include 'head.html' %}
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+  <meta name="theme-color" content="#000000">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='media/icon-192x192.png') }}">
 </head>
 
 <body>
@@ -44,6 +47,19 @@
     </div>
   </main>
   {% include 'katex_js.html' %}
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register("{{ url_for('static', filename='js/service-worker.js') }}")
+          .then(registration => {
+            console.log('Service Worker registered successfully:', registration);
+          })
+          .catch(error => {
+            console.log('Service Worker registration failed:', error);
+          });
+      });
+    }
+  </script>
 </body>
 
 </html>
