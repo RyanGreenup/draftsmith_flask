@@ -30,17 +30,22 @@ In a world overflowing with information, Draftsmith stands out as your personal 
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/draftsmith.git
+   mkdir /opt/draftsmith-flask
+   cd /opt/draftsmith-flask
+   git clone https://github.com/RyanGreenup/draftsmith_flask
+
    ```
 2. Install dependencies:
    ```
-   pip install -r requirements.txt
+   poetry install
    ```
 3. Run the application:
    ```
-   python src/server.py
+   poetry run python src/main.py
    ```
-4. Open your browser and navigate to `http://localhost:5000`
+4. Open your browser and navigate to `http://localhost:8080`
+
+For better performance consider using a production server like `gunicorn` or `uwsgi`. See the Docker container provided in the [API Setup Guide](https://ryangreenup.github.io/draftsmith_api/installation.html) which includes this pre-packaged.
 
 ### Backend
 
@@ -54,10 +59,6 @@ Install the backend API by following the [API Setup Guide](https://ryangreenup.g
 
 3. [**PyQt GUI**](https://github.com/RyanGreenup/draftsmith)
    - `pipx install git+https://github.com/RyanGreenup/draftsmith`
-
-2. **CLI Client**
-   - Install Python and dependencies.
-       - `pipx install git+https://github.com/RyanGreenup/draftsmith_cli --force`
 
 ## 🤝 Contributing
 
