@@ -26,6 +26,7 @@ from markdown.extensions.wikilinks import WikiLinkExtension
 from render.extensions.transclusions import IncludeTransclusions
 from render.math_store import MathStore
 from render.extensions.labelled_wikilinks import NoteLinkExtension
+from render.postprocess import fix_image_video_tags
 
 # from regex_patterns import INLINE_MATH_PATTERN, BLOCK_MATH_PATTERN
 from render.regex_patterns import INLINE_MATH_PATTERN, BLOCK_MATH_PATTERN
@@ -135,6 +136,9 @@ class Markdown:
         # Restore math environments
         html_body = self.math_store.restore_math(html_body)
 
+        # Postprocess the HTML
+        html_body = fix_image_video_tags(html_body)
+
         return html_body
 
     def build_css(self) -> str:
@@ -238,4 +242,5 @@ class Markdown:
         </body>
         </html>
         """
+
         return html
