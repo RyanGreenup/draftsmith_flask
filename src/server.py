@@ -3,7 +3,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from flask import Flask, render_template, request, redirect, url_for, flash, current_app, abort
+from flask import Flask, render_template, request, redirect, url_for, flash, current_app, abort, send_from_directory, make_response
 from markupsafe import Markup
 import os
 from src.api.assets.upload import upload_file
@@ -36,6 +36,17 @@ app.secret_key = 'your_secret_key_here'  # Replace with a real secret key
 @app.context_processor
 def inject_all_notes():
     return dict(all_notes=get_notes())
+
+@app.route('/manifest.json')
+def manifest():
+    return send_from_directory('static', 'manifest.json')
+
+def add_cache_control_header(response):
+    if request.path.startswith('/static/'):
+        response.headers['Cache-Control'] = 'public, max-age=31536000'
+    return response
+
+app.after_request(add_cache_control_header)
 
 @app.route("/")
 def root():
