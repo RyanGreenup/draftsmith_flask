@@ -13,6 +13,7 @@ from api.get.notes import (
     search_notes,
     get_full_titles,
     get_recent_notes,
+    get_note_backlinks,
 )
 from api.put.notes import update_server_note
 from api.post.notes import create_note
@@ -63,6 +64,9 @@ def note_detail(note_id):
     # Find the path to the current note
     note_path = find_note_path(notes_tree, note_id)
 
+    # Get backlinks for the current note
+    backlinks = get_note_backlinks(note_id)
+
     # Parse the markdown content
     md_obj = Markdown(note.content)
     html_content = md_obj.make_html()
@@ -73,6 +77,7 @@ def note_detail(note_id):
         note_html=html_content,
         tree_html=tree_html,
         note_path=note_path or [],
+        backlinks=backlinks,
     )
 
 

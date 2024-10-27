@@ -293,6 +293,30 @@ def get_recent_notes(base_url: str = "http://localhost:37238", limit: int = 10) 
     # Return only the specified number of notes
     return sorted_notes[:limit]
 
+def get_note_backlinks(note_id: int, base_url: str = "http://localhost:37238") -> List[NoteSearchResultModel]:
+    """
+    Retrieve a list of backlinks for a specific note.
+
+    Args:
+        note_id (int): The ID of the note to get backlinks for.
+        base_url (str): The base URL of the API (default: "http://localhost:37238").
+
+    Returns:
+        List[NoteSearchResultModel]: A list of notes that link to the specified note.
+    """
+    url = f"{base_url}/notes/{note_id}/backlinks"
+    response = requests.get(url)
+    response.raise_for_status()
+    backlinks_data = response.json()
+
+    try:
+        backlinks = [NoteSearchResultModel.model_validate(item) for item in backlinks_data]
+    except ValidationError as e:
+        print(f"Error validating backlinks data: {e}")
+        raise
+
+    return backlinks
+
 if __name__ == "__main__":
     tree = get_notes_tree()
     print(json.dumps([item.model_dump() for item in tree], indent=2))

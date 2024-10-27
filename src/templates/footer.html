@@ -7,9 +7,13 @@
     <nav>
       <h6 class="footer-title">Backlinks</h6>
       <ul class="space-y-1">
-        {% for note in all_notes[:5] %}
-          <li><a href="{{ url_for('note_detail', note_id=note.id) }}" class="link link-hover">{{ note.title }}</a></li>
-        {% endfor %}
+        {% if backlinks %}
+          {% for backlink in backlinks[:5] %}
+            <li><a href="{{ url_for('note_detail', note_id=backlink.id) }}" class="link link-hover">{{ backlink.title }}</a></li>
+          {% endfor %}
+        {% else %}
+          <li>No backlinks found</li>
+        {% endif %}
       </ul>
     </nav>
     <nav>
