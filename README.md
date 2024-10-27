@@ -28,8 +28,8 @@ In a world overflowing with information, Draftsmith stands out as your personal 
 
 ## 📸 Screenshots
 
-![Draftsmith Screenshot](./media/1.png)
-![Draftsmith Screenshot](./media/2.png)
+<p><img src="./media/1.png" style="float: left; width: 100px" /></p>
+<p><img src="./media/2.png" style="float: left; width: 100px" /></p>
 
 
 ## 🛠 Getting Started
