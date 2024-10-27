@@ -1,7 +1,9 @@
 # Draftsmith: Your Personal Knowledge Forge
 
 
-<p><img src="./assets/logo.png" style="float: left; width: 80px" /></p>
+<p><img src="./src/static/media/logo.png" style="float: left; width: 80px" /></p>
+
+
 
 Draftsmith is an open-source, powerful note-taking and knowledge management system designed for thinkers, researchers, and lifelong learners. It's not just another note-taking app; it's your personal knowledge forge, helping you connect ideas, discover insights, and craft your thoughts with precision.
 
