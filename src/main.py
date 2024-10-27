@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import typer
 from server import app  # Import the Flask app
 
