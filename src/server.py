@@ -1,10 +1,14 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from flask import Flask, render_template, request, redirect, url_for, flash, current_app, abort
 from markupsafe import Markup
 from urllib.parse import quote
 import os
-from api.assets.upload import upload_file
-from api.assets.list import get_assets
-from api.get.notes import (
+from src.api.assets.upload import upload_file
+from src.api.assets.list import get_assets
+from src.api.get.notes import (
     get_notes,
     get_note,
     get_notes_tree,
@@ -16,12 +20,12 @@ from api.get.notes import (
     get_note_backlinks,
     get_note_forward_links,
 )
-from api.put.notes import update_server_note
-from api.post.notes import create_note
-from api.assets.list import get_asset_id
-from api.delete.notes import delete_note
-from api.post.note_hierarchy import update_note_hierarchy
-from render.render_markdown import Markdown
+from src.api.put.notes import update_server_note
+from src.api.post.notes import create_note
+from src.api.assets.list import get_asset_id
+from src.api.delete.notes import delete_note
+from src.api.post.note_hierarchy import update_note_hierarchy
+from src.render.render_markdown import Markdown
 import requests
 
 
