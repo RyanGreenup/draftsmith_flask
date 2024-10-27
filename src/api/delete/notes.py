@@ -1,6 +1,5 @@
 import requests
-from typing import Dict, Any, List
-from urllib.parse import quote
+from typing import Dict
 
 def delete_note(
     note_id: int, base_url: str = "http://localhost:37238"

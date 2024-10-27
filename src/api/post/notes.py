@@ -1,25 +1,12 @@
-from datetime import datetime
-from flask import abort
-from pydantic import BaseModel
-from pydantic import TypeAdapter
-from pydantic import ValidationError
-from typing import List, Optional
-import json
 import requests
-from typing import List, Dict
-import requests
-from urllib.parse import quote
-from pydantic import ValidationError
-from pydantic import BaseModel
-from typing import List, Any
-
-
-
-
-
-
+from typing import Dict
 from typing import Any
-import requests
+
+
+
+
+
+
 
 def create_note(url: str, title: str|None, content: str|None) -> Dict[str, Any]:
     """
@@ -51,8 +38,7 @@ def create_note(url: str, title: str|None, content: str|None) -> Dict[str, Any]:
     response = requests.post(url, json=note_data, headers=headers)
     return response.json()
 
-import requests
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 def create_note(url: str, title: str|None, content: str|None) -> Dict[str, Any]:
     data = {

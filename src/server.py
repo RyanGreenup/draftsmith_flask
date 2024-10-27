@@ -5,7 +5,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from flask import Flask, render_template, request, redirect, url_for, flash, current_app, abort
 from markupsafe import Markup
-from urllib.parse import quote
 import os
 from src.api.assets.upload import upload_file
 from src.api.assets.list import get_assets

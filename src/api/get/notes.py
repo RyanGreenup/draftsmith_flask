@@ -6,12 +6,8 @@ from pydantic import ValidationError
 from typing import List, Optional
 import json
 import requests
-from typing import List, Dict
-import requests
+from typing import Dict
 from urllib.parse import quote
-from pydantic import ValidationError
-from pydantic import BaseModel
-from typing import List
 
 
 class NoteSearchResultModel(BaseModel):

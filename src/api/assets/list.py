@@ -4,8 +4,6 @@ from pydantic import BaseModel, ValidationError
 import requests
 from datetime import datetime
 from typing import List
-from pydantic import BaseModel, ValidationError
-import requests
 
 
 class AssetModel(BaseModel):

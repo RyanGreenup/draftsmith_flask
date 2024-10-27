@@ -1,6 +1,6 @@
 import pytest
 from bs4 import BeautifulSoup
-from postprocess import video_mime_types, fix_image_video_tags
+from postprocess import fix_image_video_tags
 
 def test_fix_image_video_tags_video_conversion():
     html_input = '''

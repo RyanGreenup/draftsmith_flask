@@ -1,8 +1,5 @@
 import requests
-from typing import Dict, Any, List
-from urllib.parse import quote
 from typing import Dict, Any
-import requests
 
 def delete_note_hierarchy(
     note_id: int, base_url: str = "http://localhost:37238"

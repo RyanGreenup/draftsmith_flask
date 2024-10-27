@@ -1,11 +1,7 @@
 import requests
-from typing import Dict, Any, List
-from urllib.parse import quote
+from typing import Dict, Any
 
-from typing import Dict, Any, Optional
-import requests
-from typing import Dict, Any, List
-from urllib.parse import quote
+from typing import Optional
 
 def update_note_hierarchy(
     note_id: int,

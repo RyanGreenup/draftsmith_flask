@@ -1,35 +1,14 @@
-from flask import Flask, render_template
-from markupsafe import Markup
 import markdown
-from api.get.notes import (
-    get_notes,
-    get_note,
-    get_notes_tree,
-    build_notes_tree_html,
-    find_note_path,
-)
-from PyQt6.QtCore import QUrl
-import markdown_gfm_admonition
 # from markdown_extension_transclusion import IncludeFileExtension
 # from markdown_extension_image_size_and_caption import ImageWithFigureExtension
-from PyQt6.QtWebEngineCore import QWebEngineSettings
-from PyQt6.QtWebEngineWidgets import QWebEngineView
 from pygments.formatters import HtmlFormatter
-import html
-import shutil
-import markdown
-import subprocess
-import os
 from pathlib import Path
-import re
-from markdown.extensions.wikilinks import WikiLinkExtension
 from render.extensions.transclusions import IncludeTransclusions
 from render.math_store import MathStore
 from render.extensions.labelled_wikilinks import NoteLinkExtension
 from render.postprocess import fix_image_video_tags
 
 # from regex_patterns import INLINE_MATH_PATTERN, BLOCK_MATH_PATTERN
-from render.regex_patterns import INLINE_MATH_PATTERN, BLOCK_MATH_PATTERN
 
 
 
