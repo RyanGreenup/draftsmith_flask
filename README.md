@@ -26,6 +26,12 @@ In a world overflowing with information, Draftsmith stands out as your personal 
 - **For Students**: Connect concepts across subjects and build a personalized study guide.
 - **For Professionals**: Manage projects, track ideas, and never lose an important thought again.
 
+## 📸 Screenshots
+
+![Draftsmith Screenshot](./media/1.png)
+![Draftsmith Screenshot](./media/2.png)
+
+
 ## 🛠 Getting Started
 
 1. Clone the repository:
