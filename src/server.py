@@ -111,11 +111,11 @@ def create_note_page():
             response = create_note(
                 url=current_app.config['API_BASE_URL'], title=title, content=content
             )
-            
+
             if "error" in response:
                 flash(f"Error creating note: {response['error']}", "error")
                 return redirect(url_for("create_note_page"))
-            
+
             id = response.get("id")
             if id:
                 return redirect(url_for("note_detail", note_id=id))
@@ -279,7 +279,7 @@ def get_asset(maybe_id):
 
 @app.route("/recent")
 def recent_pages():
-    recent_notes = get_recent_notes(limit=20)  # Adjust the limit as needed
+    recent_notes = get_recent_notes(limit=50)  # Adjust the limit as needed
     notes_tree = get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree)
     tree_html = Markup(tree_html)
