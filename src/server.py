@@ -250,6 +250,13 @@ def list_assets():
     tree_html = Markup(tree_html)
     return render_template("asset_list.html", assets=assets, tree_html=tree_html)
 
+@app.route('/edit_asset/<int:asset_id>')
+def edit_asset(asset_id):
+    # Placeholder for edit_asset route
+    # This should be implemented later
+    flash("Edit asset functionality is not yet implemented", "info")
+    return redirect(url_for('list_assets'))
+
 
 @app.route('/m/<string:maybe_id>', methods=['GET'])
 def get_asset(maybe_id):
