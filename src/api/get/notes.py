@@ -309,11 +309,16 @@ def get_note_backlinks(note_id: int, base_url: str = "http://localhost:37238") -
     response.raise_for_status()
     backlinks_data = response.json()
 
+    # Check if backlinks_data is a string (likely "backlinks")
+    if isinstance(backlinks_data, str):
+        print(f"Warning: Unexpected backlinks data format: {backlinks_data}")
+        return []  # Return an empty list if we get an unexpected response
+
     try:
         backlinks = [NoteSearchResultModel.model_validate(item) for item in backlinks_data]
     except ValidationError as e:
         print(f"Error validating backlinks data: {e}")
-        raise
+        return []  # Return an empty list if validation fails
 
     return backlinks
 
