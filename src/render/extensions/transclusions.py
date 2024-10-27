@@ -10,6 +10,7 @@ from render.regex_patterns import TRANSCLUSION_PATTERN
 
 MAX_DEPTH = 10
 
+
 class IncludeFilePreprocessor(Preprocessor):
     TRANSCLUSION_PATTERN = TRANSCLUSION_PATTERN
 
@@ -19,10 +20,8 @@ class IncludeFilePreprocessor(Preprocessor):
         self.math_store = MathStore()
         self.inject_daisy_card_css = inject_daisy_card_css
 
-
-
     def wrap_with_css(self, title: str, content: str) -> str:
-        return  f"""
+        return f"""
 <div class="card bg-base-100 w-xl shadow-xl">
   <div class="card-body">
     <b class="card-title">{title}</b>
@@ -37,8 +36,31 @@ class IncludeFilePreprocessor(Preprocessor):
             return lines  # Return the original lines if max depth is reached
 
         new_lines = []
+        code_block = False
+        code_span_pattern = re.compile(r'(`+)(.*?)\1')  # Match inline code spans
+
         for line in lines:
-            m = self.TRANSCLUSION_PATTERN.search(line)
+            # Detect code blocks (fenced with triple backticks)
+            if line.strip().startswith('```'):
+                code_block = not code_block
+                new_lines.append(line)
+                continue
+
+            # Skip processing if we're in a code block
+            if code_block:
+                new_lines.append(line)
+                continue
+
+            # Process inline code spans and protect them
+            protected_line = line
+            inline_code_matches = list(code_span_pattern.finditer(line))
+            for match in inline_code_matches:
+                protected_segment = match.group(0)  # Full match with backticks
+                # Temporarily replace inline code with a placeholder
+                protected_line = protected_line.replace(protected_segment, f"<<CODE{len(match.group(1))}>>")
+
+            # Find transclusion links in the line
+            m = self.TRANSCLUSION_PATTERN.search(protected_line)
             if m:
                 id = m.group(1)
                 if id.isdigit():
@@ -61,7 +83,10 @@ class IncludeFilePreprocessor(Preprocessor):
                         restored_html = self.math_store.restore_math(included_html)
 
                         if self.inject_daisy_card_css:
-                            restored_html = self.wrap_with_css(f"<a href='/note/{id}'>↱ #{id}</a><span class='text-sm text-gray-500'> | <a href='/edit/{id}'>Edit</a></span>", restored_html)
+                            restored_html = self.wrap_with_css(
+                                f"<a href='/note/{id}'>↱ #{id}</a><span class='text-sm text-gray-500'> | <a href='/edit/{id}'>Edit</a></span>",
+                                restored_html
+                            )
 
                         # Add the parsed HTML to new_lines
                         new_lines.append(restored_html)
@@ -71,8 +96,17 @@ class IncludeFilePreprocessor(Preprocessor):
                 else:
                     new_lines.append(f'**Error:** Unable to extract ID from `{m.group(0)}`.')
             else:
-                new_lines.append(line)
+                # Restore inline code placeholders with their original content
+                restored_line = protected_line
+                for match in inline_code_matches:
+                    restored_segment = match.group(0)
+                    restored_line = restored_line.replace(f"<<CODE{len(match.group(1))}>>", restored_segment)
+                new_lines.append(restored_line)
+
         return new_lines
+
+
+
 
 class IncludeTransclusions(Extension):
     def __init__(self, **kwargs):
