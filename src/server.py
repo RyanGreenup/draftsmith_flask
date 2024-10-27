@@ -3,6 +3,7 @@ from markupsafe import Markup
 from urllib.parse import quote
 import os
 from api.assets.upload import upload_file
+from api.assets.list import get_assets
 from api.get.notes import (
     get_notes,
     get_note,
@@ -239,6 +240,15 @@ def upload_asset():
     tree_html = build_notes_tree_html(notes_tree)
     tree_html = Markup(tree_html)
     return render_template('upload_asset.html', tree_html=tree_html)
+
+
+@app.route("/assets")
+def list_assets():
+    assets = get_assets(current_app.config['API_BASE_URL'])
+    notes_tree = get_notes_tree()
+    tree_html = build_notes_tree_html(notes_tree)
+    tree_html = Markup(tree_html)
+    return render_template("asset_list.html", assets=assets, tree_html=tree_html)
 
 
 @app.route('/m/<string:maybe_id>', methods=['GET'])
