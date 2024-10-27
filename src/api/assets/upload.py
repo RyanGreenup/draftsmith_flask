@@ -9,7 +9,7 @@ class UploadResponseModel(BaseModel):
     id: int
     message: str
 
-def upload_file(file_path: str, description: Optional[str] = None, base_url: str = "http://localhost:37238") -> UploadResponseModel:
+def upload_file(file_path: str, base_url, description: Optional[str] = None) -> UploadResponseModel:
     """
     Upload a file to the API.
 
