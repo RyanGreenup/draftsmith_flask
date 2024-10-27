@@ -241,11 +241,6 @@ def upload_asset():
     return render_template('upload_asset.html', tree_html=tree_html)
 
 
-# TODO how to handle the API URL
-@app.route('/m/<string:maybe_id>', methods=['GET'])
-def get_asset_new(maybe_id):
-    return get_asset(maybe_id)
-
 @app.route('/m/<string:maybe_id>', methods=['GET'])
 def get_asset(maybe_id):
     """
@@ -257,15 +252,24 @@ def get_asset(maybe_id):
     Returns:
         Response: A redirection to the asset's download URL or a 404 error if not found.
     """
-    api_url = current_app.config['API_BASE_URL']
 
-    if maybe_id.isdigit():
-        # It's an ID
-        id = int(maybe_id)
-    else:
-        # Assume `maybe_id` is a filename and find the corresponding ID
-        id = get_asset_id(api_url, maybe_id)
-        if id is None:
+    # Assume that it's a filename, if nothing is matched, fallback to an ID
+    # users should link to filenames, not IDs
+    # Because the filenames can be modified by the user and this may fall out of sync
+    # with the ID.
+    # The API will likely be updated to make the filename the primary key
+    api_url = current_app.config['API_BASE_URL']
+    id = None
+
+    # First, try resolving by filename
+    id = get_asset_id(api_url, maybe_id)
+
+    if id is None:
+        # If filename resolution fails, fallback to resolving by ID
+        if maybe_id.isdigit():
+            id = int(maybe_id)
+        else:
+            # If maybe_id is neither a valid filename nor a numeric ID
             abort(404, description="Asset not found.")
 
     # Construct the download URL
