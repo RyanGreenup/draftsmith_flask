@@ -1,6 +1,7 @@
 # Draftsmith: Your Personal Knowledge Forge
 
-![Draftsmith Logo](src/static/media/logo.png)
+
+<p><img src="./assets/logo.png" style="float: left; width: 80px" /></p>
 
 Draftsmith is an open-source, powerful note-taking and knowledge management system designed for thinkers, researchers, and lifelong learners. It's not just another note-taking app; it's your personal knowledge forge, helping you connect ideas, discover insights, and craft your thoughts with precision.
 
@@ -38,6 +39,23 @@ In a world overflowing with information, Draftsmith stands out as your personal 
    python src/server.py
    ```
 4. Open your browser and navigate to `http://localhost:5000`
+
+### Backend
+
+Install the backend API by following the [API Setup Guide](https://ryangreenup.github.io/draftsmith_api/installation.html), this is essentially a `docker compose up` command.
+
+### Interfaces
+
+2. **CLI Client**
+   - Install Python and dependencies.
+       - `pipx install git+https://github.com/RyanGreenup/draftsmith_cli --force`
+
+3. [**PyQt GUI**](https://github.com/RyanGreenup/draftsmith)
+   - `pipx install git+https://github.com/RyanGreenup/draftsmith`
+
+2. **CLI Client**
+   - Install Python and dependencies.
+       - `pipx install git+https://github.com/RyanGreenup/draftsmith_cli --force`
 
 ## 🤝 Contributing
 
