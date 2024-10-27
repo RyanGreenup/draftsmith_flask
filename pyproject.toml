@@ -27,5 +27,5 @@ build-backend = "poetry.core.masonry.api"
 
 
 [tool.poetry.scripts]
-ait = "main:app"
+draftsmith-flask = "main:app"
 server = "server:app.run"
