@@ -293,7 +293,7 @@ def get_recent_notes(base_url: str = "http://localhost:37238", limit: int = 10) 
     # Return only the specified number of notes
     return sorted_notes[:limit]
 
-def get_note_backlinks(note_id: int, base_url: str = "http://localhost:37238") -> List[NoteSearchResultModel]:
+def get_note_backlinks(note_id: int, base_url) -> List[NoteSearchResultModel]:
     """
     Retrieve a list of backlinks for a specific note.
 
@@ -307,20 +307,67 @@ def get_note_backlinks(note_id: int, base_url: str = "http://localhost:37238") -
     url = f"{base_url}/notes/{note_id}/backlinks"
     response = requests.get(url)
     response.raise_for_status()
-    backlinks_data = response.json()
+    response_data = response.json()
 
-    # Check if backlinks_data is a string (likely "backlinks")
-    if isinstance(backlinks_data, str):
-        print(f"Warning: Unexpected backlinks data format: {backlinks_data}")
-        return []  # Return an empty list if we get an unexpected response
+    # Access the "backlinks" key in the response
+    backlinks_data = response_data.get("backlinks")
+
+    # Handle case where "backlinks" is None
+    if backlinks_data is None:
+        print(f"No backlinks found for note {note_id}.")
+        return []  # Return an empty list if no backlinks
+
+    # Handle case where "backlinks" is not a list
+    if not isinstance(backlinks_data, list):
+        print(f"Unexpected backlinks data format: {backlinks_data}")
+        return []  # Return an empty list if no backlinks
 
     try:
-        backlinks = [NoteSearchResultModel.model_validate(item) for item in backlinks_data]
+        # Assume backlinks_data is a list of dictionaries containing "id" and "title"
+        backlinks = [NoteSearchResultModel(**item) for item in backlinks_data]
     except ValidationError as e:
         print(f"Error validating backlinks data: {e}")
         return []  # Return an empty list if validation fails
 
     return backlinks
+
+def get_note_forward_links(note_id: int, base_url: str = "http://localhost:37238") -> List[NoteSearchResultModel]:
+    """
+    Retrieve a list of forward links for a specific note.
+
+    Args:
+        note_id (int): The ID of the note to get forward links for.
+        base_url (str): The base URL of the API (default: "http://localhost:37238").
+
+    Returns:
+        List[NoteLinkModel]: A list of notes that the specified note links to.
+    """
+    url = f"{base_url}/notes/{note_id}/forward-links"
+    response = requests.get(url)
+    response.raise_for_status()
+    response_data = response.json()
+
+    # Access the "forward_links" key in the response
+    forward_links_data = response_data.get("forward_links")
+
+    # Handle case where "forward_links" is None
+    if forward_links_data is None:
+        print(f"No forward links found for note {note_id}.")
+        return []  # Return an empty list if no forward links
+
+    # Handle case where "forward_links" is not a list
+    if not isinstance(forward_links_data, list):
+        print(f"Unexpected forward links data format: {forward_links_data}")
+        return []  # Return an empty list if no forward links
+
+    try:
+        # Assume forward_links_data is a list of dictionaries containing "id" and "title"
+        forward_links = [NoteSearchResultModel(id=item['id'], title=item['title']) for item in forward_links_data]
+    except ValidationError as e:
+        print(f"Error validating forward links data: {e}")
+        return []  # Return an empty list if validation fails
+
+    return forward_links
 
 if __name__ == "__main__":
     tree = get_notes_tree()

@@ -1,5 +1,5 @@
 <footer class="footer bg-base-200 text-base-content p-10">
-  <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+  <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
     <aside>
       <img src="{{ url_for('static', filename='media/logo.png') }}" alt="Logo" class="w-20 h-20 mb-2">
       <p class="text-sm">Structured thinking since 2024</p>
@@ -8,11 +8,23 @@
       <h6 class="footer-title">Backlinks</h6>
       <ul class="space-y-1">
         {% if backlinks %}
-          {% for backlink in backlinks[:5] %}
+          {% for backlink in backlinks %}
             <li><a href="{{ url_for('note_detail', note_id=backlink.id) }}" class="link link-hover">{{ backlink.title }}</a></li>
           {% endfor %}
         {% else %}
           <li>No backlinks found</li>
+        {% endif %}
+      </ul>
+    </nav>
+    <nav>
+      <h6 class="footer-title">Forward Links</h6>
+      <ul class="space-y-1">
+        {% if forwardlinks %}
+          {% for link in forwardlinks %}
+            <li><a href="{{ url_for('note_detail', note_id=link.id) }}" class="link link-hover">{{ link.title }}</a></li>
+          {% endfor %}
+        {% else %}
+          <li>No links found</li>
         {% endif %}
       </ul>
     </nav>

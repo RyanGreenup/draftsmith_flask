@@ -14,6 +14,7 @@ from api.get.notes import (
     get_full_titles,
     get_recent_notes,
     get_note_backlinks,
+    get_note_forward_links,
 )
 from api.put.notes import update_server_note
 from api.post.notes import create_note
@@ -56,6 +57,7 @@ def root():
 
 @app.route("/note/<int:note_id>")
 def note_detail(note_id):
+    base_url = current_app.config['API_BASE_URL']
     note = get_note(note_id)
     notes_tree = get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree)
@@ -65,7 +67,8 @@ def note_detail(note_id):
     note_path = find_note_path(notes_tree, note_id)
 
     # Get backlinks for the current note
-    backlinks = get_note_backlinks(note_id)
+    backlinks = get_note_backlinks(note_id, base_url=base_url)
+    forwardlinks = get_note_forward_links(note_id, base_url=base_url)
 
     # Parse the markdown content
     md_obj = Markdown(note.content)
@@ -78,14 +81,17 @@ def note_detail(note_id):
         tree_html=tree_html,
         note_path=note_path or [],
         backlinks=backlinks,
+        forwardlinks=forwardlinks,
     )
 
 @app.context_processor
 def inject_backlinks():
+    base_url = current_app.config['API_BASE_URL']
     def get_backlinks_for_current_note():
+        base_url = current_app.config['API_BASE_URL']
         if 'note_id' in request.view_args:
             note_id = request.view_args['note_id']
-            return get_note_backlinks(note_id)
+            return get_note_backlinks(note_id, base_url=base_url)
         return []
     return dict(backlinks=get_backlinks_for_current_note())
 
