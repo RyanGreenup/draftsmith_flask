@@ -19,3 +19,5 @@ tailwind-init:
     npm install -D tailwindcss
     npx tailwindcss init
 
+serve-dev:
+    poetry run python src/main.py --port 5000 --host 0.0.0.0 --api-host vidar
