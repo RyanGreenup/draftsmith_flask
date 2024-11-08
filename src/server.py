@@ -2,6 +2,11 @@
 import sys
 import os
 
+# TODO this should be interpreted from the CLI
+API_BASE_URL = "http://localhost:37240"
+# Or possibly
+# current_app.config["API_BASE_URL"]
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from pydantic import BaseModel, Field
@@ -42,7 +47,7 @@ from src.api import note_create as create_note
 
 # from src.api_old.assets.list import get_asset_id
 # from src.api_old.delete.notes import delete_note
-from src.api_old.post.note_hierarchy import update_note_hierarchy
+# from src.api_old.post.note_hierarchy import update_note_hierarchy
 from src.render.render_markdown import Markdown
 
 from src.api import (
@@ -282,7 +287,7 @@ def root():
 
 @app.route("/note/<int:note_id>")
 def note_detail(note_id):
-    base_url = current_app.config["API_BASE_URL"]
+    base_url = API_BASE_URL
     note = get_note(note_id)
     notes_tree = get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree)
@@ -312,10 +317,10 @@ def note_detail(note_id):
 
 @app.context_processor
 def inject_backlinks():
-    base_url = current_app.config["API_BASE_URL"]
+    base_url = API_BASE_URL
 
     def get_backlinks_for_current_note():
-        base_url = current_app.config["API_BASE_URL"]
+        base_url =API_BASE_URL
         if "note_id" in request.view_args:
             note_id = request.view_args["note_id"]
             return get_note_backlinks(note_id, base_url=base_url)
@@ -358,7 +363,7 @@ def create_note_page():
         title = request.form.get("title")
         try:
             response = create_note(
-                url=current_app.config["API_BASE_URL"], title=title, content=content
+                url=API_BASE_URL, title=title, content=content
             )
 
             if "error" in response:
@@ -386,7 +391,7 @@ def update_note(note_id):
         # Refresh the page to show the updated note
     elif request.method == "PUT":
         create_note(
-            url=current_app.config["API_BASE_URL"], title=title, content=content
+            base_url=API_BASE_URL, title=title or "", content=content or ""
         )
         update_server_note(note_id, title=title, content=content)
         # Refresh the page to show the updated note
@@ -477,7 +482,7 @@ def upload_asset():
                 try:
                     result = upload_file(
                         file_path,
-                        base_url=current_app.config["API_BASE_URL"],
+                        base_url=API_BASE_URL,
                         description=description,
                     )
                     flash(
@@ -502,7 +507,7 @@ def upload_asset():
 
 @app.route("/assets")
 def list_assets():
-    assets = get_assets(current_app.config["API_BASE_URL"])
+    assets = get_assets(API_BASE_URL)
     notes_tree = get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree)
     tree_html = Markup(tree_html)
@@ -534,7 +539,7 @@ def get_asset(maybe_id):
     # Because the filenames can be modified by the user and this may fall out of sync
     # with the ID.
     # The API will likely be updated to make the filename the primary key
-    api_url = current_app.config["API_BASE_URL"]
+    api_url = API_BASE_URL
     id = None
 
     # First, try resolving by filename
