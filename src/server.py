@@ -66,6 +66,8 @@ from src.api import (
 from src.api import get_all_assets as get_assets
 from src.api import delete_note as api_delete_note
 from src.api import update_note as api_update_note
+from src.api import get_rendered_note
+from src.api import render_markdown
 import requests
 
 # BEGIN: API glue
@@ -276,8 +278,9 @@ def root():
     s = "\n".join([str(note.model_dump()) for note in all_notes])
     s = f"```json\n{s}\n```"
     content = f"# My Notes\n## All Notes in Corpus\n {s}"
-    md_obj = Markdown(content)
-    md = md_obj.make_html()
+    # md_obj = Markdown(content)
+    # md = md_obj.make_html()
+    md = render_markdown(content)
     note = get_note(1)
 
     return render_template(
@@ -303,6 +306,7 @@ def note_detail(note_id):
     # Parse the markdown content
     md_obj = Markdown(note.content)
     html_content = md_obj.make_html()
+    html_content = get_rendered_note(note_id, format="html")
 
     return render_template(
         "note_detail.html",
@@ -363,7 +367,7 @@ def create_note_page():
         title = request.form.get("title")
         try:
             response = create_note(
-                url=API_BASE_URL, title=title, content=content
+                base_url=API_BASE_URL, title=title or "", content=content or ""
             )
 
             if "error" in response:
@@ -525,7 +529,7 @@ def edit_asset(asset_id):
 @app.route("/m/<string:maybe_id>", methods=["GET"])
 def get_asset(maybe_id):
     """
-    Retrieve an asset by ID or filename and redirect to its download URL.
+    Retrieve an asset by filename and redirect to its download URL.
 
     Args:
         maybe_id (str): The asset ID or filename.
@@ -533,34 +537,7 @@ def get_asset(maybe_id):
     Returns:
         Response: A redirection to the asset's download URL or a 404 error if not found.
     """
-
-    # Assume that it's a filename, if nothing is matched, fallback to an ID
-    # users should link to filenames, not IDs
-    # Because the filenames can be modified by the user and this may fall out of sync
-    # with the ID.
-    # The API will likely be updated to make the filename the primary key
-    api_url = API_BASE_URL
-    id = None
-
-    # First, try resolving by filename
-    id = get_asset_id(api_url, maybe_id)
-
-    if id is None:
-        # If filename resolution fails, fallback to resolving by ID
-        if maybe_id.isdigit():
-            id = int(maybe_id)
-        else:
-            # If maybe_id is neither a valid filename nor a numeric ID
-            abort(404, description="Asset not found.")
-
-    # Construct the download URL
-    download_url = f"{api_url}/assets/{id}/download"
-
-    print(f"{download_url=}")
-
-    # Redirect to the download URL
-    return redirect(download_url)
-
+    return redirect(f"{API_BASE_URL}/assets/download/{maybe_id}")
 
 @app.route("/recent")
 def recent_pages():
