@@ -56,6 +56,7 @@ from src.api import (
     get_note_backlinks,
     get_note_forward_links,
     Asset,
+    attach_note_to_parent,
 )
 from src.api import get_all_assets as get_assets
 from src.api import delete_note as api_delete_note
