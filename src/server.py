@@ -46,10 +46,12 @@ def update_server_note(
 
 # BEGIN: API functions that should be implemented by server
 
+from datetime import datetime
+
 def get_recent_notes(limit: int = 10) -> List[Note]:
     notes = get_all_notes()
-    # Sort the notes by the last modified date
-    notes.sort(key=lambda x: x.modified_at, reverse=True)
+    # Sort the notes by the last modified date, using a minimum datetime for None values
+    notes.sort(key=lambda x: x.modified_at or datetime.min, reverse=True)
     return notes[:limit]
 
 
