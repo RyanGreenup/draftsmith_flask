@@ -5,32 +5,139 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from flask import Flask, render_template, request, redirect, url_for, flash, current_app, abort, send_from_directory, make_response
 from markupsafe import Markup
+from typing import List, Optional, Dict, Any
 import os
-from src.api.assets.upload import upload_file
-from src.api.assets.list import get_assets
-from src.api.get.notes import (
-    get_notes,
-    get_note,
-    get_notes_tree,
-    build_notes_tree_html,
-    find_note_path,
-    search_notes,
-    get_full_titles,
-    get_recent_notes,
+from src.api_old.assets.upload import upload_file
+from src.api_old.assets.list import get_assets
+from src.api_old.get.notes import (
+    # get_notes,
+    # get_note,
+    # get_notes_tree,
+    # build_notes_tree_html,
+    # find_note_path,
+    # search_notes,
+    # get_full_titles,
+    # get_recent_notes,
     get_note_backlinks,
     get_note_forward_links,
 )
-from src.api.put.notes import update_server_note
-from src.api.post.notes import create_note
-from src.api.assets.list import get_asset_id
-from src.api.delete.notes import delete_note
-from src.api.post.note_hierarchy import update_note_hierarchy
+# from src.api_old.put.notes import update_server_note
+from src.api_old.post.notes import create_note
+from src.api_old.assets.list import get_asset_id
+from src.api_old.delete.notes import delete_note
+from src.api_old.post.note_hierarchy import update_note_hierarchy
 from src.render.render_markdown import Markdown
+
+from src.api import get_notes_tree, TreeNote, get_note, get_all_notes, Note, search_notes, UpdateNoteRequest
+from src.api import update_note as api_update_note
 import requests
 
+# BEGIN: API glue
+# This is a temporary solution because the API changed
+
+def update_server_note(
+    note_id: int, title: Optional[str] = None, content: Optional[str] = None, base_url: str = "http://localhost:37238"
+) -> Dict[str, Any]:
+    update_note_request = UpdateNoteRequest(title=title, content=content)
+    note = api_update_note(note_id, update_note_request)
+    note_dict = note.model_dump()
+    return note_dict
+# END
+
+# BEGIN: API functions that should be implemented by server
+
+def get_recent_notes(limit: int = 10) -> List[Note]:
+    notes = get_all_notes()
+    # Sort the notes by the last modified date
+    notes.sort(key=lambda x: x.modified_at, reverse=True)
+    return notes[:limit]
+
+
+
+def get_full_titles(notes_tree: List[TreeNote]) -> Dict[int, str]:
+    def traverse_and_build_titles(note: TreeNote, parent_title: str = '') -> Dict[int, str]:
+        # Build the full title for the current note
+        full_title = f"{parent_title}/{note.title}".strip('/')
+
+        # Prepare the result entry for the current note
+        result = {note.id: full_title}
+
+        # Recursively process children, updating the result dictionary
+        if note.children:
+            for child in note.children:
+                result.update(traverse_and_build_titles(child, full_title))
+
+        return result
+
+    # Perform traversal for each root note in the top-level list
+    all_full_titles = {}
+    for root_note in notes_tree:
+        all_full_titles.update(traverse_and_build_titles(root_note))
+
+    return all_full_titles
+
+
+def find_note_path(
+    notes_tree: List[TreeNote],
+    target_id: int,
+    current_path: Optional[List[TreeNote]] = None
+) -> Optional[List[TreeNote]]:
+    if current_path is None:
+        current_path = []
+
+    for note in notes_tree:
+        new_path = current_path + [note]
+        if note.id == target_id:
+            return new_path
+        if note.children:
+            result = find_note_path(note.children, target_id, new_path)
+            if result:
+                return result
+    return None
+
+
+def get_notes(base_url: str = "http://localhost:37240", ids: List[int] | None = None) -> List[Note]:
+    notes = get_all_notes()
+    # Filter notes by ID if specified
+    if ids:
+        notes = [note for note in notes if note.id in ids]
+    return notes
+
+# END: API functions that should be implemented by server
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'  # Replace with a real secret key
+
+def build_notes_tree_html(notes_tree: List[TreeNote], fold_level: int = 2) -> str:
+    def render_note(note: TreeNote, i: int) -> str:
+        if i < fold_level:
+            status = "open"
+        else:
+            status = "closed"
+
+        hyperlink = f'<a href="/note/{note.id}">{note.title}</a>'
+        if note.children:
+            # Sort the children before rendering them
+            note.children.sort(key=lambda x: x.title)
+            html = f"<li><details {status}><summary>{hyperlink}</summary>\n<ul>"
+
+            for child in note.children:
+                html += render_note(child, i + 1)
+            html += "</ul>\n</details>\n</li>"
+        else:
+            html = f'<li>{hyperlink}</li>'
+
+        return html
+
+    # Sort the top-level notes
+    notes_tree.sort(key=lambda x: x.title)
+
+    html = '<ul class="menu bg-base-200 rounded-box w-56">'
+    for note in notes_tree:
+        html += render_note(note, 0)
+    html += "</ul>"
+
+    return html
 
 
 @app.context_processor
@@ -345,6 +452,26 @@ def recent_pages():
         recent_notes=recent_notes,
         tree_html=tree_html,
     )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
