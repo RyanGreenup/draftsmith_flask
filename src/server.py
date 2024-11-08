@@ -46,8 +46,19 @@ def update_note_hierarchy(
     hierarchy_type: str,
     base_url: str = "http://localhost:37238"
 ) -> Dict[str, Any]:
-    # TODO
-
+    """Update the hierarchical relationship between notes.
+    
+    Args:
+        parent_note_id: ID of the parent note
+        child_note_id: ID of the child note
+        hierarchy_type: Type of hierarchy relationship
+        base_url: Base URL of the API
+        
+    Returns:
+        Dict containing success status
+    """
+    attach_note_to_parent(child_note_id, parent_note_id, base_url)
+    return {"message": "Hierarchy updated successfully"}
 
 
 def delete_note(
