@@ -1,16 +1,29 @@
 #!/usr/bin/env python
 import sys
 import os
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from pydantic import BaseModel, Field
 from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for, flash, current_app, abort, send_from_directory, make_response
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash,
+    current_app,
+    abort,
+    send_from_directory,
+    make_response,
+)
 from markupsafe import Markup
 from typing import List, Optional, Dict, Any
 import os
 from src.api_old.assets.upload import upload_file
 from src.api_old.assets.list import get_assets
+
 # from src.api_old.get.notes import (
 #      get_notes,
 #      get_note,
@@ -26,12 +39,24 @@ from src.api_old.assets.list import get_assets
 # from src.api_old.put.notes import update_server_note
 # from src.api_old.post.notes import create_note
 from src.api import note_create as create_note
+
 # from src.api_old.assets.list import get_asset_id
 # from src.api_old.delete.notes import delete_note
 from src.api_old.post.note_hierarchy import update_note_hierarchy
 from src.render.render_markdown import Markdown
 
-from src.api import get_notes_tree, TreeNote, get_note, get_all_notes, Note, search_notes, UpdateNoteRequest, get_note_backlinks, get_note_forward_links, Asset
+from src.api import (
+    get_notes_tree,
+    TreeNote,
+    get_note,
+    get_all_notes,
+    Note,
+    search_notes,
+    UpdateNoteRequest,
+    get_note_backlinks,
+    get_note_forward_links,
+    Asset,
+)
 from src.api import get_all_assets as get_assets
 from src.api import delete_note as api_delete_note
 from src.api import update_note as api_update_note
@@ -40,20 +65,21 @@ import requests
 # BEGIN: API glue
 # This is a temporary solution because the API changed
 
+
 def update_note_hierarchy(
     parent_note_id: int,
     child_note_id: int,
     hierarchy_type: str,
-    base_url: str = "http://localhost:37238"
+    base_url: str = "http://localhost:37238",
 ) -> Dict[str, Any]:
     """Update the hierarchical relationship between notes.
-    
+
     Args:
         parent_note_id: ID of the parent note
         child_note_id: ID of the child note
         hierarchy_type: Type of hierarchy relationship
         base_url: Base URL of the API
-        
+
     Returns:
         Dict containing success status
     """
@@ -66,6 +92,7 @@ def delete_note(
 ) -> Dict[str, str]:
     response = api_delete_note(note_id)
     return response.model_dump()
+
 
 class AssetModel(BaseModel):
     id: int
@@ -84,6 +111,7 @@ def Asset_to_asset_model(asset: Asset):
         created_at=asset.created_at,
     )
 
+
 def get_asset_id(base_url: str, filename: str) -> Optional[int]:
     assets = get_assets(base_url)
     for asset in assets:
@@ -91,18 +119,25 @@ def get_asset_id(base_url: str, filename: str) -> Optional[int]:
             return asset.id
     return None
 
+
 def update_server_note(
-    note_id: int, title: Optional[str] = None, content: Optional[str] = None, base_url: str = "http://localhost:37238"
+    note_id: int,
+    title: Optional[str] = None,
+    content: Optional[str] = None,
+    base_url: str = "http://localhost:37238",
 ) -> Dict[str, Any]:
     update_note_request = UpdateNoteRequest(title=title, content=content)
     note = api_update_note(note_id, update_note_request)
     note_dict = note.model_dump()
     return note_dict
+
+
 # END
 
 # BEGIN: API functions that should be implemented by server
 
 from datetime import datetime
+
 
 def get_recent_notes(limit: int = 10) -> List[Note]:
     notes = get_all_notes()
@@ -111,11 +146,12 @@ def get_recent_notes(limit: int = 10) -> List[Note]:
     return notes[:limit]
 
 
-
 def get_full_titles(notes_tree: List[TreeNote]) -> Dict[int, str]:
-    def traverse_and_build_titles(note: TreeNote, parent_title: str = '') -> Dict[int, str]:
+    def traverse_and_build_titles(
+        note: TreeNote, parent_title: str = ""
+    ) -> Dict[int, str]:
         # Build the full title for the current note
-        full_title = f"{parent_title}/{note.title}".strip('/')
+        full_title = f"{parent_title}/{note.title}".strip("/")
 
         # Prepare the result entry for the current note
         result = {note.id: full_title}
@@ -138,7 +174,7 @@ def get_full_titles(notes_tree: List[TreeNote]) -> Dict[int, str]:
 def find_note_path(
     notes_tree: List[TreeNote],
     target_id: int,
-    current_path: Optional[List[TreeNote]] = None
+    current_path: Optional[List[TreeNote]] = None,
 ) -> Optional[List[TreeNote]]:
     if current_path is None:
         current_path = []
@@ -154,17 +190,21 @@ def find_note_path(
     return None
 
 
-def get_notes(base_url: str = "http://localhost:37240", ids: List[int] | None = None) -> List[Note]:
+def get_notes(
+    base_url: str = "http://localhost:37240", ids: List[int] | None = None
+) -> List[Note]:
     notes = get_all_notes()
     # Filter notes by ID if specified
     if ids:
         notes = [note for note in notes if note.id in ids]
     return notes
 
+
 # END: API functions that should be implemented by server
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'  # Replace with a real secret key
+app.secret_key = "your_secret_key_here"  # Replace with a real secret key
+
 
 def build_notes_tree_html(notes_tree: List[TreeNote], fold_level: int = 2) -> str:
     def render_note(note: TreeNote, i: int) -> str:
@@ -183,7 +223,7 @@ def build_notes_tree_html(notes_tree: List[TreeNote], fold_level: int = 2) -> st
                 html += render_note(child, i + 1)
             html += "</ul>\n</details>\n</li>"
         else:
-            html = f'<li>{hyperlink}</li>'
+            html = f"<li>{hyperlink}</li>"
 
         return html
 
@@ -202,16 +242,20 @@ def build_notes_tree_html(notes_tree: List[TreeNote], fold_level: int = 2) -> st
 def inject_all_notes():
     return dict(all_notes=get_notes())
 
-@app.route('/manifest.json')
+
+@app.route("/manifest.json")
 def manifest():
-    return send_from_directory('static', 'manifest.json')
+    return send_from_directory("static", "manifest.json")
+
 
 def add_cache_control_header(response):
-    if request.path.startswith('/static/'):
-        response.headers['Cache-Control'] = 'public, max-age=31536000'
+    if request.path.startswith("/static/"):
+        response.headers["Cache-Control"] = "public, max-age=31536000"
     return response
 
+
 app.after_request(add_cache_control_header)
+
 
 @app.route("/")
 def root():
@@ -237,7 +281,7 @@ def root():
 
 @app.route("/note/<int:note_id>")
 def note_detail(note_id):
-    base_url = current_app.config['API_BASE_URL']
+    base_url = current_app.config["API_BASE_URL"]
     note = get_note(note_id)
     notes_tree = get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree)
@@ -264,15 +308,18 @@ def note_detail(note_id):
         forwardlinks=forwardlinks,
     )
 
+
 @app.context_processor
 def inject_backlinks():
-    base_url = current_app.config['API_BASE_URL']
+    base_url = current_app.config["API_BASE_URL"]
+
     def get_backlinks_for_current_note():
-        base_url = current_app.config['API_BASE_URL']
-        if 'note_id' in request.view_args:
-            note_id = request.view_args['note_id']
+        base_url = current_app.config["API_BASE_URL"]
+        if "note_id" in request.view_args:
+            note_id = request.view_args["note_id"]
             return get_note_backlinks(note_id, base_url=base_url)
         return []
+
     return dict(backlinks=get_backlinks_for_current_note())
 
 
@@ -310,7 +357,7 @@ def create_note_page():
         title = request.form.get("title")
         try:
             response = create_note(
-                url=current_app.config['API_BASE_URL'], title=title, content=content
+                url=current_app.config["API_BASE_URL"], title=title, content=content
             )
 
             if "error" in response:
@@ -337,7 +384,9 @@ def update_note(note_id):
         update_server_note(note_id, title=title, content=content)
         # Refresh the page to show the updated note
     elif request.method == "PUT":
-        create_note(url=current_app.config['API_BASE_URL'], title=title, content=content)
+        create_note(
+            url=current_app.config["API_BASE_URL"], title=title, content=content
+        )
         update_server_note(note_id, title=title, content=content)
         # Refresh the page to show the updated note
     return redirect(url_for("note_detail", note_id=note_id))
@@ -410,55 +459,64 @@ def move_note(note_id):
             flash(f"An error occurred: {str(e)}", "error")
         return redirect(url_for("note_detail", note_id=note_id))
 
-@app.route('/upload_asset', methods=['GET', 'POST'])
+
+@app.route("/upload_asset", methods=["GET", "POST"])
 def upload_asset():
-    if request.method == 'POST':
-        file = request.files.get('file')
-        description = request.form.get('description')
+    if request.method == "POST":
+        file = request.files.get("file")
+        description = request.form.get("description")
 
         if file:
-            if (filename := file.filename):
+            if filename := file.filename:
                 filename = file.filename
-                file_path = os.path.join('temp', filename)
-                os.makedirs('temp', exist_ok=True)  # Ensure the temp directory exists
+                file_path = os.path.join("temp", filename)
+                os.makedirs("temp", exist_ok=True)  # Ensure the temp directory exists
                 file.save(file_path)
 
                 try:
-                    result = upload_file(file_path, base_url=current_app.config['API_BASE_URL'], description=description)
-                    flash(f"File uploaded successfully. asset_id: {result.id}, server_filename: {result.filename} API: {result.message}", 'success')
+                    result = upload_file(
+                        file_path,
+                        base_url=current_app.config["API_BASE_URL"],
+                        description=description,
+                    )
+                    flash(
+                        f"File uploaded successfully. asset_id: {result.id}, server_filename: {result.filename} API: {result.message}",
+                        "success",
+                    )
                     # TODO maybe return to the original page?
                 except Exception as e:
-                    flash(f"Error uploading file: {str(e)}", 'error')
+                    flash(f"Error uploading file: {str(e)}", "error")
                 finally:
                     os.remove(file_path)  # Clean up the temporary file
             else:
-                flash("Please provide a file. Unable to get a filename", 'error')
+                flash("Please provide a file. Unable to get a filename", "error")
         else:
-            flash("Please provide a file.", 'error')
+            flash("Please provide a file.", "error")
 
     notes_tree = get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree)
     tree_html = Markup(tree_html)
-    return render_template('upload_asset.html', tree_html=tree_html)
+    return render_template("upload_asset.html", tree_html=tree_html)
 
 
 @app.route("/assets")
 def list_assets():
-    assets = get_assets(current_app.config['API_BASE_URL'])
+    assets = get_assets(current_app.config["API_BASE_URL"])
     notes_tree = get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree)
     tree_html = Markup(tree_html)
     return render_template("asset_list.html", assets=assets, tree_html=tree_html)
 
-@app.route('/edit_asset/<int:asset_id>')
+
+@app.route("/edit_asset/<int:asset_id>")
 def edit_asset(asset_id):
     # Placeholder for edit_asset route
     # This should be implemented later
     flash("Edit asset functionality is not yet implemented", "info")
-    return redirect(url_for('list_assets'))
+    return redirect(url_for("list_assets"))
 
 
-@app.route('/m/<string:maybe_id>', methods=['GET'])
+@app.route("/m/<string:maybe_id>", methods=["GET"])
 def get_asset(maybe_id):
     """
     Retrieve an asset by ID or filename and redirect to its download URL.
@@ -475,7 +533,7 @@ def get_asset(maybe_id):
     # Because the filenames can be modified by the user and this may fall out of sync
     # with the ID.
     # The API will likely be updated to make the filename the primary key
-    api_url = current_app.config['API_BASE_URL']
+    api_url = current_app.config["API_BASE_URL"]
     id = None
 
     # First, try resolving by filename
@@ -512,25 +570,5 @@ def recent_pages():
     )
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
-
