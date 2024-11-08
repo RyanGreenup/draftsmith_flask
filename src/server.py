@@ -3,37 +3,82 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from pydantic import BaseModel, Field
+from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash, current_app, abort, send_from_directory, make_response
 from markupsafe import Markup
 from typing import List, Optional, Dict, Any
 import os
 from src.api_old.assets.upload import upload_file
 from src.api_old.assets.list import get_assets
-from src.api_old.get.notes import (
-    # get_notes,
-    # get_note,
-    # get_notes_tree,
-    # build_notes_tree_html,
-    # find_note_path,
-    # search_notes,
-    # get_full_titles,
-    # get_recent_notes,
-    get_note_backlinks,
-    get_note_forward_links,
-)
+# from src.api_old.get.notes import (
+#      get_notes,
+#      get_note,
+#      get_notes_tree,
+#      build_notes_tree_html,
+#      find_note_path,
+#      search_notes,
+#      get_full_titles,
+#      get_recent_notes,
+#      get_note_backlinks,
+#      get_note_forward_links,
+#  )
 # from src.api_old.put.notes import update_server_note
-from src.api_old.post.notes import create_note
-from src.api_old.assets.list import get_asset_id
-from src.api_old.delete.notes import delete_note
+# from src.api_old.post.notes import create_note
+from src.api import note_create as create_note
+# from src.api_old.assets.list import get_asset_id
+# from src.api_old.delete.notes import delete_note
 from src.api_old.post.note_hierarchy import update_note_hierarchy
 from src.render.render_markdown import Markdown
 
-from src.api import get_notes_tree, TreeNote, get_note, get_all_notes, Note, search_notes, UpdateNoteRequest
+from src.api import get_notes_tree, TreeNote, get_note, get_all_notes, Note, search_notes, UpdateNoteRequest, get_note_backlinks, get_note_forward_links, Asset
+from src.api import get_all_assets as get_assets
+from src.api import delete_note as api_delete_note
 from src.api import update_note as api_update_note
 import requests
 
 # BEGIN: API glue
 # This is a temporary solution because the API changed
+
+def update_note_hierarchy(
+    parent_note_id: int,
+    child_note_id: int,
+    hierarchy_type: str,
+    base_url: str = "http://localhost:37238"
+) -> Dict[str, Any]:
+    # TODO
+
+
+
+def delete_note(
+    note_id: int, base_url: str = "http://localhost:37238"
+) -> Dict[str, str]:
+    response = api_delete_note(note_id)
+    return response.model_dump()
+
+class AssetModel(BaseModel):
+    id: int
+    file_name: str
+    asset_type: str
+    description: str
+    created_at: datetime
+
+
+def Asset_to_asset_model(asset: Asset):
+    return AssetModel(
+        id=asset.id,
+        file_name=asset.location,
+        asset_type="Legacy Field",
+        description=asset.description or "",
+        created_at=asset.created_at,
+    )
+
+def get_asset_id(base_url: str, filename: str) -> Optional[int]:
+    assets = get_assets(base_url)
+    for asset in assets:
+        if asset.file_name == filename:
+            return asset.id
+    return None
 
 def update_server_note(
     note_id: int, title: Optional[str] = None, content: Optional[str] = None, base_url: str = "http://localhost:37238"

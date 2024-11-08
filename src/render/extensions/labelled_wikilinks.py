@@ -4,7 +4,7 @@ from markdown.extensions import Extension
 import xml.etree.ElementTree as etree
 import re
 from flask import abort
-from api.get.notes import get_note
+from api_old.get.notes import get_note
 
 class NoteLinkInlineProcessor(InlineProcessor):
     def handleMatch(self, m, data):
