@@ -418,10 +418,14 @@ def upload_asset():
                 file.save(file_path)
 
                 try:
+                    # If custom filename provided, use that as the upload path instead
+                    upload_path = os.path.join("temp", custom_filename if custom_filename else filename)
+                    if custom_filename:
+                        os.rename(file_path, upload_path)
+                    
                     result = upload_file(
-                        file_path, 
-                        base_url=api_base_url(),
-                        location=custom_filename if custom_filename else filename
+                        upload_path,
+                        base_url=api_base_url()
                     )
                     flash(
                         f"File uploaded successfully. asset_id: {result.id}, server_filename: {result.location}\n",
