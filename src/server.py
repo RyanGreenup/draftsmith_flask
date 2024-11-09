@@ -418,25 +418,31 @@ def upload_asset():
                 file.save(file_path)
 
                 try:
-                    # If custom filename provided, use that as the upload path instead
-                    upload_path = os.path.join("temp", custom_filename if custom_filename else filename)
-                    if custom_filename:
-                        os.rename(file_path, upload_path)
-                    
-                    result = upload_file(
-                        upload_path,
-                        base_url=api_base_url()
-                    )
-                    flash(
-                        f"File uploaded successfully. asset_id: {result.id}, server_filename: {result.location}\n",
-                        "success",
-                    )
-                    flash(f"{result.get_markdown_link()}", "success")
-                    # NOTE Don't return to original page, this is simpler
-                except Exception as e:
-                    flash(f"Error uploading file: {str(e)}", "error")
-                finally:
-                    os.remove(file_path)  # Clean up the temporary file
+                    try:
+                        # If custom filename provided, use that as the upload path instead
+                        upload_path = os.path.join("temp", custom_filename if custom_filename else filename)
+                        if custom_filename:
+                            os.rename(file_path, upload_path)
+                            file_to_cleanup = upload_path
+                        else:
+                            file_to_cleanup = file_path
+                        
+                        result = upload_file(
+                            upload_path if custom_filename else file_path,
+                            base_url=api_base_url()
+                        )
+                        flash(
+                            f"File uploaded successfully. asset_id: {result.id}, server_filename: {result.location}\n",
+                            "success",
+                        )
+                        flash(f"{result.get_markdown_link()}", "success")
+                        # NOTE Don't return to original page, this is simpler
+                    except Exception as e:
+                        flash(f"Error uploading file: {str(e)}", "error")
+                    finally:
+                        # Clean up the temporary file - either the renamed one or original
+                        if os.path.exists(file_to_cleanup):
+                            os.remove(file_to_cleanup)
             else:
                 flash("Please provide a file. Unable to get a filename", "error")
         else:
