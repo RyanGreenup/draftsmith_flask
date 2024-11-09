@@ -15,7 +15,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
             }
         }
 
-        if (event.altKey && event.key === 'z') {
+      /* Alt + Grave (backtick) inserts λ#()# at the caret position */
+        if (event.altKey && event.code === 'Backquote') {
             event.preventDefault();
             insertTextAtCaret('λ#()#');
         }
