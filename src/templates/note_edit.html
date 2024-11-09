@@ -8,22 +8,30 @@
 
 <div class="container max-w-lg px-4">
     <form id="content-edit-form" action="{{ url_for('edit_note', note_id=note.id) }}" method="POST">
+        {#
+        <div class="btn btn-sm tn-primary">
+            <input type="submit" class="btn btn-primary" value="Save">
+         </div>
+         #}
          {#
          <!-- This is no longer used in the Rust Version -->
         <label class="input input-bordered flex items-center gap-2">
             <input type="text" name="title" class="grow w-screen" value="{{ note.title }}" />
         </label>
         #}
-        <textarea name="content" class="font-mono text-sm textarea textarea-primary textarea-lg w-screen">{{ note.content }}</textarea>
+        {#
+        <textarea name="content" class="font-mono text-sm textarea textarea-primary textarea-lg w-full">{{ note.content }}</textarea>
+        #}
+        <textarea name="content" class="font-mono text-sm textarea textarea-primary textarea-lg w-full">{{ note.content }}</textarea>
+        <div class="mb-4">
+            <input type="submit" class="btn btn-primary w-full md:w-auto" value="Save">
+        </div>
     </form>
 
     {% include 'parent_id_form.html' %}
 </div>
 
 <div class="container mx-auto px-4 py-8">
-<div class="btn btn-sm tn-primary">
-    <input type="submit" class="btn btn-primary" value="Save">
- </div>
 {% include 'markdown-content.html' %}
 </div>
 {% endblock %}
