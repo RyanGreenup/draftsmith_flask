@@ -409,7 +409,7 @@ def move_note(note_id):
 def upload_asset():
     if request.method == "POST":
         file = request.files.get("file")
-        description = request.form.get("description")
+        custom_filename = request.form.get("location")
 
         if file:
             if filename := file.filename:
@@ -418,8 +418,11 @@ def upload_asset():
                 file.save(file_path)
 
                 try:
-                    # TODO The description is not used in the newer API
-                    result = upload_file(file_path, base_url=api_base_url())
+                    result = upload_file(
+                        file_path, 
+                        base_url=api_base_url(), 
+                        filename=custom_filename if custom_filename else filename
+                    )
                     flash(
                         f"File uploaded successfully. asset_id: {result.id}, server_filename: {result.location}\n",
                         "success",
