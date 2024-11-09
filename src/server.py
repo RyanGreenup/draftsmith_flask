@@ -26,30 +26,9 @@ from flask import (
 from markupsafe import Markup
 from typing import List, Optional, Dict, Any
 import os
-from src.api_old.assets.upload import upload_file
-from src.api_old.assets.list import get_assets
 import api
 
-# from src.api_old.get.notes import (
-#      get_notes,
-#      get_note,
-#      get_notes_tree,
-#      build_notes_tree_html,
-#      find_note_path,
-#      search_notes,
-#      get_full_titles,
-#      get_recent_notes,
-#      get_note_backlinks,
-#      get_note_forward_links,
-#  )
-# from src.api_old.put.notes import update_server_note
-# from src.api_old.post.notes import create_note
 from src.api import note_create as create_note
-
-# from src.api_old.assets.list import get_asset_id
-# from src.api_old.delete.notes import delete_note
-# from src.api_old.post.note_hierarchy import update_note_hierarchy
-from src.render.render_markdown import Markdown
 
 from src.api import (
     get_notes_tree,
