@@ -420,8 +420,8 @@ def upload_asset():
                 try:
                     result = upload_file(
                         file_path, 
-                        base_url=api_base_url(), 
-                        filename=custom_filename if custom_filename else filename
+                        base_url=api_base_url(),
+                        location=custom_filename if custom_filename else filename
                     )
                     flash(
                         f"File uploaded successfully. asset_id: {result.id}, server_filename: {result.location}\n",
