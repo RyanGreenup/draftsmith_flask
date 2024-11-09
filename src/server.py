@@ -3,7 +3,7 @@ import sys
 import os
 
 # TODO this should be interpreted from the CLI
-API_BASE_URL = "http://localhost:37240"
+API_BASE_URL = "http://vidar:37240"
 # Or possibly
 # current_app.config["API_BASE_URL"]
 
@@ -63,6 +63,9 @@ from src.api import (
     get_note_forward_links,
     Asset,
     attach_note_to_parent,
+    get_note_tag_relations,
+    get_tag,
+    get_note_without_content,
 )
 from src.api import get_all_assets as get_assets
 from src.api import delete_note as api_delete_note
@@ -290,6 +293,16 @@ def root():
     )
 
 
+@app.route("/tags/<int:tag_id>")
+def tag_detail(tag_id: int):
+    note_tags = get_note_tag_relations()
+    relevant_note_tags = [nt for nt in note_tags if nt.tag_id == tag_id]
+    all_note_details = [get_note_without_content(nt.note_id) for nt in relevant_note_tags]
+    # notes_tree = get_notes_tree()
+    # notes = [n for n in notes_tree if tag_id in n.tags]
+    tag = get_tag(tag_id)
+    return render_template("tagged_pages_list.html", notes=all_note_details, tag=tag)
+
 @app.route("/note/<int:note_id>")
 def note_detail(note_id):
     base_url = API_BASE_URL
@@ -305,6 +318,16 @@ def note_detail(note_id):
     backlinks = get_note_backlinks(note_id, base_url=base_url)
     forwardlinks = get_note_forward_links(note_id, base_url=base_url)
 
+    # Get tags (TODO this needs an endpoint)
+    notes_tree = get_notes_tree()
+    tree_note = next(
+        (n for n in notes_tree if n.id == note_id), None
+        )
+    if tree_note:
+        tags = tree_note.tags
+    else:
+        tags = []
+
     # Parse the markdown content
     md_obj = Markdown(note.content)
     html_content = md_obj.make_html()
@@ -318,6 +341,7 @@ def note_detail(note_id):
         note_path=note_path or [],
         backlinks=backlinks,
         forwardlinks=forwardlinks,
+        tags=tags,
     )
 
 

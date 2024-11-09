@@ -31,9 +31,13 @@
     <nav>
       <h6 class="footer-title">Tags</h6>
       <ul class="space-y-1">
-        <li><a class="link link-hover">Python</a></li>
-        <li><a class="link link-hover">University</a></li>
-        <li><a class="link link-hover">Jobs</a></li>
+        {% if tags %}
+          {% for tag in tags %}
+            <li><a href="{{ url_for('tag_detail', tag_id=tag.id) }}" class="link link-hover">{{ tag.name }}</a></li>
+          {% endfor %}
+        {% else %}
+          <li>No Tags found</li>
+        {% endif %}
       </ul>
     </nav>
     <nav>
