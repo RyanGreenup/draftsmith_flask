@@ -1,5 +1,9 @@
 serve:
-    poetry run gunicorn -w 4 -b 0.0.0.0:37239 src.server:app
+    cd src && poetry run gunicorn -w 4 -b 0.0.0.0:5000 server:app
+
+serve-dev:
+    poetry run python src/main.py --port 5000 --host 0.0.0.0 --api-host vidar
+
 sass:
     cd src/static
     npx sass --no-source-map src/static/styles:src/static/css
@@ -18,6 +22,3 @@ install-deps:
 tailwind-init:
     npm install -D tailwindcss
     npx tailwindcss init
-
-serve-dev:
-    poetry run python src/main.py --port 5000 --host 0.0.0.0 --api-host vidar
