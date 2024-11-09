@@ -1,6 +1,9 @@
 <div class="container mx-auto px-4 py-8">
   <div class="flex justify-between items-center mb-6">
+    {#
+    <!-- Note title is now automatically h1 -->
     <h1 class="text-3xl font-bold">{{ note.title }} <span class="text-sm text-gray-500">#{{ note.id }}</span></h1>
+    #}
   </div>
   <div class="markdown prose lg:prose-xl" id="markdown-content">
     {{ note_html|safe }}

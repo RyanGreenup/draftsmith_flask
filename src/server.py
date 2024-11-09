@@ -28,6 +28,7 @@ from typing import List, Optional, Dict, Any
 import os
 from src.api_old.assets.upload import upload_file
 from src.api_old.assets.list import get_assets
+import api
 
 # from src.api_old.get.notes import (
 #      get_notes,
@@ -68,6 +69,7 @@ from src.api import delete_note as api_delete_note
 from src.api import update_note as api_update_note
 from src.api import get_rendered_note
 from src.api import render_markdown
+from src.api import upload_asset as upload_file
 import requests
 
 # BEGIN: API glue
@@ -484,16 +486,17 @@ def upload_asset():
                 file.save(file_path)
 
                 try:
+                    # TODO The description is not used in the newer API
                     result = upload_file(
                         file_path,
-                        base_url=API_BASE_URL,
-                        description=description,
+                        base_url=API_BASE_URL
                     )
                     flash(
-                        f"File uploaded successfully. asset_id: {result.id}, server_filename: {result.filename} API: {result.message}",
+                        f"File uploaded successfully. asset_id: {result.id}, server_filename: {result.location}\n",
                         "success",
                     )
-                    # TODO maybe return to the original page?
+                    flash(f"{result.get_markdown_link()}", 'success')
+                    # NOTE Don't return to original page, this is simpler
                 except Exception as e:
                     flash(f"Error uploading file: {str(e)}", "error")
                 finally:
@@ -517,6 +520,21 @@ def list_assets():
     tree_html = Markup(tree_html)
     return render_template("asset_list.html", assets=assets, tree_html=tree_html)
 
+
+@app.route('/delete_asset/<int:asset_id>')
+def delete_asset(asset_id: int):
+    try:
+        api.delete_asset(asset_id)
+        flash('Asset deleted successfully', 'success')
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 404:
+            flash('Asset not found', 'danger')
+        else:
+            flash(f'An error occurred: {e}', 'danger')
+    except requests.exceptions.RequestException as e:
+        flash(f'Request failed: {e}', 'danger')
+
+    return redirect(url_for('list_assets'))
 
 @app.route("/edit_asset/<int:asset_id>")
 def edit_asset(asset_id):

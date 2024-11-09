@@ -119,12 +119,31 @@ class UpdateAssetRequest(BaseModel):
     description: Optional[str] = None
 
 
+from urllib.parse import quote
+
 class Asset(BaseModel):
     id: int
     note_id: Optional[int]
     location: str
     description: Optional[str]
     created_at: datetime
+
+    def get_markdown_link(self) -> str:
+        el = self.get_encoded_location()
+        desc = self.get_stripped_location()
+        return f"![{desc}](/m/{el})"
+
+    def get_stripped_location(self) -> str:
+        return self.location.replace('uploads/', '')
+
+    def get_encoded_location(self) -> str:
+
+        return (
+            quote(self.get_stripped_location())
+        )
+
+
+
 
 
 class RenderedNote(BaseModel):

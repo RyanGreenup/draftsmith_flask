@@ -16,6 +16,42 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 window.location.href = editLink.href; // Navigate to the edit note page
             }
         }
+
+        // Check if Alt and C are pressed
+        if (event.altKey && event.key === 'z') {
+            event.preventDefault(); // Prevent any default action for the keys
+            insertText('λ#\(\)#');
+            /* λ#(x)# */
+        }
     });
+
+    function insertText(text) {
+        const selection = window.getSelection();
+        const activeElement = document.activeElement;
+
+        if (selection.rangeCount > 0 || (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA'))) {
+            // If there is a selection or focus on an input element, insert text at the caret position
+            let range;
+
+            if (selection.rangeCount > 0) {
+                range = selection.getRangeAt(0);
+            } else {
+                range = document.createRange();
+                range.selectNodeContents(activeElement);
+                range.collapse(true);
+            }
+
+            const textNode = document.createTextNode(text);
+            range.insertNode(textNode);
+
+            // Move the cursor to the end of the inserted text
+            range.setStartAfter(textNode);
+            range.setEndAfter(textNode);
+            selection.removeAllRanges();
+            selection.addRange(range);
+        } else {
+            console.warn('No input field or textarea is active.');
+        }
+    }
 });
 

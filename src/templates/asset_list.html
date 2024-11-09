@@ -18,13 +18,14 @@
             {% for asset in assets %}
             <tr>
                 <td>{{ asset.id }}</td>
-                <td>{{ asset.file_name }}</td>
+                <td>{{ asset.location.replace('uploads/', '')}}</td>
                 <td>{{ asset.asset_type }}</td>
                 <td>{{ asset.description }}</td>
                 <td>{{ asset.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
                 <td>
-                    <a href="{{ url_for('get_asset', maybe_id=asset.file_name) }}" class="btn btn-sm btn-primary">View</a>
+                    <a href="{{ url_for('get_asset', maybe_id=asset.location.replace('uploads', '')) }}" class="btn btn-sm btn-primary">View</a>
                     <a href="{{ url_for('edit_asset', asset_id=asset.id) }}" class="btn btn-sm btn-secondary">Edit</a>
+                    <a href="{{ url_for('delete_asset', asset_id=asset.id) }}" class="btn btn-sm btn-danger">Delete</a>
                 </td>
             </tr>
             {% endfor %}

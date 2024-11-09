@@ -13,9 +13,12 @@
         <div class="navbar bg-base-100">
             <input type="submit" class="btn btn-primary" value="Save">
          </div>
+         {#
+         <!-- Title is now inferred from the content (H1) -->
         <label class="input input-bordered flex items-center gap-2">
             <input type="text" name="title" class="grow w-screen" placeholder="Descriptive Titles (Use / to infer Heirarchy (TODO))" />
         </label>
+        #}
         <textarea name="content" class="font-mono text-sm textarea textarea-primary textarea-lg w-screen"></textarea>
     </form>
 </div>

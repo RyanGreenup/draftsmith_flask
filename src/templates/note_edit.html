@@ -11,9 +11,12 @@
         <div class="navbar bg-base-100">
             <input type="submit" class="btn btn-primary" value="Save">
          </div>
+         {#
+         <!-- This is no longer used in the Rust Version -->
         <label class="input input-bordered flex items-center gap-2">
             <input type="text" name="title" class="grow w-screen" value="{{ note.title }}" />
         </label>
+        #}
         <textarea name="content" class="font-mono text-sm textarea textarea-primary textarea-lg w-screen">{{ note.content }}</textarea>
     </form>
 
