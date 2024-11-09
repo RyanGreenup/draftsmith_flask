@@ -3,9 +3,8 @@ import sys
 import os
 
 # TODO this should be interpreted from the CLI
-API_BASE_URL = "http://vidar:37240"
+# API_BASE_URL = "http://vidar:37240"
 # Or possibly
-# current_app.config["API_BASE_URL"]
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -49,7 +48,6 @@ from src.api import (
     NoteWithoutContent,
 )
 from src.api import get_all_assets as get_assets
-from src.api import delete_note as api_delete_note
 from src.api import update_note as api_update_note
 from src.api import get_rendered_note
 from src.api import render_markdown
@@ -81,11 +79,11 @@ def update_note_hierarchy(
     return {"message": "Hierarchy updated successfully"}
 
 
-def delete_note(
-    note_id: int, base_url: str = "http://localhost:37238"
-) -> Dict[str, str]:
-    response = api_delete_note(note_id)
-    return response.model_dump()
+# def delete_note(
+#     note_id: int, base_url: str = "http://localhost:37238"
+# ) -> Dict[str, str]:
+#     response = api_delete_note(note_id)
+#     return response.model_dump()
 
 
 class AssetModel(BaseModel):
@@ -253,25 +251,9 @@ app.after_request(add_cache_control_header)
 
 @app.route("/")
 def root():
-    # Get all the notes
-    all_notes = get_notes()
-    notes_tree = get_notes_tree()
-    tree_html = build_notes_tree_html(notes_tree)
-
-    # Wrap the HTML in Markup to prevent escaping
-    tree_html = Markup(tree_html)
-
-    s = "\n".join([str(note.model_dump()) for note in all_notes])
-    s = f"```json\n{s}\n```"
-    content = f"# My Notes\n## All Notes in Corpus\n {s}"
-    # md_obj = Markdown(content)
-    # md = md_obj.make_html()
-    md = render_markdown(content)
-    note = get_note(1)
-
-    return render_template(
-        "note_detail.html", note=note, content=md, footer="Bar", tree_html=tree_html
-    )
+    # return redirect(url_for("note_detail", note_id=1))
+    # Redirect to recent pages
+    return redirect(url_for("recent_pages"))
 
 
 @app.route("/tags/<int:tag_id>")
@@ -283,7 +265,7 @@ def tag_detail(tag_id: int):
 
 @app.route("/note/<int:note_id>")
 def note_detail(note_id):
-    base_url = API_BASE_URL
+    base_url = api_base_url()
     note = get_note(note_id)
     notes_tree = get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree)
@@ -302,8 +284,6 @@ def note_detail(note_id):
     tags = [get_tag(nt.tag_id) for nt in note_tags if nt.note_id == note_id]
 
     # Parse the markdown content
-    md_obj = Markdown(note.content)
-    html_content = md_obj.make_html()
     html_content = get_rendered_note(note_id, format="html")
 
     return render_template(
@@ -335,10 +315,10 @@ def get_tag_notes(tag_id) -> List[NoteWithoutContent]:
 
 @app.context_processor
 def inject_backlinks():
-    base_url = API_BASE_URL
+    base_url = api_base_url()
 
     def get_backlinks_for_current_note():
-        base_url = API_BASE_URL
+        base_url = api_base_url()
         if "note_id" in request.view_args:
             note_id = request.view_args["note_id"]
             return get_note_backlinks(note_id, base_url=base_url)
@@ -356,8 +336,7 @@ def edit_note(note_id):
 
     # Find the path to the current note
     note_path = find_note_path(notes_tree, note_id)
-    md_obj = Markdown(note.content)
-    html_content = md_obj.make_html()
+    html_content = get_rendered_note(note_id, format="html")
 
     return render_template(
         "note_edit.html",
@@ -381,7 +360,7 @@ def create_note_page():
         title = request.form.get("title")
         try:
             response = create_note(
-                base_url=API_BASE_URL, title=title or "", content=content or ""
+                base_url=api_base_url(), title=title or "", content=content or ""
             )
 
             if "error" in response:
@@ -408,7 +387,7 @@ def update_note(note_id):
         update_server_note(note_id, title=title, content=content)
         # Refresh the page to show the updated note
     elif request.method == "PUT":
-        create_note(base_url=API_BASE_URL, title=title or "", content=content or "")
+        create_note(base_url=api_base_url(), title=title or "", content=content or "")
         update_server_note(note_id, title=title, content=content)
         # Refresh the page to show the updated note
     return redirect(url_for("note_detail", note_id=note_id))
@@ -434,8 +413,7 @@ def search():
     full_titles = get_full_titles(notes_tree)
     # Render the content for display
     for note in notes:
-        md_obj = Markdown(note.content)
-        html_content = md_obj.make_html()
+        html_content = get_rendered_note(note.id, format="html")
         note.content = html_content
         # use a div to protect certain things
         note.content = "<div>" + note.content[:200] + "</div> ..."
@@ -453,15 +431,14 @@ def search():
 @app.route("/note/<int:note_id>/delete", methods=["POST"])
 def delete_note_page(note_id):
     try:
-        response = delete_note(note_id)
-        if response.get("message") == "Note deleted successfully":
-            flash("Note deleted successfully", "success")
-            return redirect(url_for("root"))
+        api.delete_note(note_id)
+        flash("Note deleted successfully", "success")
+        return redirect(url_for("root"))
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 404:
+            flash("Note not found", "danger")
         else:
-            flash("Failed to delete note", "error")
-            return redirect(url_for("note_detail", note_id=note_id))
-    except Exception as e:
-        flash(f"An error occurred: {str(e)}", "error")
+            flash(f"An error occurred: {e}", "danger")
         return redirect(url_for("note_detail", note_id=note_id))
 
 
@@ -497,7 +474,7 @@ def upload_asset():
 
                 try:
                     # TODO The description is not used in the newer API
-                    result = upload_file(file_path, base_url=API_BASE_URL)
+                    result = upload_file(file_path, base_url=api_base_url())
                     flash(
                         f"File uploaded successfully. asset_id: {result.id}, server_filename: {result.location}\n",
                         "success",
@@ -521,7 +498,7 @@ def upload_asset():
 
 @app.route("/assets")
 def list_assets():
-    assets = get_assets(API_BASE_URL)
+    assets = get_assets(api_base_url())
     notes_tree = get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree)
     tree_html = Markup(tree_html)
@@ -562,8 +539,15 @@ def get_asset(maybe_id):
 
     Returns:
         Response: A redirection to the asset's download URL or a 404 error if not found.
+
+    Notes:
+        Due to cross site scripting, ensure that the API_BASE_URL aligns with the server's URL.
+
+        e.g. if the server is running on localhost:5000, the API_BASE_URL should be http://localhost:37240
+             if the server is accessed at ds.myserver:5000 the API_BASEURL should be http://ds.api:37240
+             if the server is accessed at ds.flask.myserver the API_BASEURL should be http://ds.api.myserver
     """
-    return redirect(f"{API_BASE_URL}/assets/download/{maybe_id}")
+    return redirect(f"{api_base_url()}/assets/download/{maybe_id}")
 
 
 @app.route("/recent")
@@ -580,5 +564,12 @@ def recent_pages():
     )
 
 
+def api_base_url():
+    return app.config["API_BASE_URL"]
+
+
 if __name__ == "__main__":
+    api_host = os.getenv("DRAFTSMITH_FLASK_API_HOST", "vidar")
+    api_port = os.getenv("DRAFTSMITH_FLASK_API_PORT", "37240")
+    app.config["API_BASE_URL"] = f"http://{api_host}:{api_port}"
     app.run(debug=True, host="0.0.0.0")
