@@ -8,7 +8,6 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from pydantic import BaseModel, Field
 from datetime import datetime
 from flask import (
     Flask,
@@ -17,13 +16,10 @@ from flask import (
     redirect,
     url_for,
     flash,
-    current_app,
-    abort,
     send_from_directory,
-    make_response,
 )
 from markupsafe import Markup
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict
 import os
 import api
 
@@ -39,7 +35,6 @@ from src.api import (
     UpdateNoteRequest,
     get_note_backlinks,
     get_note_forward_links,
-    Asset,
     attach_note_to_parent,
     get_note_tag_relations,
     get_tag,
@@ -48,87 +43,11 @@ from src.api import (
     NoteWithoutContent,
 )
 from src.api import get_all_assets as get_assets
-from src.api import update_note as api_update_note
 from src.api import get_rendered_note
-from src.api import render_markdown
 from src.api import upload_asset as upload_file
 import requests
 
-# BEGIN: API glue
-# This is a temporary solution because the API changed
-
-
-def update_note_hierarchy(
-    parent_note_id: int,
-    child_note_id: int,
-    hierarchy_type: str,
-    base_url: str = "http://localhost:37238",
-) -> Dict[str, Any]:
-    """Update the hierarchical relationship between notes.
-
-    Args:
-        parent_note_id: ID of the parent note
-        child_note_id: ID of the child note
-        hierarchy_type: Type of hierarchy relationship
-        base_url: Base URL of the API
-
-    Returns:
-        Dict containing success status
-    """
-    attach_note_to_parent(child_note_id, parent_note_id, base_url)
-    return {"message": "Hierarchy updated successfully"}
-
-
-# def delete_note(
-#     note_id: int, base_url: str = "http://localhost:37238"
-# ) -> Dict[str, str]:
-#     response = api_delete_note(note_id)
-#     return response.model_dump()
-
-
-class AssetModel(BaseModel):
-    id: int
-    file_name: str
-    asset_type: str
-    description: str
-    created_at: datetime
-
-
-def Asset_to_asset_model(asset: Asset):
-    return AssetModel(
-        id=asset.id,
-        file_name=asset.location,
-        asset_type="Legacy Field",
-        description=asset.description or "",
-        created_at=asset.created_at,
-    )
-
-
-def get_asset_id(base_url: str, filename: str) -> Optional[int]:
-    assets = get_assets(base_url)
-    for asset in assets:
-        if asset.file_name == filename:
-            return asset.id
-    return None
-
-
-def update_server_note(
-    note_id: int,
-    title: Optional[str] = None,
-    content: Optional[str] = None,
-    base_url: str = "http://localhost:37238",
-) -> Dict[str, Any]:
-    update_note_request = UpdateNoteRequest(title=title, content=content)
-    note = api_update_note(note_id, update_note_request)
-    note_dict = note.model_dump()
-    return note_dict
-
-
-# END
-
 # BEGIN: API functions that should be implemented by server
-
-from datetime import datetime
 
 
 def get_recent_notes(limit: int = 10) -> List[Note]:
@@ -315,13 +234,10 @@ def get_tag_notes(tag_id) -> List[NoteWithoutContent]:
 
 @app.context_processor
 def inject_backlinks():
-    base_url = api_base_url()
-
     def get_backlinks_for_current_note():
-        base_url = api_base_url()
         if "note_id" in request.view_args:
             note_id = request.view_args["note_id"]
-            return get_note_backlinks(note_id, base_url=base_url)
+            return get_note_backlinks(note_id, base_url=api_base_url())
         return []
 
     return dict(backlinks=get_backlinks_for_current_note())
@@ -384,11 +300,19 @@ def update_note(note_id):
     title = request.form.get("title")
     content = request.form.get("content")
     if request.method == "POST":
-        update_server_note(note_id, title=title, content=content)
+        _note = api.update_note(
+            note_id,
+            UpdateNoteRequest(title=title, content=content),
+            base_url=api_base_url(),
+        )
         # Refresh the page to show the updated note
     elif request.method == "PUT":
         create_note(base_url=api_base_url(), title=title or "", content=content or "")
-        update_server_note(note_id, title=title, content=content)
+        _note = api.update_note(
+            note_id,
+            UpdateNoteRequest(title=title, content=content),
+            base_url=api_base_url(),
+        )
         # Refresh the page to show the updated note
     return redirect(url_for("note_detail", note_id=note_id))
 
@@ -449,14 +373,36 @@ def move_note(note_id):
     elif request.method == "POST":
         new_parent_id = request.form.get("new_parent_id")
         try:
-            new_parent_id = int(new_parent_id)
-            result = update_note_hierarchy(new_parent_id, note_id, "subpage")
-            flash("Note moved successfully", "success")
+            if new_parent_id := new_parent_id:
+                try:
+                    new_parent_id = int(new_parent_id)
+                except ValueError:
+                    flash("Invalid parent ID", "error")
+                    return redirect(url_for("note_detail", note_id=note_id))
+                except Exception as e:
+                    flash(f"An error occurred: {str(e)}", "error")
+                    return redirect(url_for("note_detail", note_id=note_id))
+                try:
+                    attach_note_to_parent(
+                        note_id, new_parent_id, base_url=api_base_url()
+                    )
+                    flash("Note moved successfully", "success")
+                except requests.exceptions.HTTPError as e:
+                    if e.response.status_code == 404:
+                        flash("Note not found", "danger")
+                    else:
+                        flash(f"An error occurred: {e}", "danger")
+            else:
+                flash("Please provide a parent ID", "error")
+                return redirect(url_for("note_detail", note_id=note_id))
         except ValueError:
             flash("Invalid parent ID", "error")
+            return redirect(url_for("note_detail", note_id=note_id))
         except Exception as e:
             flash(f"An error occurred: {str(e)}", "error")
-        return redirect(url_for("note_detail", note_id=note_id))
+            return redirect(url_for("note_detail", note_id=note_id))
+
+    return redirect(url_for("note_detail", note_id=note_id))
 
 
 @app.route("/upload_asset", methods=["GET", "POST"])
@@ -467,7 +413,6 @@ def upload_asset():
 
         if file:
             if filename := file.filename:
-                filename = file.filename
                 file_path = os.path.join("temp", filename)
                 os.makedirs("temp", exist_ok=True)  # Ensure the temp directory exists
                 file.save(file_path)
@@ -565,7 +510,9 @@ def recent_pages():
 
 
 def api_base_url():
-    return app.config["API_BASE_URL"]
+    from config import Config
+
+    return f"{Config.API_SCHEME}://{Config.API_HOST}:{Config.API_PORT}"
 
 
 if __name__ == "__main__":
