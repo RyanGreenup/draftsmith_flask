@@ -66,6 +66,8 @@ from src.api import (
     get_note_tag_relations,
     get_tag,
     get_note_without_content,
+    Tag,
+    NoteWithoutContent,
 )
 from src.api import get_all_assets as get_assets
 from src.api import delete_note as api_delete_note
@@ -295,13 +297,10 @@ def root():
 
 @app.route("/tags/<int:tag_id>")
 def tag_detail(tag_id: int):
-    note_tags = get_note_tag_relations()
-    relevant_note_tags = [nt for nt in note_tags if nt.tag_id == tag_id]
-    all_note_details = [get_note_without_content(nt.note_id) for nt in relevant_note_tags]
-    # notes_tree = get_notes_tree()
-    # notes = [n for n in notes_tree if tag_id in n.tags]
+    notes = get_tag_notes(tag_id)
     tag = get_tag(tag_id)
-    return render_template("tagged_pages_list.html", notes=all_note_details, tag=tag)
+    return render_template("tagged_pages_list.html", notes=notes, tag=tag)
+
 
 @app.route("/note/<int:note_id>")
 def note_detail(note_id):
@@ -319,14 +318,9 @@ def note_detail(note_id):
     forwardlinks = get_note_forward_links(note_id, base_url=base_url)
 
     # Get tags (TODO this needs an endpoint)
-    notes_tree = get_notes_tree()
-    tree_note = next(
-        (n for n in notes_tree if n.id == note_id), None
-        )
-    if tree_note:
-        tags = tree_note.tags
-    else:
-        tags = []
+
+    note_tags = get_note_tag_relations()
+    tags = [get_tag(nt.tag_id) for nt in note_tags if nt.note_id == note_id]
 
     # Parse the markdown content
     md_obj = Markdown(note.content)
@@ -345,12 +339,27 @@ def note_detail(note_id):
     )
 
 
+def get_note_tags(note_id) -> List[Tag]:
+    note_tags = get_note_tag_relations()
+    tags = [get_tag(nt.tag_id) for nt in note_tags if nt.note_id == note_id]
+    return tags
+
+
+def get_tag_notes(tag_id) -> List[NoteWithoutContent]:
+    note_tags = get_note_tag_relations()
+    relevant_note_tags = [nt for nt in note_tags if nt.tag_id == tag_id]
+    all_note_details = [
+        get_note_without_content(nt.note_id) for nt in relevant_note_tags
+    ]
+    return all_note_details
+
+
 @app.context_processor
 def inject_backlinks():
     base_url = API_BASE_URL
 
     def get_backlinks_for_current_note():
-        base_url =API_BASE_URL
+        base_url = API_BASE_URL
         if "note_id" in request.view_args:
             note_id = request.view_args["note_id"]
             return get_note_backlinks(note_id, base_url=base_url)
@@ -420,9 +429,7 @@ def update_note(note_id):
         update_server_note(note_id, title=title, content=content)
         # Refresh the page to show the updated note
     elif request.method == "PUT":
-        create_note(
-            base_url=API_BASE_URL, title=title or "", content=content or ""
-        )
+        create_note(base_url=API_BASE_URL, title=title or "", content=content or "")
         update_server_note(note_id, title=title, content=content)
         # Refresh the page to show the updated note
     return redirect(url_for("note_detail", note_id=note_id))
@@ -511,15 +518,12 @@ def upload_asset():
 
                 try:
                     # TODO The description is not used in the newer API
-                    result = upload_file(
-                        file_path,
-                        base_url=API_BASE_URL
-                    )
+                    result = upload_file(file_path, base_url=API_BASE_URL)
                     flash(
                         f"File uploaded successfully. asset_id: {result.id}, server_filename: {result.location}\n",
                         "success",
                     )
-                    flash(f"{result.get_markdown_link()}", 'success')
+                    flash(f"{result.get_markdown_link()}", "success")
                     # NOTE Don't return to original page, this is simpler
                 except Exception as e:
                     flash(f"Error uploading file: {str(e)}", "error")
@@ -545,20 +549,21 @@ def list_assets():
     return render_template("asset_list.html", assets=assets, tree_html=tree_html)
 
 
-@app.route('/delete_asset/<int:asset_id>')
+@app.route("/delete_asset/<int:asset_id>")
 def delete_asset(asset_id: int):
     try:
         api.delete_asset(asset_id)
-        flash('Asset deleted successfully', 'success')
+        flash("Asset deleted successfully", "success")
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 404:
-            flash('Asset not found', 'danger')
+            flash("Asset not found", "danger")
         else:
-            flash(f'An error occurred: {e}', 'danger')
+            flash(f"An error occurred: {e}", "danger")
     except requests.exceptions.RequestException as e:
-        flash(f'Request failed: {e}', 'danger')
+        flash(f"Request failed: {e}", "danger")
 
-    return redirect(url_for('list_assets'))
+    return redirect(url_for("list_assets"))
+
 
 @app.route("/edit_asset/<int:asset_id>")
 def edit_asset(asset_id):
@@ -580,6 +585,7 @@ def get_asset(maybe_id):
         Response: A redirection to the asset's download URL or a 404 error if not found.
     """
     return redirect(f"{API_BASE_URL}/assets/download/{maybe_id}")
+
 
 @app.route("/recent")
 def recent_pages():

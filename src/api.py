@@ -121,6 +121,7 @@ class UpdateAssetRequest(BaseModel):
 
 from urllib.parse import quote
 
+
 class Asset(BaseModel):
     id: int
     note_id: Optional[int]
@@ -134,16 +135,11 @@ class Asset(BaseModel):
         return f"![{desc}](/m/{el})"
 
     def get_stripped_location(self) -> str:
-        return self.location.replace('uploads/', '')
+        return self.location.replace("uploads/", "")
 
     def get_encoded_location(self) -> str:
 
-        return (
-            quote(self.get_stripped_location())
-        )
-
-
-
+        return quote(self.get_stripped_location())
 
 
 class RenderedNote(BaseModel):
