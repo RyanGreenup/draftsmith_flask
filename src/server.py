@@ -370,39 +370,35 @@ def delete_note_page(note_id):
 def move_note(note_id):
     if request.method == "GET":
         return render_template("move_note.html", note_id=note_id)
-    elif request.method == "POST":
-        new_parent_id = request.form.get("new_parent_id")
-        try:
-            if new_parent_id := new_parent_id:
-                try:
-                    new_parent_id = int(new_parent_id)
-                except ValueError:
-                    flash("Invalid parent ID", "error")
-                    return redirect(url_for("note_detail", note_id=note_id))
-                except Exception as e:
-                    flash(f"An error occurred: {str(e)}", "error")
-                    return redirect(url_for("note_detail", note_id=note_id))
-                try:
-                    attach_note_to_parent(
-                        note_id, new_parent_id, base_url=api_base_url()
-                    )
-                    flash("Note moved successfully", "success")
-                except requests.exceptions.HTTPError as e:
-                    if e.response.status_code == 404:
-                        flash("Note not found", "danger")
-                    else:
-                        flash(f"An error occurred: {e}", "danger")
-            else:
-                flash("Please provide a parent ID", "error")
-                return redirect(url_for("note_detail", note_id=note_id))
-        except ValueError:
-            flash("Invalid parent ID", "error")
-            return redirect(url_for("note_detail", note_id=note_id))
-        except Exception as e:
-            flash(f"An error occurred: {str(e)}", "error")
-            return redirect(url_for("note_detail", note_id=note_id))
+
+    new_parent_id = request.form.get("new_parent_id")
+
+    if not new_parent_id:
+        flash("Please provide a parent ID", "error")
+        return redirect(url_for("note_detail", note_id=note_id))
+
+    try:
+        new_parent_id = int(new_parent_id)
+    except ValueError:
+        flash("Invalid parent ID", "error")
+        return redirect(url_for("note_detail", note_id=note_id))
+
+    try:
+        attach_note_to_parent(note_id, new_parent_id, base_url=api_base_url())
+        flash("Note moved successfully", "success")
+    except requests.exceptions.HTTPError as e:
+        handle_http_error(e)
+    except Exception as e:
+        flash(f"An error occurred: {str(e)}", "error")
 
     return redirect(url_for("note_detail", note_id=note_id))
+
+
+def handle_http_error(error):
+    if error.response.status_code == 404:
+        flash("Note not found", "danger")
+    else:
+        flash(f"An error occurred: {error}", "danger")
 
 
 @app.route("/upload_asset", methods=["GET", "POST"])
@@ -419,16 +415,18 @@ def upload_asset():
 
                 try:
                     # If custom filename provided, use that as the upload path instead
-                    upload_path = os.path.join("temp", custom_filename if custom_filename else filename)
+                    upload_path = os.path.join(
+                        "temp", custom_filename if custom_filename else filename
+                    )
                     if custom_filename:
                         os.rename(file_path, upload_path)
                         file_to_cleanup = upload_path
                     else:
                         file_to_cleanup = file_path
-                    
+
                     result = upload_file(
                         upload_path if custom_filename else file_path,
-                        base_url=api_base_url()
+                        base_url=api_base_url(),
                     )
                     flash(
                         f"File uploaded successfully. asset_id: {result.id}, server_filename: {result.location}\n",
