@@ -1,0 +1,39 @@
+.note-item {
+  cursor: grab;
+  position: relative;
+}
+
+.note-item.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+.note-item.drag-over {
+  border: 2px dashed #666;
+  padding: 2px;
+  background-color: rgba(100, 100, 100, 0.1);
+}
+
+.note-item.drag-over::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+}
+
+.note-item .drop-indicator {
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #666;
+}
+
+.note-item.drag-over .drop-indicator {
+  display: block;
+}

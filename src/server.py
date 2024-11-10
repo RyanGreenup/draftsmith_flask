@@ -129,13 +129,13 @@ def build_notes_tree_html(notes_tree: List[TreeNote], fold_level: int = 2) -> st
         if note.children:
             # Sort the children before rendering them
             note.children.sort(key=lambda x: x.title)
-            html = f"<li><details {status}><summary>{hyperlink}</summary>\n<ul>"
+            html = f'<li class="note-item" data-note-id="{note.id}"><details {status}><summary>{hyperlink}</summary>\n<ul>'
 
             for child in note.children:
                 html += render_note(child, i + 1)
             html += "</ul>\n</details>\n</li>"
         else:
-            html = f"<li>{hyperlink}</li>"
+            html = f'<li class="note-item" data-note-id="{note.id}">{hyperlink}</li>'
 
         return html
 
@@ -377,6 +377,16 @@ def move_note(note_id):
         return render_template("move_note.html", note_id=note_id)
 
     new_parent_id = request.form.get("new_parent_id")
+    detach = request.form.get("detach", "false") == "true"
+
+    if detach:
+        try:
+            api.detach_note_from_parent(note_id, base_url=api_base_url())
+            flash("Note detached successfully", "success")
+            return redirect(url_for("note_detail", note_id=note_id))
+        except requests.exceptions.HTTPError as e:
+            handle_http_error(e)
+            return redirect(url_for("note_detail", note_id=note_id))
 
     if not new_parent_id:
         flash("Please provide a parent ID", "error")
