@@ -1,25 +1,34 @@
-
-<!--- This should be refactored into a macro with note_edit.html -->
 {% extends 'base.html' %}
 
 {% block content %}
-
 <script>
     {% include 'js/keyboard_submit.js' %}
 </script>
 
-<div class="container max-w-lg px-4">
-    <form id="content-edit-form" action="{{ url_for('create_note_page') }}" method="POST">
-        <div class="navbar bg-base-100">
-            <input type="submit" class="btn btn-primary" value="Save">
-         </div>
-         {#
-         <!-- Title is now inferred from the content (H1) -->
-        <label class="input input-bordered flex items-center gap-2">
-            <input type="text" name="title" class="grow w-screen" placeholder="Descriptive Titles (Use / to infer Heirarchy (TODO))" />
-        </label>
-        #}
-        <textarea name="content" class="font-mono text-sm textarea textarea-primary textarea-lg w-screen"></textarea>
-    </form>
+<div class="container max-w-lg px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6">Create New Note</h1>
+    
+    <div class="card bg-base-200 shadow-xl">
+        <div class="card-body">
+            <form id="content-edit-form" action="{{ url_for('create_note_page') }}" method="POST">
+                <div class="form-control w-full mb-4">
+                    <label class="label">
+                        <span class="label-text">Content</span>
+                        <span class="label-text-alt">Use Markdown formatting</span>
+                    </label>
+                    <textarea 
+                        name="content" 
+                        class="textarea textarea-bordered textarea-lg font-mono text-sm w-full h-96"
+                        placeholder="Write your note content here..."
+                        required></textarea>
+                </div>
+                
+                <div class="flex justify-end gap-2">
+                    <a href="{{ url_for('root') }}" class="btn">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save Note</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %}

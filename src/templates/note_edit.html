@@ -1,37 +1,42 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
 <script>
     {% include 'js/keyboard_submit.js' %}
 </script>
 
-<div class="container max-w-lg px-4">
-    <form id="content-edit-form" action="{{ url_for('edit_note', note_id=note.id) }}" method="POST">
-        {#
-        <div class="btn btn-sm tn-primary">
-            <input type="submit" class="btn btn-primary" value="Save">
-         </div>
-         #}
-         {#
-         <!-- This is no longer used in the Rust Version -->
-        <label class="input input-bordered flex items-center gap-2">
-            <input type="text" name="title" class="grow w-screen" value="{{ note.title }}" />
-        </label>
-        #}
-        {#
-        <textarea name="content" class="font-mono text-sm textarea textarea-primary textarea-lg w-full">{{ note.content }}</textarea>
-        #}
-        <textarea name="content" class="font-mono text-sm textarea textarea-primary textarea-lg w-screen">{{ note.content }}</textarea>
-        <div class="mb-4">
-            <input type="submit" class="btn btn-primary w-full md:w-auto" value="Save">
+<div class="container max-w-lg px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6">Edit Note</h1>
+    
+    <div class="card bg-base-200 shadow-xl">
+        <div class="card-body">
+            <form id="content-edit-form" action="{{ url_for('edit_note', note_id=note.id) }}" method="POST">
+                <div class="form-control w-full mb-4">
+                    <label class="label">
+                        <span class="label-text">Content</span>
+                        <span class="label-text-alt">Use Markdown formatting</span>
+                    </label>
+                    <textarea 
+                        name="content" 
+                        class="textarea textarea-bordered textarea-lg font-mono text-sm w-full h-96"
+                        required>{{ note.content }}</textarea>
+                </div>
+                
+                <div class="flex justify-end gap-2">
+                    <a href="{{ url_for('note_detail', note_id=note.id) }}" class="btn">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 
-    {% include 'parent_id_form.html' %}
-</div>
-
-<div class="container mx-auto px-4 py-8">
-{% include 'markdown-content.html' %}
+    <div class="mt-8">
+        <h2 class="text-xl font-bold mb-4">Preview</h2>
+        <div class="card bg-base-200 shadow-xl">
+            <div class="card-body">
+                {% include 'markdown-content.html' %}
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
