@@ -5,9 +5,9 @@
     {% include 'js/keyboard_submit.js' %}
 </script>
 
-<div class="container max-w-lg px-4 py-8">
+<div class="container max-w-full px-4 py-8">
     <h1 class="text-2xl font-bold mb-6">Edit Note</h1>
-    
+
     <div class="card bg-base-200 shadow-xl">
         <div class="card-body">
             <form id="content-edit-form" action="{{ url_for('edit_note', note_id=note.id) }}" method="POST">
@@ -16,12 +16,12 @@
                         <span class="label-text">Content</span>
                         <span class="label-text-alt">Use Markdown formatting</span>
                     </label>
-                    <textarea 
-                        name="content" 
-                        class="textarea textarea-bordered textarea-lg font-mono text-sm w-full h-96"
+                    <textarea
+                        name="content"
+                        class="textarea textarea-bordered textarea-lg font-mono text-sm w-full"
                         required>{{ note.content }}</textarea>
                 </div>
-                
+
                 <div class="flex justify-end gap-2">
                     <a href="{{ url_for('note_detail', note_id=note.id) }}" class="btn">Cancel</a>
                     <button type="submit" class="btn btn-primary">Save Changes</button>
