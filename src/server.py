@@ -558,6 +558,54 @@ def manage_tags(note_id):
         all_tags=all_tags
     )
 
+@app.route("/manage_all_tags")
+def manage_all_tags():
+    notes_tree = get_notes_tree()
+    tree_html = build_notes_tree_html(notes_tree)
+    tree_html = Markup(tree_html)
+    tags = api.get_all_tags()
+    return render_template("manage_all_tags.html", tags=tags, tree_html=tree_html)
+
+@app.route("/create_tag", methods=["POST"])
+def create_tag():
+    name = request.form.get("name")
+    if not name:
+        flash("Tag name is required", "error")
+        return redirect(url_for("manage_all_tags"))
+    
+    try:
+        api.create_tag(name, base_url=api_base_url())
+        flash("Tag created successfully", "success")
+    except requests.exceptions.RequestException as e:
+        flash(f"Error creating tag: {str(e)}", "error")
+    
+    return redirect(url_for("manage_all_tags"))
+
+@app.route("/rename_tag/<int:tag_id>", methods=["POST"])
+def rename_tag(tag_id):
+    new_name = request.form.get("name")
+    if not new_name:
+        flash("Tag name is required", "error")
+        return redirect(url_for("manage_all_tags"))
+    
+    try:
+        api.update_tag(tag_id, new_name, base_url=api_base_url())
+        flash("Tag renamed successfully", "success")
+    except requests.exceptions.RequestException as e:
+        flash(f"Error renaming tag: {str(e)}", "error")
+    
+    return redirect(url_for("manage_all_tags"))
+
+@app.route("/delete_tag/<int:tag_id>", methods=["POST"])
+def delete_tag(tag_id):
+    try:
+        api.delete_tag(tag_id, base_url=api_base_url())
+        flash("Tag deleted successfully", "success")
+    except requests.exceptions.RequestException as e:
+        flash(f"Error deleting tag: {str(e)}", "error")
+    
+    return redirect(url_for("manage_all_tags"))
+
 @app.route("/recent")
 def recent_pages():
     recent_notes = get_recent_notes(limit=50)  # Adjust the limit as needed
