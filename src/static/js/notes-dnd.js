@@ -5,27 +5,39 @@ document.addEventListener('DOMContentLoaded', function() {
   noteItems.forEach(item => {
     // Handle direct note item events
     item.addEventListener('dragstart', function(e) {
-      e.stopPropagation(); // Prevent parent elements from also being dragged
+      e.stopPropagation();
       draggedNoteId = this.dataset.noteId;
       e.dataTransfer.setData('text/plain', draggedNoteId);
       this.classList.add('dragging');
     });
 
     item.addEventListener('dragend', function(e) {
+      e.stopPropagation();
       this.classList.remove('dragging');
     });
 
     item.addEventListener('dragover', function(e) {
       e.preventDefault();
+      e.stopPropagation();
+      
+      // Remove drag-over from other items
+      document.querySelectorAll('.note-item.drag-over').forEach(el => {
+        if (el !== this) {
+          el.classList.remove('drag-over');
+        }
+      });
+      
       this.classList.add('drag-over');
     });
 
     item.addEventListener('dragleave', function(e) {
+      e.stopPropagation();
       this.classList.remove('drag-over');
     });
 
     item.addEventListener('drop', function(e) {
       e.preventDefault();
+      e.stopPropagation();
       this.classList.remove('drag-over');
       handleDrop(this.dataset.noteId);
     });
@@ -35,15 +47,26 @@ document.addEventListener('DOMContentLoaded', function() {
     if (summary) {
       summary.addEventListener('dragover', function(e) {
         e.preventDefault();
+        e.stopPropagation();
+
+        // Remove drag-over from other items
+        document.querySelectorAll('.note-item.drag-over').forEach(el => {
+          if (el !== item) {
+            el.classList.remove('drag-over');
+          }
+        });
+
         item.classList.add('drag-over');
       });
 
       summary.addEventListener('dragleave', function(e) {
+        e.stopPropagation();
         item.classList.remove('drag-over');
       });
 
       summary.addEventListener('drop', function(e) {
         e.preventDefault();
+        e.stopPropagation();
         item.classList.remove('drag-over');
         handleDrop(item.dataset.noteId);
       });

@@ -1,7 +1,7 @@
 .note-item {
     cursor: grab;
     position: relative;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, border 0.2s ease;
 }
 
 .note-item.dragging {
@@ -10,11 +10,10 @@
 }
 
 .note-item.drag-over {
-    border: 2px dashed #666;
+    border: 2px dashed #007BFF;
     padding: 2px;
-    background-color: rgba(100, 100, 100, 0.1);
-    outline: 2px solid #666;
-    outline-offset: 2px;
+    background-color: rgba(0, 123, 255, 0.1);
+    position: relative;
 }
 
 .note-item.drag-over::before {
@@ -24,7 +23,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(0, 123, 255, 0.05);
     pointer-events: none;
 }
 
