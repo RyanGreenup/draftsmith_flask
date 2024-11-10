@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6">Manage Tags for "{{ note.title }}"</h1>
+
+    <div class="card bg-base-200 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title">Current Tags</h2>
+            <div class="flex flex-wrap gap-2 mb-4">
+                {% for tag in current_tags %}
+                    <div class="badge badge-primary">{{ tag.name }}</div>
+                {% else %}
+                    <p class="text-sm opacity-70">No tags assigned</p>
+                {% endfor %}
+            </div>
+
+            <h2 class="card-title mt-4">Available Tags</h2>
+            <form method="POST" class="mt-4">
+                <div class="flex flex-wrap gap-2 mb-4">
+                    {% for tag in all_tags %}
+                        <label class="cursor-pointer label">
+                            <input type="checkbox" name="tags" value="{{ tag.id }}" 
+                                   class="checkbox checkbox-primary"
+                                   {% if tag in current_tags %}checked{% endif %}>
+                            <span class="label-text ml-2">{{ tag.name }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+                <div class="card-actions justify-end">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a href="{{ url_for('note_detail', note_id=note.id) }}" class="btn">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

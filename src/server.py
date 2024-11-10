@@ -509,6 +509,33 @@ def get_asset(maybe_id):
     return redirect(f"{api_base_url()}/assets/download/{maybe_id}")
 
 
+@app.route("/manage_tags/<int:note_id>", methods=["GET", "POST"])
+def manage_tags(note_id):
+    note = get_note(note_id)
+    if request.method == "POST":
+        # Handle tag assignments here
+        # This would need the API endpoints for tag management
+        flash("Tag management not yet implemented", "info")
+        return redirect(url_for("note_detail", note_id=note_id))
+
+    notes_tree = get_notes_tree()
+    tree_html = build_notes_tree_html(notes_tree)
+    tree_html = Markup(tree_html)
+    
+    # Get current tags for the note
+    current_tags = get_note_tags(note_id)
+    
+    # Get all available tags
+    all_tags = api.get_all_tags()
+    
+    return render_template(
+        "manage_tags.html",
+        note=note,
+        tree_html=tree_html,
+        current_tags=current_tags,
+        all_tags=all_tags
+    )
+
 @app.route("/recent")
 def recent_pages():
     recent_notes = get_recent_notes(limit=50)  # Adjust the limit as needed
