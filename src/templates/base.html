@@ -4,7 +4,7 @@
 
 <head>
   {% include 'head.html' %}
-  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="csrf-token" content="{{ csrf_token() if csrf_token else '' }}">
   <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
   <meta name="theme-color" content="#000000">
   <link rel="apple-touch-icon" href="{{ url_for('static', filename='media/icon-192x192.png') }}">

@@ -19,6 +19,7 @@ from flask import (
     send_from_directory,
     jsonify,
 )
+from flask_wtf.csrf import CSRFProtect
 from markupsafe import Markup
 from typing import List, Optional, Dict
 import os
@@ -117,6 +118,7 @@ def get_notes(
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key_here"  # Replace with a real secret key
+csrf = CSRFProtect(app)
 
 
 def build_notes_tree_html(notes_tree: List[TreeNote], fold_level: int = 2) -> str:
