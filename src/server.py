@@ -129,13 +129,13 @@ def build_notes_tree_html(notes_tree: List[TreeNote], fold_level: int = 2) -> st
         if note.children:
             # Sort the children before rendering them
             note.children.sort(key=lambda x: x.title)
-            html = f'<li class="note-item" data-note-id="{note.id}"><details {status}><summary>{hyperlink}</summary>\n<ul>'
+            html = f'<li class="note-item" draggable="true" data-note-id="{note.id}"><details {status}><summary>{hyperlink}</summary>\n<ul>'
 
             for child in note.children:
                 html += render_note(child, i + 1)
             html += "</ul>\n</details>\n</li>"
         else:
-            html = f'<li class="note-item" data-note-id="{note.id}">{hyperlink}</li>'
+            html = f'<li class="note-item" draggable="true" data-note-id="{note.id}">{hyperlink}</li>'
 
         return html
 
@@ -628,6 +628,25 @@ def delete_tag(tag_id):
         flash(f"Error deleting tag: {str(e)}", "error")
 
     return redirect(url_for("manage_all_tags"))
+
+@app.route("/api/attach_child_note", methods=["POST"])
+def attach_child_note_endpoint():
+    data = request.get_json()
+    parent_id = data.get('parent_note_id')
+    child_id = data.get('child_note_id')
+    
+    if not parent_id or not child_id:
+        return jsonify({"error": "Missing required parameters"}), 400
+        
+    try:
+        attach_note_to_parent(
+            child_note_id=child_id,
+            parent_note_id=parent_id,
+            base_url=api_base_url()
+        )
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/recent")
 def recent_pages():
