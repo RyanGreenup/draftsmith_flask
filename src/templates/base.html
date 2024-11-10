@@ -14,6 +14,7 @@
   <main>
     <div class="drawer lg:drawer-open">
       <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
+      <input id="tag-drawer" type="checkbox" class="drawer-toggle" />
       <div class="drawer-content">
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
@@ -43,6 +44,15 @@
       <div class="drawer-side">
         <label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay"></label>
         {% include 'sidebar.html' %}
+      </div>
+    </div>
+    
+    <!-- Tag Sidebar Drawer -->
+    <div class="drawer drawer-end">
+      <input id="tag-drawer" type="checkbox" class="drawer-toggle" />
+      <div class="drawer-side z-50">
+        <label for="tag-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+        {% include 'tag_sidebar.html' %}
       </div>
     </div>
   </main>

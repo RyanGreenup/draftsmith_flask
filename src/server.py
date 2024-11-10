@@ -620,6 +620,10 @@ def recent_pages():
     )
 
 
+@app.context_processor
+def inject_tags():
+    return dict(tags=api.get_all_tags(base_url=api_base_url()))
+
 def api_base_url():
     from config import Config
 
