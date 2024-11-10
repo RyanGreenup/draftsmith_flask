@@ -332,7 +332,7 @@ def search():
 
     ids = [n.id for n in search_results]
     full_titles = get_full_titles(notes_tree)
-    
+
     # TODO this should return the tree and construct the nested title
     # Maybe regail this to the server?
     search_results = []
@@ -340,10 +340,10 @@ def search():
         note = get_note(note_id)
         html_content = get_rendered_note(note.id, format="html")
         search_result = {
-            'id': note.id,
-            'title': full_titles[note.id],
-            'content': f"<div>{html_content[:200]}</div> ...",
-            'tags': get_note_tags(note.id)
+            "id": note.id,
+            "title": full_titles[note.id],
+            "content": f"<div>{html_content[:200]}</div> ...",
+            "tags": get_note_tags(note.id),
         }
         search_results.append(search_result)
 

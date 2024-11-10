@@ -6,7 +6,9 @@
     <div class="card-actions">
       {% if result['tags'] %}
         {% for tag in result['tags'] %}
+          <a href="/tags/{{ tag.id }}">
           <div class="badge badge-outline">{{ tag.name }}</div>
+          </a>
         {% endfor %}
       {% endif %}
     </div>
