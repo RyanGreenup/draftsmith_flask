@@ -41,6 +41,7 @@ from src.api import (
     get_note_without_content,
     Tag,
     NoteWithoutContent,
+    get_tags_tree,
 )
 from src.api import get_all_assets as get_assets
 from src.api import get_rendered_note
@@ -516,40 +517,40 @@ def manage_tags(note_id):
         # Get the list of selected tag IDs from the form
         selected_tag_ids = request.form.getlist("tags")
         selected_tag_ids = [int(tag_id) for tag_id in selected_tag_ids]
-        
+
         # Get current tags to determine which to add/remove
         current_tags = get_note_tags(note_id)
         current_tag_ids = [tag.id for tag in current_tags]
-        
+
         # Determine which tags to add and remove
         tags_to_add = [tag_id for tag_id in selected_tag_ids if tag_id not in current_tag_ids]
         tags_to_remove = [tag_id for tag_id in current_tag_ids if tag_id not in selected_tag_ids]
-        
+
         try:
             # Remove tags that were unchecked
             for tag_id in tags_to_remove:
                 api.detach_tag_from_note(note_id, tag_id, base_url=api_base_url())
-            
+
             # Add newly checked tags
             for tag_id in tags_to_add:
                 api.attach_tag_to_note(note_id, tag_id, base_url=api_base_url())
-            
+
             flash("Tags updated successfully", "success")
         except requests.exceptions.RequestException as e:
             flash(f"Error updating tags: {str(e)}", "error")
-        
+
         return redirect(url_for("note_detail", note_id=note_id))
 
     notes_tree = get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree)
     tree_html = Markup(tree_html)
-    
+
     # Get current tags for the note
     current_tags = get_note_tags(note_id)
-    
+
     # Get all available tags
     all_tags = api.get_all_tags()
-    
+
     return render_template(
         "manage_tags.html",
         note=note,
@@ -572,13 +573,13 @@ def create_tag():
     if not name:
         flash("Tag name is required", "error")
         return redirect(url_for("manage_all_tags"))
-    
+
     try:
         api.create_tag(name, base_url=api_base_url())
         flash("Tag created successfully", "success")
     except requests.exceptions.RequestException as e:
         flash(f"Error creating tag: {str(e)}", "error")
-    
+
     return redirect(url_for("manage_all_tags"))
 
 @app.route("/rename_tag/<int:tag_id>", methods=["POST"])
@@ -587,13 +588,13 @@ def rename_tag(tag_id):
     if not new_name:
         flash("Tag name is required", "error")
         return redirect(url_for("manage_all_tags"))
-    
+
     try:
         api.update_tag(tag_id, new_name, base_url=api_base_url())
         flash("Tag renamed successfully", "success")
     except requests.exceptions.RequestException as e:
         flash(f"Error renaming tag: {str(e)}", "error")
-    
+
     return redirect(url_for("manage_all_tags"))
 
 @app.route("/delete_tag/<int:tag_id>", methods=["POST"])
@@ -603,7 +604,7 @@ def delete_tag(tag_id):
         flash("Tag deleted successfully", "success")
     except requests.exceptions.RequestException as e:
         flash(f"Error deleting tag: {str(e)}", "error")
-    
+
     return redirect(url_for("manage_all_tags"))
 
 @app.route("/recent")
