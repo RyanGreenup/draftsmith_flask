@@ -331,6 +331,8 @@ def search():
     tree_html = Markup(tree_html)
 
     ids = [n.id for n in search_results]
+    full_titles = get_full_titles(notes_tree)
+    
     # TODO this should return the tree and construct the nested title
     # Maybe regail this to the server?
     search_results = []
@@ -348,7 +350,7 @@ def search():
     return render_template(
         "note_search.html",
         query=query,
-        search_results=notes,
+        search_results=search_results,
         tree_html=tree_html,
         note=None,
     )
