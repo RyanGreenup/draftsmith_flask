@@ -288,7 +288,11 @@ def create_note_page(parent_id=None):
             id = response.get("id")
             if id:
                 if parent_id:
-                    attach_note_to_parent(id, parent_id, base_url=api_base_url())
+                    attach_note_to_parent(
+                        child_note_id=id,
+                        parent_note_id=parent_id,
+                        base_url=api_base_url()
+                    )
                 return redirect(url_for("note_detail", note_id=id))
             else:
                 flash("Error creating note: No ID returned", "error")
