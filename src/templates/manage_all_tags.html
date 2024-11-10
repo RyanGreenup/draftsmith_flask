@@ -24,6 +24,7 @@
                     <thead>
                         <tr>
                             <th>Tag Name</th>
+                            <th>View</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -35,6 +36,9 @@
                                     <input type="text" name="name" value="{{ tag.name }}" class="input input-bordered input-sm">
                                     <button type="submit" class="btn btn-sm">Rename</button>
                                 </form>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('tag_detail', tag_id=tag.id) }}" class="btn btn-sm btn-info">View</a>
                             </td>
                             <td>
                                 <form method="POST" action="{{ url_for('delete_tag', tag_id=tag.id) }}" class="inline" 
