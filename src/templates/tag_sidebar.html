@@ -8,22 +8,26 @@
   
   {% macro render_tag_tree(node) %}
     <li>
-      <a href="{{ url_for('tag_detail', tag_id=node.id) }}" class="hover:bg-base-300">
-        {{ node.name }}
-      </a>
-      {% if node.children %}
-        <ul>
-          {% for child in node.children %}
-            {{ render_tag_tree(child) }}
-          {% endfor %}
-        </ul>
-      {% endif %}
+      <details>
+        <summary class="hover:bg-base-300">
+          <a href="{{ url_for('tag_detail', tag_id=node.id) }}" class="flex-grow">
+            {{ node.name }}
+          </a>
+        </summary>
+        {% if node.children %}
+          <ul>
+            {% for child in node.children|sort(attribute='name') %}
+              {{ render_tag_tree(child) }}
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </details>
     </li>
   {% endmacro %}
 
   <div class="overflow-y-auto h-[calc(100vh-8rem)]">
     <ul class="menu bg-base-200 w-full">
-      {% for tag in tags %}
+      {% for tag in tags|sort(attribute='name') %}
         {{ render_tag_tree(tag) }}
       {% endfor %}
     </ul>
