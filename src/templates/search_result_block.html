@@ -1,11 +1,11 @@
 <div class="mb-6">
   <div class="mb-4">
-    <a href="{{ url_for('note_detail', note_id=result.id) }}">
-    <h3 class="text-lg font-bold">{{ result.title }}</h3>
+    <a href="{{ url_for('note_detail', note_id=result['id']) }}">
+    <h3 class="text-lg font-bold">{{ result['title'] }}</h3>
     </a>
     <div class="card-actions">
-      {% if result.tags %}
-        {% for tag in result.tags %}
+      {% if result['tags'] %}
+        {% for tag in result['tags'] %}
           <div class="badge badge-outline">{{ tag.name }}</div>
         {% endfor %}
       {% endif %}
@@ -13,7 +13,7 @@
     <!-- <p class="text-sm text-base-content text-opacity-70">Tags?</p> -->
   </div>
   <div class="mb-2">
-    {{ result.content|safe }}
+    {{ result['content']|safe }}
   </div>
   <div class="card-actions">
   </div>
