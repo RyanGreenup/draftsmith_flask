@@ -19,6 +19,13 @@
           {% if note %}
           <li>
             <div class="btn btn-sm btn-block btn-ghost justify-start">
+              <a href="{{ url_for('create_note_page', parent_id=note.id) }}">New Subpage</a>
+            </div>
+          </li>
+          {% endif %}
+          {% if note %}
+          <li>
+            <div class="btn btn-sm btn-block btn-ghost justify-start">
               <a href="{{ url_for('move_note', note_id=note.id) }}">Move</a>
             </div>
           </li>

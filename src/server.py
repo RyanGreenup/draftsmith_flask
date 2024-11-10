@@ -265,7 +265,8 @@ def edit_note(note_id):
 
 
 @app.route("/notes/create", methods=["GET", "POST"])
-def create_note_page():
+@app.route("/notes/create/<int:parent_id>", methods=["GET", "POST"])
+def create_note_page(parent_id=None):
     if request.method == "GET":
         notes_tree = get_notes_tree()
         tree_html = build_notes_tree_html(notes_tree)
@@ -286,6 +287,8 @@ def create_note_page():
 
             id = response.get("id")
             if id:
+                if parent_id:
+                    attach_note_to_parent(id, parent_id, base_url=api_base_url())
                 return redirect(url_for("note_detail", note_id=id))
             else:
                 flash("Error creating note: No ID returned", "error")
