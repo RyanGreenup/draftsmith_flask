@@ -513,9 +513,31 @@ def get_asset(maybe_id):
 def manage_tags(note_id):
     note = get_note(note_id)
     if request.method == "POST":
-        # Handle tag assignments here
-        # This would need the API endpoints for tag management
-        flash("Tag management not yet implemented", "info")
+        # Get the list of selected tag IDs from the form
+        selected_tag_ids = request.form.getlist("tags")
+        selected_tag_ids = [int(tag_id) for tag_id in selected_tag_ids]
+        
+        # Get current tags to determine which to add/remove
+        current_tags = get_note_tags(note_id)
+        current_tag_ids = [tag.id for tag in current_tags]
+        
+        # Determine which tags to add and remove
+        tags_to_add = [tag_id for tag_id in selected_tag_ids if tag_id not in current_tag_ids]
+        tags_to_remove = [tag_id for tag_id in current_tag_ids if tag_id not in selected_tag_ids]
+        
+        try:
+            # Remove tags that were unchecked
+            for tag_id in tags_to_remove:
+                api.detach_tag_from_note(note_id, tag_id, base_url=api_base_url())
+            
+            # Add newly checked tags
+            for tag_id in tags_to_add:
+                api.attach_tag_to_note(note_id, tag_id, base_url=api_base_url())
+            
+            flash("Tags updated successfully", "success")
+        except requests.exceptions.RequestException as e:
+            flash(f"Error updating tags: {str(e)}", "error")
+        
         return redirect(url_for("note_detail", note_id=note_id))
 
     notes_tree = get_notes_tree()
