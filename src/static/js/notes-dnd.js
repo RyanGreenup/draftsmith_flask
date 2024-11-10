@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
   noteItems.forEach(item => {
     // Handle direct note item events
     item.addEventListener('dragstart', function(e) {
+      e.stopPropagation(); // Prevent parent elements from also being dragged
       draggedNoteId = this.dataset.noteId;
       e.dataTransfer.setData('text/plain', draggedNoteId);
       this.classList.add('dragging');
