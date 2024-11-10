@@ -17,6 +17,7 @@ from flask import (
     url_for,
     flash,
     send_from_directory,
+    jsonify,
 )
 from markupsafe import Markup
 from typing import List, Optional, Dict
