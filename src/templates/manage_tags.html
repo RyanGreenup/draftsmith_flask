@@ -22,7 +22,7 @@
                         <label class="cursor-pointer label">
                             <input type="checkbox" name="tags" value="{{ tag.id }}" 
                                    class="checkbox checkbox-primary"
-                                   {% if tag in current_tags %}checked{% endif %}>
+                                   {% if tag.id in current_tags|map(attribute='id')|list %}checked{% endif %}>
                             <span class="label-text ml-2">{{ tag.name }}</span>
                         </label>
                     {% endfor %}
