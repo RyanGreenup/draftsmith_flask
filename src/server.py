@@ -342,6 +342,8 @@ def search():
         # use a div to protect certain things
         note.content = "<div>" + note.content[:200] + "</div> ..."
         note.title = full_titles[note.id]
+        # Get tags for this note
+        note.tags = get_note_tags(note.id)
 
     return render_template(
         "note_search.html",
