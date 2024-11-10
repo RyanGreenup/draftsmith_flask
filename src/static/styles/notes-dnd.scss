@@ -1,6 +1,7 @@
 .note-item {
     cursor: grab;
     position: relative;
+    transition: all 0.2s ease;
 }
 
 .note-item.dragging {
@@ -36,4 +37,12 @@
 
 .note-item.drag-over .drop-indicator {
     display: block;
+}
+
+.note-item summary {
+    cursor: grab;
+}
+
+.note-item.dragging summary {
+    cursor: grabbing;
 }
