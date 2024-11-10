@@ -288,11 +288,15 @@ def create_note_page(parent_id=None):
             id = response.get("id")
             if id:
                 if parent_id:
-                    attach_note_to_parent(
-                        child_note_id=id,
-                        parent_note_id=parent_id,
-                        base_url=api_base_url()
-                    )
+                    try:
+                        attach_note_to_parent(
+                            child_note_id=id,
+                            parent_note_id=parent_id,
+                            base_url=api_base_url()
+                        )
+                    except requests.exceptions.RequestException as e:
+                        flash(f"Note created but failed to attach to parent: {str(e)}", "warning")
+                        return redirect(url_for("note_detail", note_id=id))
                 return redirect(url_for("note_detail", note_id=id))
             else:
                 flash("Error creating note: No ID returned", "error")
