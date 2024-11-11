@@ -35,9 +35,8 @@
   {% endif %}
 
   <div class="card bg-base-200 shadow-xl">
-    <div class="card-body">{% include 'markdown-content.html' %}</div>
+    <div class="card-body p-2">{% include 'markdown-content.html' %}</div>
   </div>
-
   {% if note.modified_at %}
   <div class="mt-4 text-sm text-base-content/70">
     Last modified: {{ note.modified_at.strftime('%Y-%m-%d %H:%M:%S') }}
