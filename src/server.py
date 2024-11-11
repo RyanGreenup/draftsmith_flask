@@ -121,7 +121,8 @@ def get_notes(
 
 # Available themes
 themes = [
-    "light",
+    "system_default",
+    "light", 
     "dark",
     "cupcake",
     "bumblebee",
