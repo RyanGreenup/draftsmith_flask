@@ -138,16 +138,38 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function handleNoteToTagDrop(noteId, tagId) {
-        fetch(`/api/attach_note_to_tag`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCSRFToken()
-            },
-            body: JSON.stringify({
-                note_id: noteId,
-                tag_id: tagId
-            })
+        // Don't process if dropping on the same tag
+        if (sourceTagId === tagId) {
+            return;
+        }
+
+        // If there was a source tag, first detach the note
+        const detachPromise = sourceTagId ? 
+            fetch(`/api/detach_note_from_tag`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({
+                    note_id: noteId,
+                    tag_id: sourceTagId
+                })
+            }) : Promise.resolve();
+
+        // After detaching (if needed), attach to new tag
+        detachPromise.then(() => {
+            return fetch(`/api/attach_note_to_tag`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({
+                    note_id: noteId,
+                    tag_id: tagId
+                })
+            });
         }).then(response => {
             if (response.ok) {
                 location.reload();
@@ -155,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Failed to attach note to tag', response);
             }
         }).catch(error => {
-            console.error('Error attaching note to tag', error);
+            console.error('Error handling note movement', error);
         });
     }
 
