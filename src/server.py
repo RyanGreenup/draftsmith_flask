@@ -42,6 +42,7 @@ from src.api import (
     get_tag,
     get_note_without_content,
     Tag,
+    TreeTag,
     NoteWithoutContent,
     get_tags_tree,
 )
@@ -121,6 +122,9 @@ app.secret_key = os.urandom(24)  # Use a consistent secret key
 csrf = CSRFProtect(app)
 app.config['WTF_CSRF_ENABLED'] = True
 
+def build_tags_tree_html(
+        tags_tree: List[TreeTag], note_id: int | None = None) -> str:
+    raise NotImplementedError("This function is not yet  implemented")
 
 def build_notes_tree_html(
     notes_tree: List[TreeNote], fold_level: int = 2, note_id: int | None = None
