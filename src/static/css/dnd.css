@@ -1,8 +1,8 @@
 .dragging {
-    opacity: 0.5;
+  opacity: 0.5;
 }
 
 .drag-over {
-    border: 2px dashed #4a9eff;
-    padding: 2px;
+  border: 2px dashed #4a9eff;
+  padding: 2px;
 }
