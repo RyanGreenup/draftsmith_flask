@@ -51,9 +51,9 @@ class KeyboardShortcuts {
     }
 
     submitForm() {
-        const form = document.querySelector('form');
-        if (form) {
-            form.submit();
+        const saveButton = document.querySelector('button[type="submit"]');
+        if (saveButton) {
+            saveButton.click();
         }
     }
 
