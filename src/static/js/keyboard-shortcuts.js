@@ -53,10 +53,8 @@ class KeyboardShortcuts {
     submitForm() {
         const form = document.getElementById('content-edit-form');
         if (form) {
-            const submitButton = form.querySelector('button[type="submit"]');
-            if (submitButton) {
-                submitButton.click();
-            }
+            form.submit();
+            return false; // Prevent any default behavior
         }
     }
 
