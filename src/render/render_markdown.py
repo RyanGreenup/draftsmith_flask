@@ -1,4 +1,5 @@
 import markdown
+
 # from markdown_extension_transclusion import IncludeFileExtension
 # from markdown_extension_image_size_and_caption import ImageWithFigureExtension
 from pygments.formatters import HtmlFormatter
@@ -9,7 +10,6 @@ from render.extensions.labelled_wikilinks import NoteLinkExtension
 from render.postprocess import fix_image_video_tags
 
 # from regex_patterns import INLINE_MATH_PATTERN, BLOCK_MATH_PATTERN
-
 
 
 def make_html(text: str) -> str:
@@ -65,7 +65,6 @@ class Markdown:
         self.dark_mode = dark_mode
         self.text = text
         self.math_store = MathStore()
-
 
     def make_html(self) -> str:
         # Preserve math environments

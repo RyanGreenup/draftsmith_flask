@@ -121,9 +121,9 @@ def get_notes(
 app = Flask(__name__)
 app.secret_key = os.urandom(24)  # Use a consistent secret key
 csrf = CSRFProtect(app)
-app.config['WTF_CSRF_ENABLED'] = True
+app.config["WTF_CSRF_ENABLED"] = True
 
-folder_svg = '''<svg
+folder_svg = """<svg
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
@@ -134,9 +134,9 @@ folder_svg = '''<svg
         stroke-linecap="round"
         stroke-linejoin="round"
         d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
-    </svg>'''
+    </svg>"""
 
-tag_svg = '''<svg
+tag_svg = """<svg
   xmlns="http://www.w3.org/2000/svg"
   fill="none"
   viewBox="0 0 24 24"
@@ -147,9 +147,9 @@ tag_svg = '''<svg
     stroke-linecap="round"
     stroke-linejoin="round"
     d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" />
-</svg>'''
+</svg>"""
 
-file_svg = '''<svg
+file_svg = """<svg
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
     viewBox="0 0 24 24"
@@ -160,17 +160,21 @@ file_svg = '''<svg
       stroke-linecap="round"
       stroke-linejoin="round"
       d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-  </svg>'''
+  </svg>"""
 
 
-def build_tags_tree_html(tags_tree: List[TreeTagWithNotes], note_id: int | None = None) -> str:
+def build_tags_tree_html(
+    tags_tree: List[TreeTagWithNotes], note_id: int | None = None
+) -> str:
     def render_tag(tag: TreeTagWithNotes) -> str:
         # Initialize classes list for all tags
         classes = ["tag-item"]
 
         # Add highlighting classes if this is the current tag
         if tag.id == note_id:
-            classes.extend(["bg-blue-100", "text-blue-800", "font-semibold", "rounded-md"])
+            classes.extend(
+                ["bg-blue-100", "text-blue-800", "font-semibold", "rounded-md"]
+            )
 
         class_str = " ".join(classes)
         tag_link = f'{tag_svg}<a href="/tags/{tag.id}">{tag.name}</a>'
@@ -178,8 +182,10 @@ def build_tags_tree_html(tags_tree: List[TreeTagWithNotes], note_id: int | None 
         if tag.children or tag.notes:
             # Create details element for hierarchical structure
             html = [f'<li class="{class_str}" data-tag-id="{tag.id}">']
-            html.append('<details open>')  # Always open by default since we don't want folding
-            html.append(f'<summary>{tag_link}</summary>')
+            html.append(
+                "<details open>"
+            )  # Always open by default since we don't want folding
+            html.append(f"<summary>{tag_link}</summary>")
             html.append('<ul class="ml-4">')  # Indentation for nested items
 
             # First add child tags (if any)
@@ -195,14 +201,14 @@ def build_tags_tree_html(tags_tree: List[TreeTagWithNotes], note_id: int | None 
                     note_link = f'{file_svg}<a href="/note/{note.id}">{note.title}</a>'
                     html.append(f'<li class="note-item">{note_link}</li>')
 
-            html.append('</ul>')
-            html.append('</details>')
-            html.append('</li>')
+            html.append("</ul>")
+            html.append("</details>")
+            html.append("</li>")
         else:
             # For tags without children or notes, just render the tag
             html = [f'<li class="{class_str}">{tag_link}</li>']
 
-        return '\n'.join(html)
+        return "\n".join(html)
 
     # Sort top-level tags
     sorted_tags = sorted(tags_tree, key=lambda x: x.name)
@@ -210,14 +216,15 @@ def build_tags_tree_html(tags_tree: List[TreeTagWithNotes], note_id: int | None 
     html = ['<ul class="menu bg-base-200 rounded-box w-56">']
     for tag in sorted_tags:
         html.append(render_tag(tag))
-    html.append('</ul>')
+    html.append("</ul>")
 
-    return '\n'.join(html)
+    return "\n".join(html)
+
 
 def build_notes_tree_html(
     notes_tree: List[TreeNote], fold_level: int = 2, note_id: int | None = None
 ) -> str:
-    file_svg = '''<svg
+    file_svg = """<svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
@@ -228,7 +235,8 @@ def build_notes_tree_html(
           stroke-linecap="round"
           stroke-linejoin="round"
           d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-      </svg>'''
+      </svg>"""
+
     def render_note(note: TreeNote, i: int) -> str:
         svg = file_svg if not note.children else folder_svg
         if i < fold_level:
@@ -306,6 +314,7 @@ def inject_tag_sidebar():
     tags_tree = get_tags_tree()
     tag_html = Markup(build_tags_tree_html(tags_tree))
     return dict(tag_html=tag_html)
+
 
 @app.route("/tags/<int:tag_id>")
 def tag_detail(tag_id: int):
@@ -787,13 +796,12 @@ def attach_child_tag_endpoint():
 
     try:
         api.attach_tag_to_parent(
-            child_id=child_id,
-            parent_id=parent_id,
-            base_url=api_base_url()
+            child_id=child_id, parent_id=parent_id, base_url=api_base_url()
         )
         return jsonify({"success": True}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @app.route("/api/detach_note_from_tag", methods=["POST"])
 def detach_note_from_tag_endpoint():
@@ -806,13 +814,12 @@ def detach_note_from_tag_endpoint():
 
     try:
         api.detach_tag_from_note(
-            note_id=note_id,
-            tag_id=tag_id,
-            base_url=api_base_url()
+            note_id=note_id, tag_id=tag_id, base_url=api_base_url()
         )
         return jsonify({"success": True}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @app.route("/api/attach_note_to_tag", methods=["POST"])
 def attach_note_to_tag_endpoint():
@@ -824,14 +831,11 @@ def attach_note_to_tag_endpoint():
         return jsonify({"error": "Missing required parameters"}), 400
 
     try:
-        api.attach_tag_to_note(
-            note_id=note_id,
-            tag_id=tag_id,
-            base_url=api_base_url()
-        )
+        api.attach_tag_to_note(note_id=note_id, tag_id=tag_id, base_url=api_base_url())
         return jsonify({"success": True}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @app.route("/api/attach_child_note", methods=["POST"])
 def attach_child_note_endpoint():
