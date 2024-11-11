@@ -51,9 +51,12 @@ class KeyboardShortcuts {
     }
 
     submitForm() {
-        const saveButton = document.querySelector('button[type="submit"]');
-        if (saveButton) {
-            saveButton.click();
+        const form = document.getElementById('content-edit-form');
+        if (form) {
+            const submitButton = form.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.click();
+            }
         }
     }
 
