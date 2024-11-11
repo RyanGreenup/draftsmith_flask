@@ -117,8 +117,9 @@ def get_notes(
 # END: API functions that should be implemented by server
 
 app = Flask(__name__)
-app.secret_key = "your_secret_key_here"  # Replace with a real secret key
+app.secret_key = os.urandom(24)  # Use a consistent secret key
 csrf = CSRFProtect(app)
+app.config['WTF_CSRF_ENABLED'] = True
 
 
 def build_notes_tree_html(
@@ -393,7 +394,7 @@ def search():
 @app.route("/note/<int:note_id>/delete", methods=["POST"])
 def delete_note_page(note_id):
     try:
-        api.delete_note(note_id)
+        api.delete_note(note_id, base_url=api_base_url())
         flash("Note deleted successfully", "success")
         return redirect(url_for("root"))
     except requests.exceptions.HTTPError as e:
@@ -401,6 +402,9 @@ def delete_note_page(note_id):
             flash("Note not found", "danger")
         else:
             flash(f"An error occurred: {e}", "danger")
+        return redirect(url_for("note_detail", note_id=note_id))
+    except requests.exceptions.RequestException as e:
+        flash(f"Error deleting note: {str(e)}", "error")
         return redirect(url_for("note_detail", note_id=note_id))
 
 

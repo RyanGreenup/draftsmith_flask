@@ -1,4 +1,5 @@
 <form action="{{ url_for('delete_note_page', note_id=note.id) }}" method="POST"
   onsubmit="return confirm('Are you sure you want to delete this note? This action cannot be undone.');">
-  <button type="submit">Delete Note</button>
+  {% include 'csrf_token.html' %}
+  <button type="submit" class="btn btn-error">Delete Note</button>
 </form>
