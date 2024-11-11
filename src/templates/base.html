@@ -1,6 +1,6 @@
 <!-- src/templates/base.html -->
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="{{ request.cookies.get('theme', 'light') }}">
   <head>
     {% include 'head.html' %}
     <meta
