@@ -48,10 +48,11 @@ document.addEventListener('DOMContentLoaded', function() {
             e.stopPropagation();
             this.classList.remove('drag-over');
             
+            const targetTagId = this.dataset.tagId;
             if (draggedTagId) {
-                handleTagDrop(this.dataset.tagId);
+                handleTagDrop(targetTagId);
             } else if (draggedNoteId) {
-                handleNoteToTagDrop(draggedNoteId, this.dataset.tagId);
+                handleNoteToTagDrop(draggedNoteId, targetTagId);
             }
         });
 
@@ -81,10 +82,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.stopPropagation();
                 item.classList.remove('drag-over');
                 
+                const targetTagId = item.dataset.tagId;
                 if (draggedTagId) {
-                    handleTagDrop(item.dataset.tagId);
+                    handleTagDrop(targetTagId);
                 } else if (draggedNoteId) {
-                    handleNoteToTagDrop(draggedNoteId, item.dataset.tagId);
+                    handleNoteToTagDrop(draggedNoteId, targetTagId);
                 }
             });
         }
