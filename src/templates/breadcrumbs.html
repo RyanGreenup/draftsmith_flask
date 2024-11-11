@@ -1,18 +1,22 @@
-<div class="text-sm breadcrumbs">
-  <ul class="flex flex-wrap items-center">
-    <li>
-      <a href="/" class="text-primary">{% include 'icons/home.html' %}</a>
-    </li>
-    {% if note_path %} {% for parent in note_path[:-1] %}
-    <li>
-      <a
-        href="{{ url_for('note_detail', note_id=parent.id) }}"
-        class="text-primary"
-        >{{ parent.title }}</a
-      >
-    </li>
-    {% endfor %}
-    <li class="text-gray-600">{{ note_path[-1].title }}</li>
-    {% endif %}
-  </ul>
+{% if note_path and note_path|length > 1 %}
+<div class="card bg-base-100 shadow-lg">
+  <div class="card-body p-4">
+    <nav aria-label="breadcrumb" class="text-sm text-gray-700">
+      <ul class="flex flex-wrap items-center gap-2">
+        {% for parent in note_path[:-1] %}
+        <li>
+          <a
+            href="{{ url_for('note_detail', note_id=parent.id) }}"
+            class="text-primary hover:text-primary-focus hover:underline"
+          >
+            {{ parent.title }}
+          </a>
+        </li>
+        <span>/</span>
+        {% endfor %}
+        <li class="text-gray-600 font-semibold">{{ note_path[-1].title }}</li>
+      </ul>
+    </nav>
+  </div>
 </div>
+{% endif %}
