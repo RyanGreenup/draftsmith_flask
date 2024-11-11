@@ -1,5 +1,2 @@
-<script>
-  {% include 'js/keyboard_new.js' %}
-</script>
-
+<script src="{{ url_for('static', filename='js/keyboard-shortcuts.js') }}"></script>
 <a href="{{ url_for('create_note_page') }}" data-create-link>Create New Note</a>
