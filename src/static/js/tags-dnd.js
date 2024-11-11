@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const noteItems = document.querySelectorAll('.note-item');
     let draggedTagId = null;
     let draggedNoteId = null;
+    let sourceTagId = null;  // Add this to track the source tag
 
     // Make tags draggable
     tagItems.forEach(item => {
@@ -91,12 +92,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Make notes draggable for tag assignment
     noteItems.forEach(item => {
+        item.setAttribute('draggable', 'true');
+        
         item.addEventListener('dragstart', function(e) {
             e.stopPropagation();
             draggedNoteId = this.dataset.noteId;
             draggedTagId = null;
+            // Find the closest parent tag-item to set as source
+            const parentTag = this.closest('.tag-item');
+            sourceTagId = parentTag ? parentTag.dataset.tagId : null;
             e.dataTransfer.setData('text/plain', draggedNoteId);
             this.classList.add('dragging');
+        });
+
+        item.addEventListener('dragend', function(e) {
+            e.stopPropagation();
+            this.classList.remove('dragging');
         });
     });
 

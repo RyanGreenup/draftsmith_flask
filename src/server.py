@@ -795,6 +795,25 @@ def attach_child_tag_endpoint():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route("/api/detach_note_from_tag", methods=["POST"])
+def detach_note_from_tag_endpoint():
+    data = request.get_json()
+    note_id = data.get("note_id")
+    tag_id = data.get("tag_id")
+
+    if not note_id or not tag_id:
+        return jsonify({"error": "Missing required parameters"}), 400
+
+    try:
+        api.detach_tag_from_note(
+            note_id=note_id,
+            tag_id=tag_id,
+            base_url=api_base_url()
+        )
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route("/api/attach_note_to_tag", methods=["POST"])
 def attach_note_to_tag_endpoint():
     data = request.get_json()
