@@ -41,12 +41,10 @@ themes = [
 s = ""
 for theme in themes:
     s+=f"""<li>
-<input
-    type="radio"
-    name="theme-dropdown"
-    class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-    aria-label="{theme.title()}"
-    value="{theme}" />
+<a href="{{{{ url_for('set_theme', theme='{theme}') }}}}"
+    class="btn btn-sm btn-block btn-ghost justify-start">
+    {theme.title()}
+</a>
 </li>\n"""
 top="""
 <div class="dropdown mb-72">
