@@ -15,6 +15,11 @@ class KeyboardShortcuts {
                 key: 'Backquote',
                 modifier: 'Alt',
                 action: () => this.insertTextAtCaret('λ#()#')
+            },
+            submit: {
+                key: 'Enter',
+                modifier: 'Control',
+                action: () => this.submitForm()
             }
         };
         
@@ -26,19 +31,29 @@ class KeyboardShortcuts {
     }
 
     handleKeydown(event) {
-        if (!event.altKey) return;
-
         for (const [name, shortcut] of Object.entries(this.shortcuts)) {
-            if (event.key.toLowerCase() === shortcut.key.toLowerCase() || 
-                event.code === shortcut.key) {
-                event.preventDefault();
-                
-                if (shortcut.action) {
-                    shortcut.action();
-                } else {
-                    this.navigateToLink(shortcut.selector);
+            if (
+                (shortcut.modifier === 'Alt' && event.altKey) ||
+                (shortcut.modifier === 'Control' && event.ctrlKey)
+            ) {
+                if (event.key.toLowerCase() === shortcut.key.toLowerCase() || 
+                    event.code === shortcut.key) {
+                    event.preventDefault();
+                    
+                    if (shortcut.action) {
+                        shortcut.action();
+                    } else {
+                        this.navigateToLink(shortcut.selector);
+                    }
                 }
             }
+        }
+    }
+
+    submitForm() {
+        const form = document.querySelector('form');
+        if (form) {
+            form.submit();
         }
     }
 
