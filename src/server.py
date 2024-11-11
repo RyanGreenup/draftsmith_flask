@@ -206,12 +206,12 @@ def build_tags_tree_html(tags_tree: List[TreeTagWithNotes], note_id: int | None 
 
     # Sort top-level tags
     sorted_tags = sorted(tags_tree, key=lambda x: x.name)
-    
+
     html = ['<ul class="menu bg-base-200 rounded-box w-56">']
     for tag in sorted_tags:
         html.append(render_tag(tag))
     html.append('</ul>')
-    
+
     return '\n'.join(html)
 
 def build_notes_tree_html(
@@ -787,8 +787,8 @@ def attach_child_tag_endpoint():
 
     try:
         api.attach_tag_to_parent(
-            child_tag_id=child_id, 
-            parent_tag_id=parent_id, 
+            child_id=child_id,
+            parent_id=parent_id,
             base_url=api_base_url()
         )
         return jsonify({"success": True}), 200
