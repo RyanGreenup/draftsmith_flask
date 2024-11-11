@@ -1,33 +1,43 @@
-{% extends "base.html" %}
-
-{% block content %}
+{% extends "base.html" %} {% block content %}
 <div class="container mx-auto px-4">
-    <h1 class="text-2xl font-bold mb-4">Upload Asset</h1>
-    <form action="{{ url_for('upload_asset') }}" method="post" enctype="multipart/form-data" class="mb-4">
+  <h1 class="text-2xl font-bold mb-4">Upload Asset</h1>
+  <form
+    action="{{ url_for('upload_asset') }}"
+    method="post"
+    enctype="multipart/form-data"
+    class="mb-4"
+  >
+    <label class="form-control w-full max-w-xs">
+      <div class="label">
+        <span class="label-text">Pick a file</span>
+        <span class="label-text-alt">Alt label</span>
+      </div>
+      <input
+        type="file"
+        id="file"
+        name="file"
+        required
+        class="file-input file-input-bordered w-full max-w-xs"
+      />
+      <div class="label">
+        <span class="label-text-alt">Alt label</span>
+        <span class="label-text-alt">Alt label</span>
+      </div>
+    </label>
 
-        <label class="form-control w-full max-w-xs">
-          <div class="label">
-            <span class="label-text">Pick a file</span>
-            <span class="label-text-alt">Alt label</span>
-          </div>
-          <input type="file" id="file" name="file" required class="file-input file-input-bordered w-full max-w-xs" />
-          <div class="label">
-            <span class="label-text-alt">Alt label</span>
-            <span class="label-text-alt">Alt label</span>
-          </div>
-        </label>
+    <div class="mb-4">
+      <label for="location" class="block mb-2"
+        >Custom filename (optional):</label
+      >
+      <input
+        type="text"
+        id="location"
+        name="location"
+        class="input input-bordered w-full"
+      />
+    </div>
 
-
-        <div class="mb-4">
-            <label for="location" class="block mb-2">Custom filename (optional):</label>
-            <input type="text" id="location" name="location" class="input input-bordered w-full" />
-        </div>
-
-        <button type="submit" class="btn btn-primary">Upload</button>
-    </form>
+    <button type="submit" class="btn btn-primary">Upload</button>
+  </form>
 </div>
-{% endblock %}
-
-{% block sidebar %}
-    {{ tree_html }}
-{% endblock %}
+{% endblock %} {% block sidebar %} {{ tree_html }} {% endblock %}

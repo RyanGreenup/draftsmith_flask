@@ -1,44 +1,49 @@
-{% extends 'base.html' %}
-
-{% block content %}
+{% extends 'base.html' %} {% block content %}
 <script>
-    {% include 'js/keyboard_submit.js' %}
+  {% include 'js/keyboard_submit.js' %}
 </script>
 
 <div class="container max-w-full px-4 py-8">
-    <h1 class="text-2xl font-bold mb-6">Edit Note</h1>
+  <h1 class="text-2xl font-bold mb-6">Edit Note</h1>
 
+  <div class="card bg-base-200 shadow-xl">
+    <div class="card-body">
+      <form
+        id="content-edit-form"
+        action="{{ url_for('edit_note', note_id=note.id) }}"
+        method="POST"
+      >
+        {% include 'csrf_token.html' %}
+        <div class="form-control w-full mb-4">
+          <label class="label">
+            <span class="label-text">Content</span>
+            <span class="label-text-alt">Use Markdown formatting</span>
+          </label>
+          <textarea
+            name="content"
+            class="textarea textarea-bordered textarea-lg font-mono text-sm w-full min-h-[50vh]"
+            rows="80"
+            required
+          >
+{{ note.content }}</textarea
+          >
+        </div>
+
+        <div class="flex justify-end gap-2">
+          <a href="{{ url_for('note_detail', note_id=note.id) }}" class="btn"
+            >Cancel</a
+          >
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="mt-8">
+    <h2 class="text-xl font-bold mb-4">Preview</h2>
     <div class="card bg-base-200 shadow-xl">
-        <div class="card-body">
-            <form id="content-edit-form" action="{{ url_for('edit_note', note_id=note.id) }}" method="POST">
-                {% include 'csrf_token.html' %}
-                <div class="form-control w-full mb-4">
-                    <label class="label">
-                        <span class="label-text">Content</span>
-                        <span class="label-text-alt">Use Markdown formatting</span>
-                    </label>
-                    <textarea
-                        name="content"
-                        class="textarea textarea-bordered textarea-lg font-mono text-sm w-full min-h-[50vh]"
-                        rows="80"
-                        required>{{ note.content }}</textarea>
-                </div>
-
-                <div class="flex justify-end gap-2">
-                    <a href="{{ url_for('note_detail', note_id=note.id) }}" class="btn">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                </div>
-            </form>
-        </div>
+      <div class="card-body">{% include 'markdown-content.html' %}</div>
     </div>
-
-    <div class="mt-8">
-        <h2 class="text-xl font-bold mb-4">Preview</h2>
-        <div class="card bg-base-200 shadow-xl">
-            <div class="card-body">
-                {% include 'markdown-content.html' %}
-            </div>
-        </div>
-    </div>
+  </div>
 </div>
 {% endblock %}

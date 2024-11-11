@@ -3,7 +3,10 @@
     <li>
       <details>
         <summary>Actions</summary>
-        <ul tabindex="0" class="dropdown-content bg-base-300 rounded-box z-[1] w-52 p-2 shadow-2xl">
+        <ul
+          tabindex="0"
+          class="dropdown-content bg-base-300 rounded-box z-[1] w-52 p-2 shadow-2xl"
+        >
           {% if note %}
           <li>
             <div class="btn btn-sm btn-block btn-ghost justify-start">
@@ -19,27 +22,32 @@
           {% if note %}
           <li>
             <div class="btn btn-sm btn-block btn-ghost justify-start">
-              <a href="{{ url_for('create_note_page', parent_id=note.id) }}">New Subpage</a>
+              <a href="{{ url_for('create_note_page', parent_id=note.id) }}"
+                >New Subpage</a
+              >
             </div>
           </li>
-          {% endif %}
-          {% if note %}
+          {% endif %} {% if note %}
           <li>
             <div class="btn btn-sm btn-block btn-ghost justify-start">
               <a href="{{ url_for('move_note', note_id=note.id) }}">Move</a>
             </div>
           </li>
-          {% endif %}
-          {% if note %}
+          {% endif %} {% if note %}
           <li>
             <div class="btn btn-sm btn-block btn-ghost justify-start">
-              <a href="{{ url_for('manage_tags', note_id=note.id) }}">Assign Tags</a>
+              <a href="{{ url_for('manage_tags', note_id=note.id) }}"
+                >Assign Tags</a
+              >
             </div>
           </li>
           <li>
             <div class="btn btn-sm btn-block btn-ghost justify-start">
-              <form action="{{ url_for('delete_note_page', note_id=note.id) }}" method="POST"
-                onsubmit="return confirm('Are you sure you want to delete this note? This action cannot be undone.');">
+              <form
+                action="{{ url_for('delete_note_page', note_id=note.id) }}"
+                method="POST"
+                onsubmit="return confirm('Are you sure you want to delete this note? This action cannot be undone.');"
+              >
                 {% include 'csrf_token.html' %}
                 <button type="submit">Delete Note</button>
               </form>
@@ -59,7 +67,10 @@
           <li>
             <details>
               <summary>Assets</summary>
-              <ul tabindex="0" class="dropdown-content bg-base-300 rounded-box z-[1] w-52 p-2 shadow-2xl">
+              <ul
+                tabindex="0"
+                class="dropdown-content bg-base-300 rounded-box z-[1] w-52 p-2 shadow-2xl"
+              >
                 <li>
                   <div class="btn btn-sm btn-block btn-ghost justify-start">
                     {% include 'buttons/upload_asset.html' %}
@@ -78,8 +89,19 @@
     </li>
     <li>
       <label for="tag-drawer" class="btn btn-ghost">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"
+          />
         </svg>
         Tags
       </label>

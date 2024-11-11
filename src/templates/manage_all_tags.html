@@ -46,8 +46,7 @@
                   action="{{ url_for('rename_tag', tag_id=tag.id) }}"
                   class="flex gap-2"
                 >
-
-                {% include 'csrf_token.html' %}
+                  {% include 'csrf_token.html' %}
                   <input
                     type="text"
                     name="name"

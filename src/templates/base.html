@@ -1,76 +1,90 @@
 <!-- src/templates/base.html -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    {% include 'head.html' %}
+    <meta
+      name="csrf-token"
+      content="{{ csrf_token() if csrf_token else '' }}"
+    />
+    <link
+      rel="manifest"
+      href="{{ url_for('static', filename='manifest.json') }}"
+    />
+    <meta name="theme-color" content="#000000" />
+    <link
+      rel="apple-touch-icon"
+      href="{{ url_for('static', filename='media/icon-192x192.png') }}"
+    />
+  </head>
 
-<head>
-  {% include 'head.html' %}
-  <meta name="csrf-token" content="{{ csrf_token() if csrf_token else '' }}">
-  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
-  <meta name="theme-color" content="#000000">
-  <link rel="apple-touch-icon" href="{{ url_for('static', filename='media/icon-192x192.png') }}">
-</head>
+  <body>
+    {% include 'navbar.html' %}
+    <main>
+      <div class="drawer lg:drawer-open">
+        <input id="pages-drawer" type="checkbox" class="drawer-toggle" />
+        <div class="drawer-content">
+          {% with messages = get_flashed_messages(with_categories=true) %} {% if
+          messages %}
+          <div class="container mx-auto px-4 mt-4">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} mb-4">{{ message }}</div>
+            {% endfor %}
+          </div>
+          {% endif %} {% endwith %}
 
-<body>
-  {% include 'navbar.html' %}
-  <main>
-    <div class="drawer lg:drawer-open">
-      <input id="pages-drawer" type="checkbox" class="drawer-toggle" />
-      <div class="drawer-content">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            <div class="container mx-auto px-4 mt-4">
-              {% for category, message in messages %}
-                <div class="alert alert-{{ category }} mb-4">
-                  {{ message }}
-                </div>
-              {% endfor %}
-            </div>
-          {% endif %}
-        {% endwith %}
-
-        <div class="container mx-auto">
-          {% include 'breadcrumbs.html' %}
+          <div class="container mx-auto">{% include 'breadcrumbs.html' %}</div>
+          <!-- BEGIN Page content here -->
+          {% block content %}
+          <!-- Specific page content will go here -->
+          {% endblock %} {% block asset_list %}
+          <!-- Asset list content will go here -->
+          {% endblock %} {% include 'footer.html' %}
+          <!-- END Page content here -->
         </div>
-        <!-- BEGIN Page content here -->
-        {% block content %}
-        <!-- Specific page content will go here -->
-        {% endblock %}
-        {% block asset_list %}
-        <!-- Asset list content will go here -->
-        {% endblock %}
-        {% include 'footer.html' %}
-        <!-- END Page content here -->
+        <div class="drawer-side">
+          <label
+            for="pages-drawer"
+            aria-label="close sidebar"
+            class="drawer-overlay"
+          ></label>
+          {% include 'sidebar.html' %}
+        </div>
       </div>
-      <div class="drawer-side">
-        <label for="pages-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-        {% include 'sidebar.html' %}
-      </div>
-    </div>
-    
-    <!-- Tag Sidebar Drawer -->
-    <div class="drawer drawer-end">
-      <input id="tag-drawer" type="checkbox" class="drawer-toggle" />
-      <div class="drawer-side">
-        <label for="tag-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-        {% include 'tag_sidebar.html' %}
-      </div>
-    </div>
-  </main>
-  {% include 'katex_js.html' %}
-  <script src="{{ url_for('static', filename='js/notes-dnd.js') }}"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register("{{ url_for('static', filename='js/service-worker.js') }}")
-          .then(registration => {
-            console.log('Service Worker registered successfully:', registration);
-          })
-          .catch(error => {
-            console.log('Service Worker registration failed:', error);
-          });
-      });
-    }
-  </script>
-</body>
 
+      <!-- Tag Sidebar Drawer -->
+      <div class="drawer drawer-end">
+        <input id="tag-drawer" type="checkbox" class="drawer-toggle" />
+        <div class="drawer-side">
+          <label
+            for="tag-drawer"
+            aria-label="close sidebar"
+            class="drawer-overlay"
+          ></label>
+          {% include 'tag_sidebar.html' %}
+        </div>
+      </div>
+    </main>
+    {% include 'katex_js.html' %}
+    <script src="{{ url_for('static', filename='js/notes-dnd.js') }}"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register(
+              "{{ url_for('static', filename='js/service-worker.js') }}",
+            )
+            .then((registration) => {
+              console.log(
+                "Service Worker registered successfully:",
+                registration,
+              );
+            })
+            .catch((error) => {
+              console.log("Service Worker registration failed:", error);
+            });
+        });
+      }
+    </script>
+  </body>
 </html>
