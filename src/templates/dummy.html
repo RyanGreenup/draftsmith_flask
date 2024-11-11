@@ -8,35 +8,35 @@
 
 
 
-<details>
+    <details>
 
-```py
-@app.route("/note/<int:note_id>/move", methods=["GET", "POST"])
-def move_note(note_id):
-    if request.method == "GET":
+      ```py
+      @app.route("/note/<int:note_id>/move", methods=["GET", "POST"])
+        def move_note(note_id):
+        if request.method == "GET":
         return render_template("move_note.html", note_id=note_id)
-    elif request.method == "POST":
+        elif request.method == "POST":
         new_parent_id = request.form.get("new_parent_id")
         try:
-            new_parent_id = int(new_parent_id)
-            result = update_note_hierarchy(new_parent_id, note_id, "subpage")
-            flash("Note moved successfully", "success")
+        new_parent_id = int(new_parent_id)
+        result = update_note_hierarchy(new_parent_id, note_id, "subpage")
+        flash("Note moved successfully", "success")
         except ValueError:
-            flash("Invalid parent ID", "error")
+        flash("Invalid parent ID", "error")
         except Exception as e:
-            flash(f"An error occurred: {str(e)}", "error")
+        flash(f"An error occurred: {str(e)}", "error")
         return redirect(url_for("note_detail", note_id=note_id))
 
 
-```
+        ```
 
-</details>
-
-
+    </details>
 
 
 
-</p>
+
+
+    </p>
   </div>
 </div>
 
@@ -107,36 +107,28 @@ def move_note(note_id):
 
 <div class="carousel w-full">
   <div id="slide1" class="carousel-item relative w-full">
-    <img
-      src="https://img.daisyui.com/images/stock/photo-1625726411847-8cbb60cc71e6.webp"
-      class="w-full" />
+    <img src="https://img.daisyui.com/images/stock/photo-1625726411847-8cbb60cc71e6.webp" class="w-full" />
     <div class="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
       <a href="#slide4" class="btn btn-circle">❮</a>
       <a href="#slide2" class="btn btn-circle">❯</a>
     </div>
   </div>
   <div id="slide2" class="carousel-item relative w-full">
-    <img
-      src="https://img.daisyui.com/images/stock/photo-1609621838510-5ad474b7d25d.webp"
-      class="w-full" />
+    <img src="https://img.daisyui.com/images/stock/photo-1609621838510-5ad474b7d25d.webp" class="w-full" />
     <div class="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
       <a href="#slide1" class="btn btn-circle">❮</a>
       <a href="#slide3" class="btn btn-circle">❯</a>
     </div>
   </div>
   <div id="slide3" class="carousel-item relative w-full">
-    <img
-      src="https://img.daisyui.com/images/stock/photo-1414694762283-acccc27bca85.webp"
-      class="w-full" />
+    <img src="https://img.daisyui.com/images/stock/photo-1414694762283-acccc27bca85.webp" class="w-full" />
     <div class="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
       <a href="#slide2" class="btn btn-circle">❮</a>
       <a href="#slide4" class="btn btn-circle">❯</a>
     </div>
   </div>
   <div id="slide4" class="carousel-item relative w-full">
-    <img
-      src="https://img.daisyui.com/images/stock/photo-1665553365602-b2fb8e5d1707.webp"
-      class="w-full" />
+    <img src="https://img.daisyui.com/images/stock/photo-1665553365602-b2fb8e5d1707.webp" class="w-full" />
     <div class="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
       <a href="#slide3" class="btn btn-circle">❮</a>
       <a href="#slide1" class="btn btn-circle">❯</a>
@@ -184,16 +176,11 @@ def move_note(note_id):
 <div class="stats shadow">
   <div class="stat">
     <div class="stat-figure text-primary">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
         class="inline-block h-8 w-8 stroke-current">
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+        </path>
       </svg>
     </div>
     <div class="stat-title">Total Likes</div>
@@ -203,16 +190,9 @@ def move_note(note_id):
 
   <div class="stat">
     <div class="stat-figure text-secondary">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
         class="inline-block h-8 w-8 stroke-current">
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
       </svg>
     </div>
     <div class="stat-title">Page Views</div>
@@ -474,13 +454,8 @@ These would be good for showing a timeline of research papers or events
 <ul class="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical">
   <li>
     <div class="timeline-middle">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-        class="h-5 w-5">
-        <path
-          fill-rule="evenodd"
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+        <path fill-rule="evenodd"
           d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
           clip-rule="evenodd" />
       </svg>
@@ -499,13 +474,8 @@ These would be good for showing a timeline of research papers or events
   <li>
     <hr />
     <div class="timeline-middle">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-        class="h-5 w-5">
-        <path
-          fill-rule="evenodd"
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+        <path fill-rule="evenodd"
           d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
           clip-rule="evenodd" />
       </svg>
@@ -522,13 +492,8 @@ These would be good for showing a timeline of research papers or events
   <li>
     <hr />
     <div class="timeline-middle">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-        class="h-5 w-5">
-        <path
-          fill-rule="evenodd"
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+        <path fill-rule="evenodd"
           d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
           clip-rule="evenodd" />
       </svg>
@@ -547,13 +512,8 @@ These would be good for showing a timeline of research papers or events
   <li>
     <hr />
     <div class="timeline-middle">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-        class="h-5 w-5">
-        <path
-          fill-rule="evenodd"
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+        <path fill-rule="evenodd"
           d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
           clip-rule="evenodd" />
       </svg>
@@ -572,13 +532,8 @@ These would be good for showing a timeline of research papers or events
   <li>
     <hr />
     <div class="timeline-middle">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-        class="h-5 w-5">
-        <path
-          fill-rule="evenodd"
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+        <path fill-rule="evenodd"
           d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
           clip-rule="evenodd" />
       </svg>
@@ -606,9 +561,7 @@ Good for tutorials
 
 <div role="tablist" class="tabs tabs-lifted">
   <a role="tab" class="tab">Tab 1</a>
-  <a
-    role="tab"
-    class="tab tab-active text-primary [--tab-bg:yellow] [--tab-border-color:orange]">
+  <a role="tab" class="tab tab-active text-primary [--tab-bg:yellow] [--tab-border-color:orange]">
     Tab 2
   </a>
   <a role="tab" class="tab">Tab 3</a>
@@ -619,60 +572,32 @@ Good for tutorials
 
 
 <div role="alert" class="alert alert-info">
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    class="h-6 w-6 shrink-0 stroke-current">
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-6 w-6 shrink-0 stroke-current">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
       d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
   </svg>
   <span>New software update available.</span>
 </div>
 
 <div role="alert" class="alert alert-success">
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    class="h-6 w-6 shrink-0 stroke-current"
-    fill="none"
-    viewBox="0 0 24 24">
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
       d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
   </svg>
   <span>Your purchase has been confirmed!</span>
 </div>
 
 <div role="alert" class="alert alert-warning">
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    class="h-6 w-6 shrink-0 stroke-current"
-    fill="none"
-    viewBox="0 0 24 24">
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
       d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
   </svg>
   <span>Warning: Invalid email address!</span>
 </div>
 
 <div role="alert" class="alert alert-error">
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    class="h-6 w-6 shrink-0 stroke-current"
-    fill="none"
-    viewBox="0 0 24 24">
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
       d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
   </svg>
   <span>Error! Task failed successfully.</span>
@@ -683,9 +608,7 @@ Good for tutorials
 
 <div class="card bg-base-100 w-96 shadow-xl">
   <figure class="px-10 pt-10">
-    <img
-      src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
-      alt="Shoes"
+    <img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp" alt="Shoes"
       class="rounded-xl" />
   </figure>
   <div class="card-body items-center text-center">
@@ -707,13 +630,7 @@ Good for tutorials
     Tab content 1
   </div>
 
-  <input
-    type="radio"
-    name="my_tabs_2"
-    role="tab"
-    class="tab"
-    aria-label="Tab 2"
-    checked="checked" />
+  <input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Tab 2" checked="checked" />
   <div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">
     Tab content 2
   </div>
@@ -771,4 +688,10 @@ Good for tutorials
     <div class="bg-base-200 grid place-content-center text-9xl font-black">DAISY</div>
   </div>
   <div class="diff-resizer"></div>
+</div>
+
+
+
+<div class="bg-blue-100 text-blue-800 font-semibold rounded-md">
+  foo
 </div>

@@ -121,24 +121,40 @@ app.secret_key = "your_secret_key_here"  # Replace with a real secret key
 csrf = CSRFProtect(app)
 
 
-def build_notes_tree_html(notes_tree: List[TreeNote], fold_level: int = 2) -> str:
+def build_notes_tree_html(
+    notes_tree: List[TreeNote], fold_level: int = 2, note_id: int | None = None
+) -> str:
     def render_note(note: TreeNote, i: int) -> str:
         if i < fold_level:
             status = "open"
         else:
             status = "closed"
 
+        # Initialize classes list for all notes
+        classes = ["note-item"]
+
+        # Add highlighting classes if this is the current note
+        if note.id == note_id:
+            classes.extend(
+                ["bg-blue-100", "text-blue-800", "font-semibold", "rounded-md"]
+            )
+
+        class_str = " ".join(classes)
         hyperlink = f'<a href="/note/{note.id}">{note.title}</a>'
+
         if note.children:
             # Sort the children before rendering them
             note.children.sort(key=lambda x: x.title)
-            html = f'<li class="note-item" draggable="true" data-note-id="{note.id}"><details {status}><summary>{hyperlink}</summary>\n<ul>'
+            if note.id == note_id:
+                status = "open"
+
+            html = f'<li class="{class_str}" draggable="true" data-note-id="{note.id}"><details {status}><summary>{hyperlink}</summary>\n<ul>'
 
             for child in note.children:
                 html += render_note(child, i + 1)
             html += "</ul>\n</details>\n</li>"
         else:
-            html = f'<li class="note-item" draggable="true" data-note-id="{note.id}">{hyperlink}</li>'
+            html = f'<li class="{class_str}" draggable="true" data-note-id="{note.id}">{hyperlink}</li>'
 
         return html
 
@@ -191,7 +207,7 @@ def note_detail(note_id):
     base_url = api_base_url()
     note = get_note(note_id)
     notes_tree = get_notes_tree()
-    tree_html = build_notes_tree_html(notes_tree)
+    tree_html = build_notes_tree_html(notes_tree, note_id=note_id)
     tree_html = Markup(tree_html)
 
     # Find the path to the current note
@@ -251,7 +267,7 @@ def inject_backlinks():
 def edit_note(note_id):
     note = get_note(note_id)
     notes_tree = get_notes_tree()
-    tree_html = build_notes_tree_html(notes_tree)
+    tree_html = build_notes_tree_html(notes_tree, note_id=note_id)
     tree_html = Markup(tree_html)
 
     # Find the path to the current note
@@ -272,7 +288,7 @@ def edit_note(note_id):
 def create_note_page(parent_id=None):
     if request.method == "GET":
         notes_tree = get_notes_tree()
-        tree_html = build_notes_tree_html(notes_tree)
+        tree_html = build_notes_tree_html(notes_tree, note_id=parent_id)
         tree_html = Markup(tree_html)
 
         return render_template("note_create.html", tree_html=tree_html, title="")
@@ -295,10 +311,13 @@ def create_note_page(parent_id=None):
                         attach_note_to_parent(
                             child_note_id=id,
                             parent_note_id=parent_id,
-                            base_url=api_base_url()
+                            base_url=api_base_url(),
                         )
                     except requests.exceptions.RequestException as e:
-                        flash(f"Note created but failed to attach to parent: {str(e)}", "warning")
+                        flash(
+                            f"Note created but failed to attach to parent: {str(e)}",
+                            "warning",
+                        )
                         return redirect(url_for("note_detail", note_id=id))
                 return redirect(url_for("note_detail", note_id=id))
             else:
@@ -342,7 +361,7 @@ def search():
     # Save multiple requests?
     search_results = search_notes(query)
     notes_tree = get_notes_tree()
-    tree_html = build_notes_tree_html(notes_tree)
+    tree_html = build_notes_tree_html(notes_tree, note_id=None)
     tree_html = Markup(tree_html)
 
     ids = [n.id for n in search_results]
@@ -394,8 +413,9 @@ def detach_note(note_id):
         handle_http_error(e)
     except Exception as e:
         flash(f"An error occurred: {str(e)}", "error")
-    
+
     return redirect(url_for("note_detail", note_id=note_id))
+
 
 @app.route("/note/<int:note_id>/move", methods=["GET", "POST"])
 def move_note(note_id):
@@ -548,8 +568,12 @@ def manage_tags(note_id):
         current_tag_ids = [tag.id for tag in current_tags]
 
         # Determine which tags to add and remove
-        tags_to_add = [tag_id for tag_id in selected_tag_ids if tag_id not in current_tag_ids]
-        tags_to_remove = [tag_id for tag_id in current_tag_ids if tag_id not in selected_tag_ids]
+        tags_to_add = [
+            tag_id for tag_id in selected_tag_ids if tag_id not in current_tag_ids
+        ]
+        tags_to_remove = [
+            tag_id for tag_id in current_tag_ids if tag_id not in selected_tag_ids
+        ]
 
         try:
             # Remove tags that were unchecked
@@ -567,7 +591,7 @@ def manage_tags(note_id):
         return redirect(url_for("note_detail", note_id=note_id))
 
     notes_tree = get_notes_tree()
-    tree_html = build_notes_tree_html(notes_tree)
+    tree_html = build_notes_tree_html(notes_tree, note_id=note_id)
     tree_html = Markup(tree_html)
 
     # Get current tags for the note
@@ -581,8 +605,9 @@ def manage_tags(note_id):
         note=note,
         tree_html=tree_html,
         current_tags=current_tags,
-        all_tags=all_tags
+        all_tags=all_tags,
     )
+
 
 @app.route("/manage_all_tags")
 def manage_all_tags():
@@ -591,6 +616,7 @@ def manage_all_tags():
     tree_html = Markup(tree_html)
     tags = api.get_all_tags()
     return render_template("manage_all_tags.html", tags=tags, tree_html=tree_html)
+
 
 @app.route("/create_tag", methods=["POST"])
 def create_tag():
@@ -607,6 +633,7 @@ def create_tag():
 
     return redirect(url_for("manage_all_tags"))
 
+
 @app.route("/rename_tag/<int:tag_id>", methods=["POST"])
 def rename_tag(tag_id):
     new_name = request.form.get("name")
@@ -622,6 +649,7 @@ def rename_tag(tag_id):
 
     return redirect(url_for("manage_all_tags"))
 
+
 @app.route("/delete_tag/<int:tag_id>", methods=["POST"])
 def delete_tag(tag_id):
     try:
@@ -632,24 +660,24 @@ def delete_tag(tag_id):
 
     return redirect(url_for("manage_all_tags"))
 
+
 @app.route("/api/attach_child_note", methods=["POST"])
 def attach_child_note_endpoint():
     data = request.get_json()
-    parent_id = data.get('parent_note_id')
-    child_id = data.get('child_note_id')
-    
+    parent_id = data.get("parent_note_id")
+    child_id = data.get("child_note_id")
+
     if not parent_id or not child_id:
         return jsonify({"error": "Missing required parameters"}), 400
-        
+
     try:
         attach_note_to_parent(
-            child_note_id=child_id,
-            parent_note_id=parent_id,
-            base_url=api_base_url()
+            child_note_id=child_id, parent_note_id=parent_id, base_url=api_base_url()
         )
         return jsonify({"success": True}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @app.route("/recent")
 def recent_pages():
@@ -668,6 +696,7 @@ def recent_pages():
 @app.context_processor
 def inject_tags():
     return dict(tags=api.get_tags_tree(base_url=api_base_url()))
+
 
 def api_base_url():
     from config import Config

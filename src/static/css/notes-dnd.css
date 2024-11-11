@@ -1,6 +1,27 @@
 .note-item {
   cursor: grab;
   position: relative;
+  transition: background-color 0.2s ease, border 0.2s ease;
+}
+
+.note-item.current-page {
+  background-color: #ebf8ff;
+  color: #2c5282;
+  font-weight: 600;
+  border-radius: 0.375rem;
+}
+
+.note-item.current-page a {
+  text-decoration: underline;
+}
+
+.note-item a {
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.note-item a:hover {
+  text-decoration: underline;
 }
 
 .note-item.dragging {
@@ -8,10 +29,19 @@
   cursor: grabbing;
 }
 
+.note-item.dragging summary {
+  cursor: grabbing;
+}
+
 .note-item.drag-over {
-  border: 2px dashed #666;
+  border: 2px dashed #007BFF;
   padding: 2px;
-  background-color: rgba(100, 100, 100, 0.1);
+  background-color: rgba(0, 123, 255, 0.1);
+  position: relative;
+}
+
+.note-item.drag-over .drop-indicator {
+  display: block;
 }
 
 .note-item.drag-over::before {
@@ -21,8 +51,12 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 123, 255, 0.05);
   pointer-events: none;
+}
+
+.note-item summary {
+  cursor: grab;
 }
 
 .note-item .drop-indicator {
@@ -32,8 +66,4 @@
   right: 0;
   height: 2px;
   background-color: #666;
-}
-
-.note-item.drag-over .drop-indicator {
-  display: block;
 }
