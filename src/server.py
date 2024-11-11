@@ -43,6 +43,7 @@ from src.api import (
     get_note_without_content,
     Tag,
     TreeTag,
+    TreeTagWithNotes,
     NoteWithoutContent,
     get_tags_tree,
 )
@@ -135,9 +136,83 @@ folder_svg = '''<svg
         d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
     </svg>'''
 
-def build_tags_tree_html(
-        tags_tree: List[TreeTag], note_id: int | None = None) -> str:
-    raise NotImplementedError("This function is not yet  implemented")
+tag_svg = '''<svg
+  xmlns="http://www.w3.org/2000/svg"
+  fill="none"
+  viewBox="0 0 24 24"
+  stroke-width="1.5"
+  stroke="currentColor"
+  class="h-4 w-4">
+  <path
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" />
+</svg>'''
+
+file_svg = '''<svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke-width="1.5"
+    stroke="currentColor"
+    class="h-4 w-4">
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+  </svg>'''
+
+
+def build_tags_tree_html(tags_tree: List[TreeTagWithNotes], note_id: int | None = None) -> str:
+    def render_tag(tag: TreeTagWithNotes) -> str:
+        # Initialize classes list for all tags
+        classes = ["tag-item"]
+
+        # Add highlighting classes if this is the current tag
+        if tag.id == note_id:
+            classes.extend(["bg-blue-100", "text-blue-800", "font-semibold", "rounded-md"])
+
+        class_str = " ".join(classes)
+        tag_link = f'{tag_svg}<a href="/tags/{tag.id}">{tag.name}</a>'
+
+        if tag.children or tag.notes:
+            # Create details element for hierarchical structure
+            html = [f'<li class="{class_str}">']
+            html.append('<details open>')  # Always open by default since we don't want folding
+            html.append(f'<summary>{tag_link}</summary>')
+            html.append('<ul class="ml-4">')  # Indentation for nested items
+
+            # First add child tags (if any)
+            if tag.children:
+                sorted_children = sorted(tag.children, key=lambda x: x.name)
+                for child in sorted_children:
+                    html.append(render_tag(child))
+
+            # Then add notes (if any)
+            if tag.notes:
+                sorted_notes = sorted(tag.notes, key=lambda x: x.title)
+                for note in sorted_notes:
+                    note_link = f'{file_svg}<a href="/note/{note.id}">{note.title}</a>'
+                    html.append(f'<li class="note-item">{note_link}</li>')
+
+            html.append('</ul>')
+            html.append('</details>')
+            html.append('</li>')
+        else:
+            # For tags without children or notes, just render the tag
+            html = [f'<li class="{class_str}">{tag_link}</li>']
+
+        return '\n'.join(html)
+
+    # Sort top-level tags
+    sorted_tags = sorted(tags_tree, key=lambda x: x.name)
+    
+    html = ['<ul class="menu bg-base-200 rounded-box w-56">']
+    for tag in sorted_tags:
+        html.append(render_tag(tag))
+    html.append('</ul>')
+    
+    return '\n'.join(html)
 
 def build_notes_tree_html(
     notes_tree: List[TreeNote], fold_level: int = 2, note_id: int | None = None
@@ -225,6 +300,12 @@ def root():
     # Redirect to recent pages
     return redirect(url_for("recent_pages"))
 
+
+@app.context_processor
+def inject_tag_sidebar():
+    tags_tree = get_tags_tree()
+    tag_html = Markup(build_tags_tree_html(tags_tree))
+    return dict(tag_html=tag_html)
 
 @app.route("/tags/<int:tag_id>")
 def tag_detail(tag_id: int):
