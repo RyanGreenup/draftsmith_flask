@@ -908,20 +908,33 @@ def inject_tags():
     return dict(tags=api.get_tags_tree(base_url=api_base_url()))
 
 
+@app.context_processor
+def inject_theme():
+    return {
+        'current_theme': request.cookies.get('theme', 'system_default'),
+        'available_themes': themes
+    }
+
 @app.route('/theme/<theme>')
 def set_theme(theme):
     if theme in themes:
+        app.logger.debug(f"Setting theme cookie to: {theme}")
         response = make_response(redirect(request.referrer or url_for('index')))
         response.set_cookie(
             'theme',
             theme,
             max_age=31536000,  # 1 year
-            httponly=True,
+            httponly=False,     # Changed to false since we need JS to access it
             secure=True,
             samesite='Lax'
         )
         return response
     return redirect(request.referrer or url_for('index'))
+
+@app.before_request
+def log_theme_cookie():
+    theme = request.cookies.get('theme')
+    app.logger.debug(f"Current theme cookie value: {theme}")
 
 def api_base_url():
     from config import Config

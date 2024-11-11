@@ -1,7 +1,27 @@
 <!-- src/templates/base.html -->
 <!doctype html>
-<html lang="en" data-theme="{{ request.cookies.get('theme', 'light') }}">
+<html lang="en" data-theme="{{ current_theme if current_theme != 'system_default' else 'light' }}">
   <head>
+    <script>
+        // Check system dark mode preference and set theme if no override
+        function setSystemTheme() {
+            const html = document.documentElement;
+            const currentTheme = "{{ current_theme }}";
+            if (currentTheme === 'system_default') {
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    html.setAttribute('data-theme', 'dark');
+                } else {
+                    html.setAttribute('data-theme', 'light');
+                }
+            }
+        }
+        setSystemTheme();
+        
+        // Listen for system theme changes
+        if (window.matchMedia) {
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', setSystemTheme);
+        }
+    </script>
     {% include 'head.html' %}
     <meta
       name="csrf-token"
