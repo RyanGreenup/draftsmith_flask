@@ -18,6 +18,7 @@ from flask import (
     flash,
     send_from_directory,
     jsonify,
+    make_response,
 )
 from flask_wtf.csrf import CSRFProtect
 from markupsafe import Markup
@@ -117,6 +118,39 @@ def get_notes(
 
 
 # END: API functions that should be implemented by server
+
+# Available themes
+themes = [
+    "light",
+    "dark",
+    "cupcake",
+    "bumblebee",
+    "emerald",
+    "corporate",
+    "synthwave",
+    "retro",
+    "cyberpunk",
+    "valentine",
+    "halloween",
+    "garden",
+    "forest",
+    "aqua",
+    "lofi",
+    "pastel",
+    "fantasy",
+    "wireframe",
+    "black",
+    "luxury",
+    "dracula",
+    "cmyk",
+    "autumn",
+    "business",
+    "acid",
+    "lemonade",
+    "night",
+    "coffee",
+    "winter",
+]
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)  # Use a consistent secret key
@@ -873,6 +907,21 @@ def recent_pages():
 def inject_tags():
     return dict(tags=api.get_tags_tree(base_url=api_base_url()))
 
+
+@app.route('/theme/<theme>')
+def set_theme(theme):
+    if theme in themes:
+        response = make_response(redirect(request.referrer or url_for('index')))
+        response.set_cookie(
+            'theme',
+            theme,
+            max_age=31536000,  # 1 year
+            httponly=True,
+            secure=True,
+            samesite='Lax'
+        )
+        return response
+    return redirect(request.referrer or url_for('index'))
 
 def api_base_url():
     from config import Config
