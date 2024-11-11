@@ -20,10 +20,11 @@
 
             <h2 class="card-title mt-4">Available Tags</h2>
             <form method="POST" class="mt-4">
+                {% include 'csrf_token.html' %}
                 <div class="flex flex-wrap gap-2 mb-4">
                     {% for tag in all_tags %}
                         <label class="cursor-pointer label">
-                            <input type="checkbox" name="tags" value="{{ tag.id }}" 
+                            <input type="checkbox" name="tags" value="{{ tag.id }}"
                                    class="checkbox checkbox-primary"
                                    {% if tag.id in current_tags|map(attribute='id')|list %}checked{% endif %}>
                             <span class="label-text ml-2">{{ tag.name }}</span>

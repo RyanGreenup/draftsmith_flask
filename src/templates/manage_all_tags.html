@@ -1,57 +1,88 @@
-{% extends "base.html" %}
-
-{% block content %}
+{% extends "base.html" %} {% block content %}
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold mb-6">Tag Management</h1>
+  <h1 class="text-2xl font-bold mb-6">Tag Management</h1>
 
-    <!-- Create New Tag -->
-    <div class="card bg-base-200 shadow-xl mb-8">
-        <div class="card-body">
-            <h2 class="card-title">Create New Tag</h2>
-            <form method="POST" action="{{ url_for('create_tag') }}" class="flex gap-4">
-                <input type="text" name="name" placeholder="Tag name" class="input input-bordered w-full max-w-xs" required>
-                <button type="submit" class="btn btn-primary">Create Tag</button>
-            </form>
-        </div>
+  <!-- Create New Tag -->
+  <div class="card bg-base-200 shadow-xl mb-8">
+    <div class="card-body">
+      <h2 class="card-title">Create New Tag</h2>
+      <form
+        method="POST"
+        action="{{ url_for('create_tag') }}"
+        class="flex gap-4"
+      >
+        {% include 'csrf_token.html' %}
+        <input
+          type="text"
+          name="name"
+          placeholder="Tag name"
+          class="input input-bordered w-full max-w-xs"
+          required
+        />
+        <button type="submit" class="btn btn-primary">Create Tag</button>
+      </form>
     </div>
+  </div>
 
-    <!-- Existing Tags -->
-    <div class="card bg-base-200 shadow-xl">
-        <div class="card-body">
-            <h2 class="card-title mb-4">Existing Tags</h2>
-            <div class="overflow-x-auto">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Tag Name</th>
-                            <th>View</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for tag in tags %}
-                        <tr>
-                            <td>
-                                <form method="POST" action="{{ url_for('rename_tag', tag_id=tag.id) }}" class="flex gap-2">
-                                    <input type="text" name="name" value="{{ tag.name }}" class="input input-bordered input-sm">
-                                    <button type="submit" class="btn btn-sm">Rename</button>
-                                </form>
-                            </td>
-                            <td>
-                                <a href="{{ url_for('tag_detail', tag_id=tag.id) }}" class="btn btn-sm btn-info">View</a>
-                            </td>
-                            <td>
-                                <form method="POST" action="{{ url_for('delete_tag', tag_id=tag.id) }}" class="inline" 
-                                      onsubmit="return confirm('Are you sure you want to delete this tag? This action cannot be undone.');">
-                                    <button type="submit" class="btn btn-sm btn-error">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+  <!-- Existing Tags -->
+  <div class="card bg-base-200 shadow-xl">
+    <div class="card-body">
+      <h2 class="card-title mb-4">Existing Tags</h2>
+      <div class="overflow-x-auto">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Tag Name</th>
+              <th>View</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for tag in tags %}
+            <tr>
+              <td>
+                <form
+                  method="POST"
+                  action="{{ url_for('rename_tag', tag_id=tag.id) }}"
+                  class="flex gap-2"
+                >
+
+                {% include 'csrf_token.html' %}
+                  <input
+                    type="text"
+                    name="name"
+                    value="{{ tag.name }}"
+                    class="input input-bordered input-sm"
+                  />
+                  <button type="submit" class="btn btn-sm">Rename</button>
+                </form>
+              </td>
+              <td>
+                <a
+                  href="{{ url_for('tag_detail', tag_id=tag.id) }}"
+                  class="btn btn-sm btn-info"
+                  >View</a
+                >
+              </td>
+              <td>
+                <form
+                  method="POST"
+                  action="{{ url_for('delete_tag', tag_id=tag.id) }}"
+                  class="inline"
+                  onsubmit="return confirm('Are you sure you want to delete this tag? This action cannot be undone.');"
+                >
+                  {% include 'csrf_token.html' %}
+                  <button type="submit" class="btn btn-sm btn-error">
+                    Delete
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
+  </div>
 </div>
 {% endblock %}
