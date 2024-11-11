@@ -177,7 +177,7 @@ def build_tags_tree_html(tags_tree: List[TreeTagWithNotes], note_id: int | None 
 
         if tag.children or tag.notes:
             # Create details element for hierarchical structure
-            html = [f'<li class="{class_str}">']
+            html = [f'<li class="{class_str}" data-tag-id="{tag.id}">']
             html.append('<details open>')  # Always open by default since we don't want folding
             html.append(f'<summary>{tag_link}</summary>')
             html.append('<ul class="ml-4">')  # Indentation for nested items
@@ -775,6 +775,44 @@ def delete_tag(tag_id):
 
     return redirect(url_for("manage_all_tags"))
 
+
+@app.route("/api/attach_child_tag", methods=["POST"])
+def attach_child_tag_endpoint():
+    data = request.get_json()
+    parent_id = data.get("parent_tag_id")
+    child_id = data.get("child_tag_id")
+
+    if not parent_id or not child_id:
+        return jsonify({"error": "Missing required parameters"}), 400
+
+    try:
+        api.attach_tag_to_parent(
+            child_tag_id=child_id, 
+            parent_tag_id=parent_id, 
+            base_url=api_base_url()
+        )
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/attach_note_to_tag", methods=["POST"])
+def attach_note_to_tag_endpoint():
+    data = request.get_json()
+    note_id = data.get("note_id")
+    tag_id = data.get("tag_id")
+
+    if not note_id or not tag_id:
+        return jsonify({"error": "Missing required parameters"}), 400
+
+    try:
+        api.attach_tag_to_note(
+            note_id=note_id,
+            tag_id=tag_id,
+            base_url=api_base_url()
+        )
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/api/attach_child_note", methods=["POST"])
 def attach_child_note_endpoint():
