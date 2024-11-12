@@ -10,6 +10,7 @@ import requests
 import json
 import tempfile
 import os
+from draftsmith_flask.config import Config
 
 
 class Note(BaseModel):
@@ -164,7 +165,7 @@ class TreeTagWithNotes(BaseModel):
 
 
 def update_notes_tree(
-    notes: list[TreeNote], base_url: str = "http://localhost:37240"
+    notes: list[TreeNote], base_url: str =Config.get_api_base_url()
 ) -> None:
     """
     Update the entire notes tree structure
@@ -186,7 +187,7 @@ def update_notes_tree(
 
 
 def note_create(
-    title: str, content: str, base_url: str = "http://localhost:37240"
+    title: str, content: str, base_url: str =Config.get_api_base_url()
 ) -> dict:
     """
     Create a new note using the API
@@ -214,7 +215,7 @@ def note_create(
     return response.json()
 
 
-def get_note(note_id: int, base_url: str = "http://localhost:37240") -> Note:
+def get_note(note_id: int, base_url: str =Config.get_api_base_url()) -> Note:
     """
     Retrieve a note by its ID
 
@@ -239,7 +240,7 @@ def get_note(note_id: int, base_url: str = "http://localhost:37240") -> Note:
 
 
 def get_note_without_content(
-    note_id: int, base_url: str = "http://localhost:37240"
+    note_id: int, base_url: str =Config.get_api_base_url()
 ) -> NoteWithoutContent:
     """
     Retrieve a note by its ID, excluding the content field
@@ -265,7 +266,7 @@ def get_note_without_content(
     return NoteWithoutContent.model_validate(response.json())
 
 
-def get_all_notes(base_url: str = "http://localhost:37240") -> list[Note]:
+def get_all_notes(base_url: str =Config.get_api_base_url()) -> list[Note]:
     """
     Retrieve all notes
 
@@ -288,7 +289,7 @@ def get_all_notes(base_url: str = "http://localhost:37240") -> list[Note]:
 
 
 def get_all_notes_without_content(
-    base_url: str = "http://localhost:37240",
+    base_url: str =Config.get_api_base_url(),
 ) -> list[NoteWithoutContent]:
     """
     Retrieve all notes without their content
@@ -316,7 +317,7 @@ def attach_note_to_parent(
     child_note_id: int,
     parent_note_id: int,
     hierarchy_type: str = "block",
-    base_url: str = "http://localhost:37240",
+    base_url: str =Config.get_api_base_url(),
 ) -> None:
     """
     Attach a note as a child of another note
@@ -346,7 +347,7 @@ def attach_note_to_parent(
 
 
 def get_note_hierarchy_relations(
-    base_url: str = "http://localhost:37240",
+    base_url: str =Config.get_api_base_url(),
 ) -> list[NoteHierarchyRelation]:
     """
     Get all parent-child relationships between notes
@@ -370,7 +371,7 @@ def get_note_hierarchy_relations(
 
 
 def detach_note_from_parent(
-    note_id: int, base_url: str = "http://localhost:37240"
+    note_id: int, base_url: str =Config.get_api_base_url()
 ) -> None:
     """
     Detach a note from its parent
@@ -390,7 +391,7 @@ def detach_note_from_parent(
     response.raise_for_status()
 
 
-def get_tag(tag_id: int, base_url: str = "http://localhost:37240") -> Tag:
+def get_tag(tag_id: int, base_url: str =Config.get_api_base_url()) -> Tag:
     """
     Get a tag by its ID
 
@@ -413,7 +414,7 @@ def get_tag(tag_id: int, base_url: str = "http://localhost:37240") -> Tag:
     return Tag.model_validate(response.json())
 
 
-def get_all_tags(base_url: str = "http://localhost:37240") -> list[Tag]:
+def get_all_tags(base_url: str =Config.get_api_base_url()) -> list[Tag]:
     """
     Get all tags
 
@@ -435,7 +436,7 @@ def get_all_tags(base_url: str = "http://localhost:37240") -> list[Tag]:
     return [Tag.model_validate(tag) for tag in response.json()]
 
 
-def update_tag(tag_id: int, name: str, base_url: str = "http://localhost:37240") -> Tag:
+def update_tag(tag_id: int, name: str, base_url: str =Config.get_api_base_url()) -> Tag:
     """
     Update an existing tag
 
@@ -462,7 +463,7 @@ def update_tag(tag_id: int, name: str, base_url: str = "http://localhost:37240")
     return Tag.model_validate(response.json())
 
 
-def delete_tag(tag_id: int, base_url: str = "http://localhost:37240") -> None:
+def delete_tag(tag_id: int, base_url: str =Config.get_api_base_url()) -> None:
     """
     Delete a tag by its ID
 
@@ -482,7 +483,7 @@ def delete_tag(tag_id: int, base_url: str = "http://localhost:37240") -> None:
 
 
 def attach_tag_to_note(
-    note_id: int, tag_id: int, base_url: str = "http://localhost:37240"
+    note_id: int, tag_id: int, base_url: str =Config.get_api_base_url()
 ) -> None:
     """
     Attach a tag to a note
@@ -507,7 +508,7 @@ def attach_tag_to_note(
 
 
 def detach_tag_from_note(
-    note_id: int, tag_id: int, base_url: str = "http://localhost:37240"
+    note_id: int, tag_id: int, base_url: str =Config.get_api_base_url()
 ) -> None:
     """
     Detach a tag from a note
@@ -529,7 +530,7 @@ def detach_tag_from_note(
 
 
 def get_note_tag_relations(
-    base_url: str = "http://localhost:37240",
+    base_url: str =Config.get_api_base_url(),
 ) -> list[NoteTagRelation]:
     """
     Get all relationships between notes and tags
@@ -553,7 +554,7 @@ def get_note_tag_relations(
 
 
 def get_tag_hierarchy_relations(
-    base_url: str = "http://localhost:37240",
+    base_url: str =Config.get_api_base_url(),
 ) -> list[TagHierarchyRelation]:
     """
     Get all parent-child relationships between tags
@@ -577,7 +578,7 @@ def get_tag_hierarchy_relations(
 
 
 def attach_tag_to_parent(
-    child_id: int, parent_id: int, base_url: str = "http://localhost:37240"
+    child_id: int, parent_id: int, base_url: str =Config.get_api_base_url()
 ) -> None:
     """
     Attach a tag as a child of another tag
@@ -602,7 +603,7 @@ def attach_tag_to_parent(
 
 
 def detach_tag_from_parent(
-    tag_id: int, base_url: str = "http://localhost:37240"
+    tag_id: int, base_url: str =Config.get_api_base_url()
 ) -> None:
     """
     Detach a tag from its parent
@@ -622,7 +623,7 @@ def detach_tag_from_parent(
     response.raise_for_status()
 
 
-def create_tag(name: str, base_url: str = "http://localhost:37240") -> Tag:
+def create_tag(name: str, base_url: str =Config.get_api_base_url()) -> Tag:
     """
     Create a new tag
 
@@ -648,7 +649,7 @@ def create_tag(name: str, base_url: str = "http://localhost:37240") -> Tag:
     return Tag.model_validate(response.json())
 
 
-def get_tags_tree(base_url: str = "http://localhost:37240") -> list[TreeTagWithNotes]:
+def get_tags_tree(base_url: str =Config.get_api_base_url()) -> list[TreeTagWithNotes]:
     """
     Get all tags in a tree structure
 
@@ -738,7 +739,7 @@ class Task(BaseModel):
     goal_relationship: Optional[str]
 
 
-def get_task(task_id: int, base_url: str = "http://localhost:37240") -> Task:
+def get_task(task_id: int, base_url: str =Config.get_api_base_url()) -> Task:
     """
     Get a task by its ID
 
@@ -761,7 +762,7 @@ def get_task(task_id: int, base_url: str = "http://localhost:37240") -> Task:
     return Task.model_validate(response.json())
 
 
-def get_all_tasks(base_url: str = "http://localhost:37240") -> list[Task]:
+def get_all_tasks(base_url: str =Config.get_api_base_url()) -> list[Task]:
     """
     Get all tasks
 
@@ -784,7 +785,7 @@ def get_all_tasks(base_url: str = "http://localhost:37240") -> list[Task]:
 
 
 def get_task_hierarchy_relations(
-    base_url: str = "http://localhost:37240",
+    base_url: str =Config.get_api_base_url(),
 ) -> list[TaskHierarchyRelation]:
     """
     Get all parent-child relationships between tasks
@@ -808,7 +809,7 @@ def get_task_hierarchy_relations(
 
 
 def update_task(
-    task_id: int, task: UpdateTaskRequest, base_url: str = "http://localhost:37240"
+    task_id: int, task: UpdateTaskRequest, base_url: str =Config.get_api_base_url()
 ) -> Task:
     """
     Update an existing task
@@ -834,7 +835,7 @@ def update_task(
     return Task.model_validate(response.json())
 
 
-def delete_task(task_id: int, base_url: str = "http://localhost:37240") -> None:
+def delete_task(task_id: int, base_url: str =Config.get_api_base_url()) -> None:
     """
     Delete a task by its ID
 
@@ -855,7 +856,7 @@ def delete_task(task_id: int, base_url: str = "http://localhost:37240") -> None:
 
 
 def create_task(
-    task: CreateTaskRequest, base_url: str = "http://localhost:37240"
+    task: CreateTaskRequest, base_url: str =Config.get_api_base_url()
 ) -> Task:
     """
     Create a new task
@@ -881,7 +882,7 @@ def create_task(
 
 
 def attach_task_to_parent(
-    child_id: int, parent_id: int, base_url: str = "http://localhost:37240"
+    child_id: int, parent_id: int, base_url: str =Config.get_api_base_url()
 ) -> None:
     """
     Attach a task as a child of another task
@@ -906,7 +907,7 @@ def attach_task_to_parent(
 
 
 def detach_task_from_parent(
-    task_id: int, base_url: str = "http://localhost:37240"
+    task_id: int, base_url: str =Config.get_api_base_url()
 ) -> None:
     """
     Detach a task from its parent
@@ -926,7 +927,7 @@ def detach_task_from_parent(
     response.raise_for_status()
 
 
-def get_tasks_tree(base_url: str = "http://localhost:37240") -> list[TreeTask]:
+def get_tasks_tree(base_url: str =Config.get_api_base_url()) -> list[TreeTask]:
     """
     Get all tasks in a tree structure
 
@@ -949,7 +950,7 @@ def get_tasks_tree(base_url: str = "http://localhost:37240") -> list[TreeTask]:
 
 
 def upload_asset(
-    file_path: str | Path | BinaryIO, base_url: str = "http://localhost:37240"
+    file_path: str | Path | BinaryIO, base_url: str =Config.get_api_base_url()
 ) -> Asset:
     """
     Upload a file as an asset
@@ -978,7 +979,7 @@ def upload_asset(
     return Asset.model_validate(response.json())
 
 
-def get_all_assets(base_url: str = "http://localhost:37240") -> list[Asset]:
+def get_all_assets(base_url: str =Config.get_api_base_url()) -> list[Asset]:
     """
     Get all assets
 
@@ -1001,7 +1002,7 @@ def get_all_assets(base_url: str = "http://localhost:37240") -> list[Asset]:
 
 
 def update_asset(
-    asset_id: int, request: UpdateAssetRequest, base_url: str = "http://localhost:37240"
+    asset_id: int, request: UpdateAssetRequest, base_url: str =Config.get_api_base_url()
 ) -> Asset:
     """
     Update an asset's metadata
@@ -1028,7 +1029,7 @@ def update_asset(
     return Asset.model_validate(response.json())
 
 
-def delete_asset(asset_id: int, base_url: str = "http://localhost:37240") -> None:
+def delete_asset(asset_id: int, base_url: str =Config.get_api_base_url()) -> None:
     """
     Delete an asset by its ID
 
@@ -1051,7 +1052,7 @@ def delete_asset(asset_id: int, base_url: str = "http://localhost:37240") -> Non
 def download_asset(
     asset_id: int | str,
     output_path: str | Path,
-    base_url: str = "http://localhost:37240",
+    base_url: str =Config.get_api_base_url(),
 ) -> None:
     """
     Download an asset by its ID or filename to a specified path
@@ -1078,7 +1079,7 @@ def download_asset(
             f.write(chunk)
 
 
-def search_notes(query: str, base_url: str = "http://localhost:37240") -> list[Note]:
+def search_notes(query: str, base_url: str =Config.get_api_base_url()) -> list[Note]:
     """
     Search notes using full-text search
 
@@ -1103,7 +1104,7 @@ def search_notes(query: str, base_url: str = "http://localhost:37240") -> list[N
 
 
 def update_note(
-    note_id: int, request: UpdateNoteRequest, base_url: str = "http://localhost:37240"
+    note_id: int, request: UpdateNoteRequest, base_url: str =Config.get_api_base_url()
 ) -> Note:
     """
     Update an existing note
@@ -1131,7 +1132,7 @@ def update_note(
 
 
 def delete_note(
-    note_id: int, base_url: str = "http://localhost:37240"
+    note_id: int, base_url: str =Config.get_api_base_url()
 ) -> DeleteNoteResponse:
     """
     Delete a note by its ID
@@ -1157,7 +1158,7 @@ def delete_note(
 
 
 def batch_update_notes(
-    request: BatchUpdateNotesRequest, base_url: str = "http://localhost:37240"
+    request: BatchUpdateNotesRequest, base_url: str =Config.get_api_base_url()
 ) -> BatchUpdateNotesResponse:
     """
     Update multiple notes in a single request
@@ -1190,7 +1191,7 @@ def batch_update_notes(
 
 
 def get_note_backlinks(
-    note_id: int, base_url: str = "http://localhost:37240"
+    note_id: int, base_url: str =Config.get_api_base_url()
 ) -> list[Note]:
     """Get all notes that link to the specified note
 
@@ -1214,7 +1215,7 @@ def get_note_backlinks(
 
 
 def get_note_forward_links(
-    note_id: int, base_url: str = "http://localhost:37240"
+    note_id: int, base_url: str =Config.get_api_base_url()
 ) -> list[Note]:
     """Get all notes that the specified note links to
 
@@ -1237,7 +1238,7 @@ def get_note_forward_links(
     return [Note.model_validate(note) for note in response.json()]
 
 
-def get_link_edge_list(base_url: str = "http://localhost:37240") -> List[LinkEdge]:
+def get_link_edge_list(base_url: str =Config.get_api_base_url()) -> List[LinkEdge]:
     """Get all link edges between notes
 
     Args:
@@ -1259,7 +1260,7 @@ def get_link_edge_list(base_url: str = "http://localhost:37240") -> List[LinkEdg
 
 
 def get_rendered_notes(
-    base_url: str = "http://localhost:37240", format: Literal["md", "html"] = "md"
+    base_url: str =Config.get_api_base_url(), format: Literal["md", "html"] = "md"
 ) -> list[RenderedNote]:
     """Get all notes with their content rendered as markdown or HTML
 
@@ -1284,7 +1285,7 @@ def get_rendered_notes(
 
 def get_rendered_note(
     note_id: int,
-    base_url: str = "http://localhost:37240",
+    base_url: str =Config.get_api_base_url(),
     format: Literal["md", "html"] = "md",
 ) -> str:
     """Get a single note with its content rendered as markdown
@@ -1306,30 +1307,11 @@ def get_rendered_note(
 
     response.raise_for_status()
     return response.text
-    """Get all notes with their content rendered as markdown
-
-    Args:
-        base_url: The base URL of the API (default: http://localhost:37240)
-
-    Returns:
-        list[RenderedNote]: List of notes with rendered markdown content
-
-    Raises:
-        requests.exceptions.RequestException: If the request fails
-    """
-    response = requests.get(
-        f"{base_url}/notes/flat/render/md",
-        headers={"Content-Type": "application/json"},
-    )
-
-    response.raise_for_status()
-    return [RenderedNote.model_validate(note) for note in response.json()]
-
 
 def render_markdown(
     content: str,
     format: Optional[Literal["text", "html", "pdf"]] = None,
-    base_url: str = "http://localhost:37240",
+    base_url: str =Config.get_api_base_url(),
 ) -> str:
     """Render markdown content to the specified format
 
@@ -1359,7 +1341,7 @@ def render_markdown(
 def render_markdown(
     content: str,
     format: Optional[Literal["text", "html", "pdf"]] = None,
-    base_url: str = "http://localhost:37240",
+    base_url: str =Config.get_api_base_url(),
 ) -> str:
     """Render markdown content to the specified format
 
@@ -1386,7 +1368,7 @@ def render_markdown(
     return response.text
 
 
-def get_notes_tree(base_url: str = "http://localhost:37240") -> list[TreeNote]:
+def get_notes_tree(base_url: str =Config.get_api_base_url()) -> list[TreeNote]:
     """
     Retrieve all notes in a tree structure
 

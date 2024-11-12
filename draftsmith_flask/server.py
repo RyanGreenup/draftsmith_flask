@@ -7,6 +7,7 @@ import os
 # Or possibly
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from draftsmith_flask.config import Config
 
 from datetime import datetime
 from flask import (
@@ -57,7 +58,7 @@ import requests
 
 
 def get_recent_notes(limit: int = 10) -> List[Note]:
-    notes = get_all_notes()
+    notes = get_all_notes(Config.get_api_base_url())
     # Sort the notes by the last modified date, using a minimum datetime for None values
     notes.sort(key=lambda x: x.modified_at or datetime.min, reverse=True)
     return notes[:limit]
@@ -110,7 +111,7 @@ def find_note_path(
 def get_notes(
     base_url: str = "http://localhost:37240", ids: List[int] | None = None
 ) -> List[Note]:
-    notes = get_all_notes()
+    notes = get_all_notes(Config.get_api_base_url())
     # Filter notes by ID if specified
     if ids:
         notes = [note for note in notes if note.id in ids]
@@ -320,15 +321,15 @@ def inject_tag_sidebar():
 @app.route("/tags/<int:tag_id>")
 def tag_detail(tag_id: int):
     notes = get_tag_notes(tag_id)
-    tag = get_tag(tag_id)
+    tag = get_tag(tag_id, Config.get_api_base_url())
     return render_template("tagged_pages_list.html", notes=notes, tag=tag)
 
 
 @app.route("/note/<int:note_id>")
 def note_detail(note_id):
-    base_url = api_base_url()
-    note = get_note(note_id)
-    notes_tree = get_notes_tree()
+    base_url = Config.get_api_base_url()
+    note = get_note(note_id, Config.get_api_base_url())
+    notes_tree = get_notes_tree(Config.get_api_base_url())
     tree_html = build_notes_tree_html(notes_tree, note_id=note_id)
     tree_html = Markup(tree_html)
 
@@ -342,7 +343,7 @@ def note_detail(note_id):
     # Get tags (TODO this needs an endpoint)
 
     note_tags = get_note_tag_relations()
-    tags = [get_tag(nt.tag_id) for nt in note_tags if nt.note_id == note_id]
+    tags = [get_tag(nt.tag_id, Config.get_api_base_url()) for nt in note_tags if nt.note_id == note_id]
 
     # Parse the markdown content
     html_content = get_rendered_note(note_id, format="html")
@@ -361,7 +362,7 @@ def note_detail(note_id):
 
 def get_note_tags(note_id) -> List[Tag]:
     note_tags = get_note_tag_relations()
-    tags = [get_tag(nt.tag_id) for nt in note_tags if nt.note_id == note_id]
+    tags = [get_tag(nt.tag_id, Config.get_api_base_url()) for nt in note_tags if nt.note_id == note_id]
     return tags
 
 
@@ -379,7 +380,7 @@ def inject_backlinks():
     def get_backlinks_for_current_note():
         if "note_id" in request.view_args:
             note_id = request.view_args["note_id"]
-            return get_note_backlinks(note_id, base_url=api_base_url())
+            return get_note_backlinks(note_id, base_url=Config.get_api_base_url())
         return []
 
     return dict(backlinks=get_backlinks_for_current_note())
@@ -387,8 +388,8 @@ def inject_backlinks():
 
 @app.route("/edit/<int:note_id>")
 def edit_note(note_id):
-    note = get_note(note_id)
-    notes_tree = get_notes_tree()
+    note = get_note(note_id, Config.get_api_base_url())
+    notes_tree = get_notes_tree(Config.get_api_base_url())
     tree_html = build_notes_tree_html(notes_tree, note_id=note_id)
     tree_html = Markup(tree_html)
 
@@ -409,7 +410,7 @@ def edit_note(note_id):
 @app.route("/notes/create/<int:parent_id>", methods=["GET", "POST"])
 def create_note_page(parent_id=None):
     if request.method == "GET":
-        notes_tree = get_notes_tree()
+        notes_tree = get_notes_tree(Config.get_api_base_url())
         tree_html = build_notes_tree_html(notes_tree, note_id=parent_id)
         tree_html = Markup(tree_html)
 
@@ -433,7 +434,7 @@ def create_note_page(parent_id=None):
                         attach_note_to_parent(
                             child_note_id=id,
                             parent_note_id=parent_id,
-                            base_url=api_base_url(),
+                            base_url=Config.get_api_base_url(),
                         )
                     except requests.exceptions.RequestException as e:
                         flash(
@@ -481,8 +482,8 @@ def search():
 
     # TODO maybe API should include a field with and withot the full name to
     # Save multiple requests?
-    search_results = search_notes(query)
-    notes_tree = get_notes_tree()
+    search_results = search_notes(query, Config.get_api_base_url())
+    notes_tree = get_notes_tree(Config.get_api_base_url())
     tree_html = build_notes_tree_html(notes_tree, note_id=None)
     tree_html = Markup(tree_html)
 
@@ -493,7 +494,7 @@ def search():
     # Maybe regail this to the server?
     search_results = []
     for note_id in ids:
-        note = get_note(note_id)
+        note = get_note(note_id, Config.get_api_base_url())
         html_content = get_rendered_note(note.id, format="html")
         search_result = {
             "id": note.id,
@@ -559,7 +560,7 @@ def move_note(note_id):
         return redirect(url_for("note_detail", note_id=note_id))
 
     try:
-        attach_note_to_parent(note_id, new_parent_id, base_url=api_base_url())
+        attach_note_to_parent(note_id, new_parent_id, base_url=Config.get_api_base_url())
         flash("Note moved successfully", "success")
     except requests.exceptions.HTTPError as e:
         handle_http_error(e)
@@ -620,7 +621,7 @@ def upload_asset():
         else:
             flash("Please provide a file.", "error")
 
-    notes_tree = get_notes_tree()
+    notes_tree = get_notes_tree(Config.get_api_base_url())
     tree_html = build_notes_tree_html(notes_tree)
     tree_html = Markup(tree_html)
     return render_template("upload_asset.html", tree_html=tree_html)
@@ -629,7 +630,7 @@ def upload_asset():
 @app.route("/assets")
 def list_assets():
     assets = get_assets(api_base_url())
-    notes_tree = get_notes_tree()
+    notes_tree = get_notes_tree(Config.get_api_base_url())
     tree_html = build_notes_tree_html(notes_tree)
     tree_html = Markup(tree_html)
     return render_template("asset_list.html", assets=assets, tree_html=tree_html)
@@ -677,12 +678,12 @@ def get_asset(maybe_id):
              if the server is accessed at ds.myserver:5000 the API_BASEURL should be http://ds.api:37240
              if the server is accessed at ds.flask.myserver the API_BASEURL should be http://ds.api.myserver
     """
-    return redirect(f"{api_base_url()}/assets/download/{maybe_id}")
+    return redirect(f"{Config.get_api_base_url()}/assets/download/{maybe_id}")
 
 
 @app.route("/manage_tags/<int:note_id>", methods=["GET", "POST"])
 def manage_tags(note_id):
-    note = get_note(note_id)
+    note = get_note(note_id, Config.get_api_base_url())
     if request.method == "POST":
         # Get the list of selected tag IDs from the form
         selected_tag_ids = request.form.getlist("tags")
@@ -715,7 +716,7 @@ def manage_tags(note_id):
 
         return redirect(url_for("note_detail", note_id=note_id))
 
-    notes_tree = get_notes_tree()
+    notes_tree = get_notes_tree(Config.get_api_base_url())
     tree_html = build_notes_tree_html(notes_tree, note_id=note_id)
     tree_html = Markup(tree_html)
 
@@ -736,7 +737,7 @@ def manage_tags(note_id):
 
 @app.route("/manage_all_tags")
 def manage_all_tags():
-    notes_tree = get_notes_tree()
+    notes_tree = get_notes_tree(Config.get_api_base_url())
     tree_html = build_notes_tree_html(notes_tree)
     tree_html = Markup(tree_html)
     tags = api.get_all_tags()
@@ -849,7 +850,7 @@ def attach_child_note_endpoint():
 
     try:
         attach_note_to_parent(
-            child_note_id=child_id, parent_note_id=parent_id, base_url=api_base_url()
+            child_note_id=child_id, parent_note_id=parent_id, base_url=Config.get_api_base_url()
         )
         return jsonify({"success": True}), 200
     except Exception as e:
@@ -859,7 +860,7 @@ def attach_child_note_endpoint():
 @app.route("/recent")
 def recent_pages():
     recent_notes = get_recent_notes(limit=50)  # Adjust the limit as needed
-    notes_tree = get_notes_tree()
+    notes_tree = get_notes_tree(Config.get_api_base_url())
     tree_html = build_notes_tree_html(notes_tree)
     tree_html = Markup(tree_html)
 
@@ -872,12 +873,9 @@ def recent_pages():
 
 @app.context_processor
 def inject_tags():
-    return dict(tags=api.get_tags_tree(base_url=api_base_url()))
+    return dict(tags=api.get_tags_tree(Config.get_api_base_url()))
 
 
-def api_base_url():
-    from draftsmith_flask.config import Config
-    return Config.get_api_base_url()
 
 
 if __name__ == "__main__":
