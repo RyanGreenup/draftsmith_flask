@@ -876,9 +876,8 @@ def inject_tags():
 
 
 def api_base_url():
-    from config import Config
-
-    return f"{Config.API_SCHEME}://{Config.API_HOST}:{Config.API_PORT}"
+    from draftsmith_flask.config import Config
+    return Config.get_api_base_url()
 
 
 if __name__ == "__main__":

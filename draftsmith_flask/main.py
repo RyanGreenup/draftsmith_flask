@@ -21,8 +21,9 @@ def run_server(
     if host == "0.0.0.0":
         print("Warning: Server is accessible from any IP address. Use with caution.")
 
-    # Update the Flask app configuration with API host and port
-    srv.app.config["API_BASE_URL"] = f"http://{api_host}:{api_port}"
+    # Set API configuration through environment variables
+    os.environ["DRAFTSMITH_API_HOST"] = api_host
+    os.environ["DRAFTSMITH_API_PORT"] = str(api_port)
 
     config = Config()
     config.bind = [f"{host}:{port}"]
