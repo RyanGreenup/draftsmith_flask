@@ -420,7 +420,7 @@ def create_note_page(parent_id=None):
         title = request.form.get("title")
         try:
             response = create_note(
-                base_url=api_base_url(), title=title or "", content=content or ""
+                base_url=Config.get_api_base_url(), title=title or "", content=content or ""
             )
 
             if "error" in response:
@@ -460,15 +460,15 @@ def update_note(note_id):
         _note = api.update_note(
             note_id,
             UpdateNoteRequest(title=title, content=content),
-            base_url=api_base_url(),
+            base_url=Config.get_api_base_url(),
         )
         # Refresh the page to show the updated note
     elif request.method == "PUT":
-        create_note(base_url=api_base_url(), title=title or "", content=content or "")
+        create_note(base_url=Config.get_api_base_url(), title=title or "", content=content or "")
         _note = api.update_note(
             note_id,
             UpdateNoteRequest(title=title, content=content),
-            base_url=api_base_url(),
+            base_url=Config.get_api_base_url(),
         )
         # Refresh the page to show the updated note
     return redirect(url_for("note_detail", note_id=note_id))
@@ -516,7 +516,7 @@ def search():
 @app.route("/note/<int:note_id>/delete", methods=["POST"])
 def delete_note_page(note_id):
     try:
-        api.delete_note(note_id, base_url=api_base_url())
+        api.delete_note(note_id, base_url=Config.get_api_base_url())
         flash("Note deleted successfully", "success")
         return redirect(url_for("root"))
     except requests.exceptions.HTTPError as e:
@@ -533,7 +533,7 @@ def delete_note_page(note_id):
 @app.route("/note/<int:note_id>/detach", methods=["POST"])
 def detach_note(note_id):
     try:
-        api.detach_note_from_parent(note_id, base_url=api_base_url())
+        api.detach_note_from_parent(note_id, base_url=Config.get_api_base_url())
         flash("Note detached successfully", "success")
     except requests.exceptions.HTTPError as e:
         handle_http_error(e)
@@ -602,7 +602,7 @@ def upload_asset():
 
                     result = upload_file(
                         upload_path if custom_filename else file_path,
-                        base_url=api_base_url(),
+                        base_url=Config.get_api_base_url(),
                     )
                     flash(
                         f"File uploaded successfully. asset_id: {result.id}, server_filename: {result.location}\n",
@@ -629,7 +629,7 @@ def upload_asset():
 
 @app.route("/assets")
 def list_assets():
-    assets = get_assets(api_base_url())
+    assets = get_assets(Config.get_api_base_url())
     notes_tree = get_notes_tree(Config.get_api_base_url())
     tree_html = build_notes_tree_html(notes_tree)
     tree_html = Markup(tree_html)
@@ -704,11 +704,11 @@ def manage_tags(note_id):
         try:
             # Remove tags that were unchecked
             for tag_id in tags_to_remove:
-                api.detach_tag_from_note(note_id, tag_id, base_url=api_base_url())
+                api.detach_tag_from_note(note_id, tag_id, base_url=Config.get_api_base_url())
 
             # Add newly checked tags
             for tag_id in tags_to_add:
-                api.attach_tag_to_note(note_id, tag_id, base_url=api_base_url())
+                api.attach_tag_to_note(note_id, tag_id, base_url=Config.get_api_base_url())
 
             flash("Tags updated successfully", "success")
         except requests.exceptions.RequestException as e:
@@ -752,7 +752,7 @@ def create_tag():
         return redirect(url_for("manage_all_tags"))
 
     try:
-        api.create_tag(name, base_url=api_base_url())
+        api.create_tag(name, base_url=Config.get_api_base_url())
         flash("Tag created successfully", "success")
     except requests.exceptions.RequestException as e:
         flash(f"Error creating tag: {str(e)}", "error")
@@ -768,7 +768,7 @@ def rename_tag(tag_id):
         return redirect(url_for("manage_all_tags"))
 
     try:
-        api.update_tag(tag_id, new_name, base_url=api_base_url())
+        api.update_tag(tag_id, new_name, base_url=Config.get_api_base_url())
         flash("Tag renamed successfully", "success")
     except requests.exceptions.RequestException as e:
         flash(f"Error renaming tag: {str(e)}", "error")
@@ -779,7 +779,7 @@ def rename_tag(tag_id):
 @app.route("/delete_tag/<int:tag_id>", methods=["POST"])
 def delete_tag(tag_id):
     try:
-        api.delete_tag(tag_id, base_url=api_base_url())
+        api.delete_tag(tag_id, base_url=Config.get_api_base_url())
         flash("Tag deleted successfully", "success")
     except requests.exceptions.RequestException as e:
         flash(f"Error deleting tag: {str(e)}", "error")
@@ -798,7 +798,7 @@ def attach_child_tag_endpoint():
 
     try:
         api.attach_tag_to_parent(
-            child_id=child_id, parent_id=parent_id, base_url=api_base_url()
+            child_id=child_id, parent_id=parent_id, base_url=Config.get_api_base_url()
         )
         return jsonify({"success": True}), 200
     except Exception as e:
@@ -816,7 +816,7 @@ def detach_note_from_tag_endpoint():
 
     try:
         api.detach_tag_from_note(
-            note_id=note_id, tag_id=tag_id, base_url=api_base_url()
+            note_id=note_id, tag_id=tag_id, base_url=Config.get_api_base_url()
         )
         return jsonify({"success": True}), 200
     except Exception as e:
@@ -833,7 +833,7 @@ def attach_note_to_tag_endpoint():
         return jsonify({"error": "Missing required parameters"}), 400
 
     try:
-        api.attach_tag_to_note(note_id=note_id, tag_id=tag_id, base_url=api_base_url())
+        api.attach_tag_to_note(note_id=note_id, tag_id=tag_id, base_url=Config.get_api_base_url())
         return jsonify({"success": True}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
