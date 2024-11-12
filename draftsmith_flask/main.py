@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 import typer
+import asyncio
+from hypercorn.config import Config
+from hypercorn.asyncio import serve
 import draftsmith_flask.server as srv
-import subprocess as sp
 
 app = typer.Typer()
 
@@ -22,12 +24,12 @@ def run_server(
     # Update the Flask app configuration with API host and port
     srv.app.config["API_BASE_URL"] = f"http://{api_host}:{api_port}"
 
-    if debug:
-        print("Running Debug Server")
-        print(f"Serving on {host}:{port}")
-        srv.app.run(host=host, port=port, debug=debug)
-    else:
-        sp.run(["gunicorn", "draftsmith_flask.server:app", f"--bind={host}:{port}"])
+    config = Config()
+    config.bind = [f"{host}:{port}"]
+    config.debug = debug
+
+    print(f"Serving on {host}:{port}")
+    asyncio.run(serve(srv.app, config))
 
 if __name__ == "__main__":
     app()
