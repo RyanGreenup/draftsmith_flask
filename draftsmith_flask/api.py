@@ -1,16 +1,12 @@
-from typing import Optional, BinaryIO, Literal, List, Union
+from typing import Optional, BinaryIO, Literal, List
 from pydantic import BaseModel, Field
-from datetime import datetime, date
+from datetime import datetime
 from pathlib import Path
 from decimal import Decimal
 from enum import Enum
 from typing import Optional
 from pydantic import BaseModel
 import requests
-import json
-import tempfile
-import os
-from draftsmith_flask.config import Config
 
 
 class Note(BaseModel):
@@ -446,9 +442,7 @@ class NoteAPI(API):
 
         response.raise_for_status()
 
-    def search_notes(
-        self, query: str, base_url: str = Config.get_api_base_url()
-    ) -> list[Note]:
+    def search_notes(self, query: str) -> list[Note]:
         """
         Search notes using full-text search
 
@@ -462,7 +456,7 @@ class NoteAPI(API):
             requests.exceptions.RequestException: If the request fails
         """
         response = requests.get(
-            f"{base_url}/notes/search/fts",
+            f"{self.base_url}/notes/search/fts",
             params={"q": query},
             headers={"Content-Type": "application/json"},
         )
@@ -486,7 +480,7 @@ class NoteAPI(API):
             requests.exceptions.HTTPError: If the note is not found (404)
         """
         response = requests.put(
-            f"{base_url}/notes/flat/{note_id}",
+            f"{self.base_url}/notes/flat/{note_id}",
             headers={"Content-Type": "application/json"},
             data=request.model_dump_json(),
         )
@@ -509,7 +503,7 @@ class NoteAPI(API):
             requests.exceptions.HTTPError: If the note is not found (404)
         """
         response = requests.delete(
-            f"{base_url}/notes/flat/{note_id}",
+            f"{self.base_url}/notes/flat/{note_id}",
             headers={"Content-Type": "application/json"},
         )
 
@@ -540,7 +534,7 @@ class NoteAPI(API):
         }
 
         response = requests.put(
-            f"{base_url}/notes/flat/batch",
+            f"{self.base_url}/notes/flat/batch",
             headers={"Content-Type": "application/json"},
             json=payload,
         )
@@ -649,34 +643,6 @@ class NoteAPI(API):
         response = requests.get(
             f"{self.base_url}/notes/flat/{note_id}/render/{format}",
             headers={"Content-Type": "application/json"},
-        )
-
-        response.raise_for_status()
-        return response.text
-
-    def render_markdown(
-        self,
-        content: str,
-        format: Optional[Literal["text", "html", "pdf"]] = None,
-    ) -> str:
-        """Render markdown content to the specified format
-
-        Args:
-            content: The markdown content to render
-            format: Optional output format (text, html, or pdf)
-
-        Returns:
-            str: The rendered content
-
-        Raises:
-            requests.exceptions.RequestException: If the request fails
-        """
-        request = RenderMarkdownRequest(content=content, format=format)
-
-        response = requests.post(
-            f"{self.base_url}/render/markdown",
-            headers={"Content-Type": "application/json"},
-            data=request.model_dump_json(exclude_none=True),
         )
 
         response.raise_for_status()
@@ -992,7 +958,7 @@ class TaskAPI(API):
     def __init__(self, base_url: str):
         super().__init__(base_url)
 
-    def get_task(self, task_id: int, base_url: str = Config.get_api_base_url()) -> Task:
+    def get_task(self, task_id: int) -> Task:
         """
         Get a task by its ID
 
@@ -1084,7 +1050,7 @@ class TaskAPI(API):
             requests.exceptions.HTTPError: If the task is not found (404)
         """
         response = requests.delete(
-            f"{base_url}/tasks/{task_id}",
+            f"{self.base_url}/tasks/{task_id}",
             headers={"Content-Type": "application/json"},
         )
 

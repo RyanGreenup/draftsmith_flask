@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from datetime import datetime
-from draftsmith_flask.api import (
+from api import (
     TreeNote,
     Note,
     UpdateNoteRequest,
@@ -9,7 +9,7 @@ from draftsmith_flask.api import (
     TreeTagWithNotes,
     NoteWithoutContent,
 )
-from draftsmith_flask.api import NoteAPI, TagAPI, TaskAPI, AssetAPI
+from api import NoteAPI, TagAPI, TaskAPI, AssetAPI
 from flask import (
     Flask,
     render_template,
