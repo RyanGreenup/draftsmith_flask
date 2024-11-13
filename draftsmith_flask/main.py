@@ -30,7 +30,7 @@ def run_server(
     config.bind = [f"{host}:{port}"]
     config.debug = debug
 
-    print(f"Serving on {host}:{port}")
+    print(f"Serving on {host}:{port} with API host {api_host}:{api_port}")
     asyncio.run(serve(srv.app, config))
 
 if __name__ == "__main__":

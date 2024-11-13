@@ -109,7 +109,7 @@ def find_note_path(
 
 
 def get_notes(
-    base_url: str = "http://localhost:37240", ids: List[int] | None = None
+    base_url: str =Config.get_api_base_url(), ids: List[int] | None = None
 ) -> List[Note]:
     notes = get_all_notes(Config.get_api_base_url())
     # Filter notes by ID if specified
