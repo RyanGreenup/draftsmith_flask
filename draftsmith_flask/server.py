@@ -106,12 +106,9 @@ def get_notes(ids: List[int] | None = None) -> List[Note]:
 # END: API functions that should be implemented by server
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)  # Use a consistent secret key
+app.secret_key = os.getenv("CSRF_SECRET_KEY")
 csrf = CSRFProtect(app)
 app.config["WTF_CSRF_ENABLED"] = True
-
-def csrf_token():
-    return csrf._get_token()
 
 folder_svg = """<svg
       xmlns="http://www.w3.org/2000/svg"
