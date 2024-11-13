@@ -27,6 +27,8 @@ import os
 
 import draftsmith_flask.api as api
 
+from draftsmith_flask.api import NoteAPI, TagAPI, TaskAPI, AssetAPI
+noteapi = NoteAPI(app.config["API_HOST"])
 
 from draftsmith_flask.api import (
     note_create as create_note,
@@ -879,7 +881,4 @@ def inject_tags():
 
 
 if __name__ == "__main__":
-    api_host = os.getenv("DRAFTSMITH_FLASK_API_HOST", "vidar")
-    api_port = os.getenv("DRAFTSMITH_FLASK_API_PORT", "37240")
-    app.config["API_BASE_URL"] = f"http://{api_host}:{api_port}"
     app.run(debug=True, host="0.0.0.0")
