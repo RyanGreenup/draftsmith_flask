@@ -1,8 +1,6 @@
 serve:
-    cd src && poetry run gunicorn -w 4 -b 0.0.0.0:5000 server:app
-
-serve-dev:
-    poetry run python src/main.py --port 5000 --host 0.0.0.0 --api-host vidar
+    # API_SCHEME=http API_PORT=37240 API_HOST=vidar poetry run draftsmith_flask/server.py
+    API_SCHEME=http API_PORT=37240 API_HOST=vidar gunicorn -w 4 -b 0.0.0.0:5000 server:app
 
 sass:
     cd src/static
