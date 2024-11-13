@@ -27,32 +27,27 @@ import os
 
 import draftsmith_flask.api as api
 
+
 from draftsmith_flask.api import NoteAPI, TagAPI, TaskAPI, AssetAPI
-noteapi = NoteAPI(app.config["API_HOST"])
+
+API_SCHEME = os.environ.get("API_SCHEME")
+API_HOST = os.environ.get("API_HOST")
+API_PORT = os.environ.get("API_PORT")
+API_BASE_URL = f"{API_SCHEME}://{API_HOST}:{API_PORT}"
+noteapi = NoteAPI(base_url=API_BASE_URL)
+tagapi = TagAPI(base_url=API_BASE_URL)
+taskapi = TaskAPI(base_url=API_BASE_URL)
+assetsapi = AssetAPI(base_url=API_BASE_URL)
+
 
 from draftsmith_flask.api import (
-    note_create as create_note,
-    get_notes_tree,
     TreeNote,
-    get_note,
-    get_all_notes,
     Note,
-    search_notes,
     UpdateNoteRequest,
-    get_note_backlinks,
-    get_note_forward_links,
-    attach_note_to_parent,
-    get_note_tag_relations,
-    get_tag,
-    get_note_without_content,
     Tag,
     TreeTag,
     TreeTagWithNotes,
     NoteWithoutContent,
-    get_tags_tree,
-    get_all_assets as get_assets,
-    get_rendered_note,
-    upload_asset as upload_file,
 )
 import requests
 
@@ -60,7 +55,7 @@ import requests
 
 
 def get_recent_notes(limit: int = 10) -> List[Note]:
-    notes = get_all_notes(Config.get_api_base_url())
+    notes = noteapi.get_all_notes()
     # Sort the notes by the last modified date, using a minimum datetime for None values
     notes.sort(key=lambda x: x.modified_at or datetime.min, reverse=True)
     return notes[:limit]
@@ -110,10 +105,8 @@ def find_note_path(
     return None
 
 
-def get_notes(
-    base_url: str =Config.get_api_base_url(), ids: List[int] | None = None
-) -> List[Note]:
-    notes = get_all_notes(Config.get_api_base_url())
+def get_notes(ids: List[int] | None = None) -> List[Note]:
+    notes = noteapi.get_all_notes()
     # Filter notes by ID if specified
     if ids:
         notes = [note for note in notes if note.id in ids]
@@ -315,7 +308,7 @@ def root():
 
 @app.context_processor
 def inject_tag_sidebar():
-    tags_tree = get_tags_tree()
+    tags_tree = tagapi.get_tags_tree()
     tag_html = Markup(build_tags_tree_html(tags_tree))
     return dict(tag_html=tag_html)
 
@@ -323,15 +316,14 @@ def inject_tag_sidebar():
 @app.route("/tags/<int:tag_id>")
 def tag_detail(tag_id: int):
     notes = get_tag_notes(tag_id)
-    tag = get_tag(tag_id, Config.get_api_base_url())
+    tag = tagapi.get_tag(tag_id)
     return render_template("tagged_pages_list.html", notes=notes, tag=tag)
 
 
 @app.route("/note/<int:note_id>")
 def note_detail(note_id):
-    base_url = Config.get_api_base_url()
-    note = get_note(note_id, Config.get_api_base_url())
-    notes_tree = get_notes_tree(Config.get_api_base_url())
+    note = noteapi.get_note(note_id)
+    notes_tree = noteapi.get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree, note_id=note_id)
     tree_html = Markup(tree_html)
 
@@ -339,16 +331,16 @@ def note_detail(note_id):
     note_path = find_note_path(notes_tree, note_id)
 
     # Get backlinks for the current note
-    backlinks = get_note_backlinks(note_id, base_url=base_url)
-    forwardlinks = get_note_forward_links(note_id, base_url=base_url)
+    backlinks = noteapi.get_note_backlinks(note_id)
+    forwardlinks = noteapi.get_note_forward_links(note_id)
 
     # Get tags (TODO this needs an endpoint)
 
-    note_tags = get_note_tag_relations()
-    tags = [get_tag(nt.tag_id, Config.get_api_base_url()) for nt in note_tags if nt.note_id == note_id]
+    note_tags = tagapi.get_note_tag_relations()
+    tags = [tagapi.get_tag(nt.tag_id) for nt in note_tags if nt.note_id == note_id]
 
     # Parse the markdown content
-    html_content = get_rendered_note(note_id, format="html")
+    html_content = noteapi.get_rendered_note(note_id, format="html")
 
     return render_template(
         "note_detail.html",
@@ -363,16 +355,16 @@ def note_detail(note_id):
 
 
 def get_note_tags(note_id) -> List[Tag]:
-    note_tags = get_note_tag_relations()
-    tags = [get_tag(nt.tag_id, Config.get_api_base_url()) for nt in note_tags if nt.note_id == note_id]
+    note_tags = tagapi.get_note_tag_relations()
+    tags = [tagapi.get_tag(nt.tag_id) for nt in note_tags if nt.note_id == note_id]
     return tags
 
 
 def get_tag_notes(tag_id) -> List[NoteWithoutContent]:
-    note_tags = get_note_tag_relations()
+    note_tags = tagapi.get_note_tag_relations()
     relevant_note_tags = [nt for nt in note_tags if nt.tag_id == tag_id]
     all_note_details = [
-        get_note_without_content(nt.note_id) for nt in relevant_note_tags
+        noteapi.get_note_without_content(nt.note_id) for nt in relevant_note_tags
     ]
     return all_note_details
 
@@ -382,7 +374,7 @@ def inject_backlinks():
     def get_backlinks_for_current_note():
         if "note_id" in request.view_args:
             note_id = request.view_args["note_id"]
-            return get_note_backlinks(note_id, base_url=Config.get_api_base_url())
+            return noteapi.get_note_backlinks(note_id)
         return []
 
     return dict(backlinks=get_backlinks_for_current_note())
@@ -390,14 +382,14 @@ def inject_backlinks():
 
 @app.route("/edit/<int:note_id>")
 def edit_note(note_id):
-    note = get_note(note_id, Config.get_api_base_url())
-    notes_tree = get_notes_tree(Config.get_api_base_url())
+    note = noteapi.get_note(note_id)
+    notes_tree = noteapi.get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree, note_id=note_id)
     tree_html = Markup(tree_html)
 
     # Find the path to the current note
     note_path = find_note_path(notes_tree, note_id)
-    html_content = get_rendered_note(note_id, format="html")
+    html_content = noteapi.get_rendered_note(note_id, format="html")
 
     return render_template(
         "note_edit.html",
@@ -412,7 +404,7 @@ def edit_note(note_id):
 @app.route("/notes/create/<int:parent_id>", methods=["GET", "POST"])
 def create_note_page(parent_id=None):
     if request.method == "GET":
-        notes_tree = get_notes_tree(Config.get_api_base_url())
+        notes_tree = noteapi.get_notes_tree()
         tree_html = build_notes_tree_html(notes_tree, note_id=parent_id)
         tree_html = Markup(tree_html)
 
@@ -421,9 +413,7 @@ def create_note_page(parent_id=None):
         content = request.form.get("content")
         title = request.form.get("title")
         try:
-            response = create_note(
-                base_url=Config.get_api_base_url(), title=title or "", content=content or ""
-            )
+            response = noteapi.note_create(title=title or "", content=content or "")
 
             if "error" in response:
                 flash(f"Error creating note: {response['error']}", "error")
@@ -433,10 +423,8 @@ def create_note_page(parent_id=None):
             if id:
                 if parent_id:
                     try:
-                        attach_note_to_parent(
-                            child_note_id=id,
-                            parent_note_id=parent_id,
-                            base_url=Config.get_api_base_url(),
+                        noteapi.attach_note_to_parent(
+                            child_note_id=id, parent_note_id=parent_id
                         )
                     except requests.exceptions.RequestException as e:
                         flash(
@@ -459,18 +447,14 @@ def update_note(note_id):
     title = request.form.get("title")
     content = request.form.get("content")
     if request.method == "POST":
-        _note = api.update_note(
-            note_id,
-            UpdateNoteRequest(title=title, content=content),
-            base_url=Config.get_api_base_url(),
+        _note = noteapi.update_note(
+            note_id, UpdateNoteRequest(title=title, content=content)
         )
         # Refresh the page to show the updated note
     elif request.method == "PUT":
-        create_note(base_url=Config.get_api_base_url(), title=title or "", content=content or "")
-        _note = api.update_note(
-            note_id,
-            UpdateNoteRequest(title=title, content=content),
-            base_url=Config.get_api_base_url(),
+        noteapi.note_create(title=title or "", content=content or "")
+        _note = noteapi.update_note(
+            note_id, UpdateNoteRequest(title=title, content=content)
         )
         # Refresh the page to show the updated note
     return redirect(url_for("note_detail", note_id=note_id))
@@ -484,8 +468,8 @@ def search():
 
     # TODO maybe API should include a field with and withot the full name to
     # Save multiple requests?
-    search_results = search_notes(query, Config.get_api_base_url())
-    notes_tree = get_notes_tree(Config.get_api_base_url())
+    search_results = noteapi.search_notes(query)
+    notes_tree = noteapi.get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree, note_id=None)
     tree_html = Markup(tree_html)
 
@@ -496,8 +480,8 @@ def search():
     # Maybe regail this to the server?
     search_results = []
     for note_id in ids:
-        note = get_note(note_id, Config.get_api_base_url())
-        html_content = get_rendered_note(note.id, format="html")
+        note = noteapi.get_note(note_id)
+        html_content = noteapi.get_rendered_note(note.id, format="html")
         search_result = {
             "id": note.id,
             "title": full_titles[note.id],
@@ -518,7 +502,7 @@ def search():
 @app.route("/note/<int:note_id>/delete", methods=["POST"])
 def delete_note_page(note_id):
     try:
-        api.delete_note(note_id, base_url=Config.get_api_base_url())
+        noteapi.delete_note(note_id)
         flash("Note deleted successfully", "success")
         return redirect(url_for("root"))
     except requests.exceptions.HTTPError as e:
@@ -535,7 +519,7 @@ def delete_note_page(note_id):
 @app.route("/note/<int:note_id>/detach", methods=["POST"])
 def detach_note(note_id):
     try:
-        api.detach_note_from_parent(note_id, base_url=Config.get_api_base_url())
+        noteapi.detach_note_from_parent(note_id)
         flash("Note detached successfully", "success")
     except requests.exceptions.HTTPError as e:
         handle_http_error(e)
@@ -562,7 +546,7 @@ def move_note(note_id):
         return redirect(url_for("note_detail", note_id=note_id))
 
     try:
-        attach_note_to_parent(note_id, new_parent_id, base_url=Config.get_api_base_url())
+        noteapi.attach_note_to_parent(note_id, new_parent_id)
         flash("Note moved successfully", "success")
     except requests.exceptions.HTTPError as e:
         handle_http_error(e)
@@ -602,9 +586,8 @@ def upload_asset():
                     else:
                         file_to_cleanup = file_path
 
-                    result = upload_file(
-                        upload_path if custom_filename else file_path,
-                        base_url=Config.get_api_base_url(),
+                    result = assetsapi.upload_asset(
+                        upload_path if custom_filename else file_path
                     )
                     flash(
                         f"File uploaded successfully. asset_id: {result.id}, server_filename: {result.location}\n",
@@ -623,7 +606,7 @@ def upload_asset():
         else:
             flash("Please provide a file.", "error")
 
-    notes_tree = get_notes_tree(Config.get_api_base_url())
+    notes_tree = noteapi.get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree)
     tree_html = Markup(tree_html)
     return render_template("upload_asset.html", tree_html=tree_html)
@@ -631,8 +614,8 @@ def upload_asset():
 
 @app.route("/assets")
 def list_assets():
-    assets = get_assets(Config.get_api_base_url())
-    notes_tree = get_notes_tree(Config.get_api_base_url())
+    assets = assetsapi.get_all_assets()
+    notes_tree = noteapi.get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree)
     tree_html = Markup(tree_html)
     return render_template("asset_list.html", assets=assets, tree_html=tree_html)
@@ -641,7 +624,7 @@ def list_assets():
 @app.route("/delete_asset/<int:asset_id>")
 def delete_asset(asset_id: int):
     try:
-        api.delete_asset(asset_id)
+        assetsapi.delete_asset(asset_id)
         flash("Asset deleted successfully", "success")
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 404:
@@ -680,12 +663,12 @@ def get_asset(maybe_id):
              if the server is accessed at ds.myserver:5000 the API_BASEURL should be http://ds.api:37240
              if the server is accessed at ds.flask.myserver the API_BASEURL should be http://ds.api.myserver
     """
-    return redirect(f"{Config.get_api_base_url()}/assets/download/{maybe_id}")
+    return redirect(f"{API_BASE_URL}/assets/download/{maybe_id}")
 
 
 @app.route("/manage_tags/<int:note_id>", methods=["GET", "POST"])
 def manage_tags(note_id):
-    note = get_note(note_id, Config.get_api_base_url())
+    note = noteapi.get_note(note_id)
     if request.method == "POST":
         # Get the list of selected tag IDs from the form
         selected_tag_ids = request.form.getlist("tags")
@@ -706,11 +689,11 @@ def manage_tags(note_id):
         try:
             # Remove tags that were unchecked
             for tag_id in tags_to_remove:
-                api.detach_tag_from_note(note_id, tag_id, base_url=Config.get_api_base_url())
+                tagapi.detach_tag_from_note(note_id, tag_id)
 
             # Add newly checked tags
             for tag_id in tags_to_add:
-                api.attach_tag_to_note(note_id, tag_id, base_url=Config.get_api_base_url())
+                tagapi.attach_tag_to_note(note_id, tag_id)
 
             flash("Tags updated successfully", "success")
         except requests.exceptions.RequestException as e:
@@ -718,7 +701,7 @@ def manage_tags(note_id):
 
         return redirect(url_for("note_detail", note_id=note_id))
 
-    notes_tree = get_notes_tree(Config.get_api_base_url())
+    notes_tree = noteapi.get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree, note_id=note_id)
     tree_html = Markup(tree_html)
 
@@ -726,7 +709,7 @@ def manage_tags(note_id):
     current_tags = get_note_tags(note_id)
 
     # Get all available tags
-    all_tags = api.get_all_tags()
+    all_tags = tagapi.get_all_tags()
 
     return render_template(
         "manage_tags.html",
@@ -739,10 +722,10 @@ def manage_tags(note_id):
 
 @app.route("/manage_all_tags")
 def manage_all_tags():
-    notes_tree = get_notes_tree(Config.get_api_base_url())
+    notes_tree = noteapi.get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree)
     tree_html = Markup(tree_html)
-    tags = api.get_all_tags()
+    tags = tagapi.get_all_tags()
     return render_template("manage_all_tags.html", tags=tags, tree_html=tree_html)
 
 
@@ -754,7 +737,7 @@ def create_tag():
         return redirect(url_for("manage_all_tags"))
 
     try:
-        api.create_tag(name, base_url=Config.get_api_base_url())
+        tagapi.create_tag(name)
         flash("Tag created successfully", "success")
     except requests.exceptions.RequestException as e:
         flash(f"Error creating tag: {str(e)}", "error")
@@ -770,7 +753,7 @@ def rename_tag(tag_id):
         return redirect(url_for("manage_all_tags"))
 
     try:
-        api.update_tag(tag_id, new_name, base_url=Config.get_api_base_url())
+        tagapi.update_tag(tag_id, new_name)
         flash("Tag renamed successfully", "success")
     except requests.exceptions.RequestException as e:
         flash(f"Error renaming tag: {str(e)}", "error")
@@ -781,7 +764,7 @@ def rename_tag(tag_id):
 @app.route("/delete_tag/<int:tag_id>", methods=["POST"])
 def delete_tag(tag_id):
     try:
-        api.delete_tag(tag_id, base_url=Config.get_api_base_url())
+        tagapi.delete_tag(tag_id)
         flash("Tag deleted successfully", "success")
     except requests.exceptions.RequestException as e:
         flash(f"Error deleting tag: {str(e)}", "error")
@@ -799,9 +782,7 @@ def attach_child_tag_endpoint():
         return jsonify({"error": "Missing required parameters"}), 400
 
     try:
-        api.attach_tag_to_parent(
-            child_id=child_id, parent_id=parent_id, base_url=Config.get_api_base_url()
-        )
+        tagapi.attach_tag_to_parent(child_id=child_id, parent_id=parent_id)
         return jsonify({"success": True}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -817,9 +798,7 @@ def detach_note_from_tag_endpoint():
         return jsonify({"error": "Missing required parameters"}), 400
 
     try:
-        api.detach_tag_from_note(
-            note_id=note_id, tag_id=tag_id, base_url=Config.get_api_base_url()
-        )
+        tagapi.detach_tag_from_note(note_id=note_id, tag_id=tag_id)
         return jsonify({"success": True}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -835,7 +814,7 @@ def attach_note_to_tag_endpoint():
         return jsonify({"error": "Missing required parameters"}), 400
 
     try:
-        api.attach_tag_to_note(note_id=note_id, tag_id=tag_id, base_url=Config.get_api_base_url())
+        tagapi.attach_tag_to_note(note_id=note_id, tag_id=tag_id)
         return jsonify({"success": True}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -851,9 +830,7 @@ def attach_child_note_endpoint():
         return jsonify({"error": "Missing required parameters"}), 400
 
     try:
-        attach_note_to_parent(
-            child_note_id=child_id, parent_note_id=parent_id, base_url=Config.get_api_base_url()
-        )
+        noteapi.attach_note_to_parent(child_note_id=child_id, parent_note_id=parent_id)
         return jsonify({"success": True}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -862,7 +839,7 @@ def attach_child_note_endpoint():
 @app.route("/recent")
 def recent_pages():
     recent_notes = get_recent_notes(limit=50)  # Adjust the limit as needed
-    notes_tree = get_notes_tree(Config.get_api_base_url())
+    notes_tree = noteapi.get_notes_tree()
     tree_html = build_notes_tree_html(notes_tree)
     tree_html = Markup(tree_html)
 
@@ -875,9 +852,7 @@ def recent_pages():
 
 @app.context_processor
 def inject_tags():
-    return dict(tags=api.get_tags_tree(Config.get_api_base_url()))
-
-
+    return dict(tags=tagapi.get_tags_tree())
 
 
 if __name__ == "__main__":

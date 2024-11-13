@@ -241,9 +241,7 @@ class NoteAPI(API):
     def __init__(self, base_url: str):
         super().__init__(base_url)
 
-    def update_notes_tree(
-        self, notes: list[TreeNote]
-    ) -> None:
+    def update_notes_tree(self, notes: list[TreeNote]) -> None:
         """
         Update the entire notes tree structure
 
@@ -1177,11 +1175,7 @@ class AssetAPI(API):
     def __init__(self, base_url: str):
         super().__init__(base_url)
 
-    def upload_asset(
-        self,
-        file_path: str | Path | BinaryIO,
-        base_url: str = Config.get_api_base_url(),
-    ) -> Asset:
+    def upload_asset(self, file_path: str | Path | BinaryIO) -> Asset:
         """
         Upload a file as an asset
 
