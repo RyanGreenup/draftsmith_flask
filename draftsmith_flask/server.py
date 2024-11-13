@@ -12,6 +12,7 @@ from api import (
 from api import NoteAPI, TagAPI, TaskAPI, AssetAPI
 from flask import (
     Flask,
+    Response,
     render_template,
     request,
     redirect,
@@ -645,15 +646,33 @@ def get_asset(maybe_id):
 
     Returns:
         Response: A redirection to the asset's download URL or a 404 error if not found.
-
-    Notes:
-        Due to cross site scripting, ensure that the API_BASE_URL aligns with the server's URL.
-
-        e.g. if the server is running on localhost:5000, the API_BASE_URL should be http://localhost:37240
-             if the server is accessed at ds.myserver:5000 the API_BASEURL should be http://ds.api:37240
-             if the server is accessed at ds.flask.myserver the API_BASEURL should be http://ds.api.myserver
     """
-    return redirect(f"{API_BASE_URL}/assets/download/{maybe_id}")
+    # Construct the API URL
+    api_url = f"{API_BASE_URL}/assets/download/{maybe_id}"
+
+    # Convert Flask request headers to a dictionary
+    headers = dict(request.headers)
+
+    # Forward the GET request to the API URL
+    try:
+        # Use the transformed headers dictionary
+        response = requests.get(api_url, headers=headers, timeout=5)
+
+        # Create a new response with the data from the API
+        forwarded_response = Response(
+            response.content,
+            response.status_code,
+            dict(response.headers.items())
+        )
+        return forwarded_response
+
+    except requests.exceptions.RequestException as e:
+        # If there's an issue with connecting to the API, return a 502 Bad Gateway error
+        return Response(str(e), status=502)
+
+# NOTE The following will not work:
+# return redirect(f"{API_BASE_URL}/assets/download/{maybe_id}")
+# Ass the REST API may be running inside a container with a hostname not accessible to the user
 
 
 @app.route("/manage_tags/<int:note_id>", methods=["GET", "POST"])
