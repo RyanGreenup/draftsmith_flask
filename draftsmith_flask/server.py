@@ -1,15 +1,15 @@
 #!/usr/bin/env python
-import sys
-import os
-
-# TODO this should be interpreted from the CLI
-# API_BASE_URL = "http://vidar:37240"
-# Or possibly
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from draftsmith_flask.config import Config
-
 from datetime import datetime
+from draftsmith_flask.api import (
+    TreeNote,
+    Note,
+    UpdateNoteRequest,
+    Tag,
+    TreeTag,
+    TreeTagWithNotes,
+    NoteWithoutContent,
+)
+from draftsmith_flask.api import NoteAPI, TagAPI, TaskAPI, AssetAPI
 from flask import (
     Flask,
     render_template,
@@ -24,36 +24,26 @@ from flask_wtf.csrf import CSRFProtect
 from markupsafe import Markup
 from typing import List, Optional, Dict
 import os
+import requests
+import sys
 
-import draftsmith_flask.api as api
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
-from draftsmith_flask.api import NoteAPI, TagAPI, TaskAPI, AssetAPI
-
+# Inherit the API base URL from the environment variables
 API_SCHEME = os.environ.get("API_SCHEME")
 API_HOST = os.environ.get("API_HOST")
 API_PORT = os.environ.get("API_PORT")
 API_BASE_URL = f"{API_SCHEME}://{API_HOST}:{API_PORT}"
+
+# Initialize the API clients
 noteapi = NoteAPI(base_url=API_BASE_URL)
 tagapi = TagAPI(base_url=API_BASE_URL)
 taskapi = TaskAPI(base_url=API_BASE_URL)
 assetsapi = AssetAPI(base_url=API_BASE_URL)
 
 
-from draftsmith_flask.api import (
-    TreeNote,
-    Note,
-    UpdateNoteRequest,
-    Tag,
-    TreeTag,
-    TreeTagWithNotes,
-    NoteWithoutContent,
-)
-import requests
-
 # BEGIN: API functions that should be implemented by server
-
-
 def get_recent_notes(limit: int = 10) -> List[Note]:
     notes = noteapi.get_all_notes()
     # Sort the notes by the last modified date, using a minimum datetime for None values
