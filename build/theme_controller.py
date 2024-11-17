@@ -1,46 +1,46 @@
 import os
 
 themes = [
-      "light",
-      "dark",
-      "cupcake",
-      "bumblebee",
-      "emerald",
-      "corporate",
-      "synthwave",
-      "retro",
-      "cyberpunk",
-      "valentine",
-      "halloween",
-      "garden",
-      "forest",
-      "aqua",
-      "lofi",
-      "pastel",
-      "fantasy",
-      "wireframe",
-      "black",
-      "luxury",
-      "dracula",
-      "cmyk",
-      "autumn",
-      "business",
-      "acid",
-      "lemonade",
-      "night",
-      "coffee",
-      "winter",
-      "dim",
-      "nord",
-      "sunset",
-      "my_catppucin",
-      "aurora",
-      "twilight",
-      ]
+    "light",
+    "dark",
+    "cupcake",
+    "bumblebee",
+    "emerald",
+    "corporate",
+    "synthwave",
+    "retro",
+    "cyberpunk",
+    "valentine",
+    "halloween",
+    "garden",
+    "forest",
+    "aqua",
+    "lofi",
+    "pastel",
+    "fantasy",
+    "wireframe",
+    "black",
+    "luxury",
+    "dracula",
+    "cmyk",
+    "autumn",
+    "business",
+    "acid",
+    "lemonade",
+    "night",
+    "coffee",
+    "winter",
+    "dim",
+    "nord",
+    "sunset",
+    "my_catppucin",
+    "aurora",
+    "twilight",
+]
 
 s = ""
 for theme in themes:
-    s+=f"""<li>
+    s += f"""<li>
 <input
     type="radio"
     name="theme-dropdown"
@@ -48,7 +48,7 @@ for theme in themes:
     aria-label="{theme.title()}"
     value="{theme}" />
 </li>\n"""
-top="""
+top = """
 <div class="dropdown mb-72">
   <div tabindex="0" role="button" class="btn m-1">
     Theme
@@ -63,12 +63,14 @@ top="""
   </div>
   <ul tabindex="0" class="dropdown-content bg-base-300 rounded-box z-[1] w-52 p-2 shadow-2xl">
 """
-bottom="""
+bottom = """
   </ul>
 </div>
 """
 s = top + s + bottom
-os.chdir(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))  # Change to Root Assuming this is under /build
+os.chdir(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+)  # Change to Root Assuming this is under /build
 
 with open("src/templates/theme_controller.html", "w") as f:
     f.write(s)

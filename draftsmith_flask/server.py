@@ -225,10 +225,12 @@ def build_notes_tree_html(
           d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
       </svg>"""
 
-    def find_parent_ids(tree: List[TreeNote], target_id: int, path: set[int] = None) -> set[int]:
+    def find_parent_ids(
+        tree: List[TreeNote], target_id: int, path: set[int] = None
+    ) -> set[int]:
         if path is None:
             path = set()
-        
+
         for note in tree:
             if note.id == target_id:
                 return path
@@ -238,18 +240,24 @@ def build_notes_tree_html(
                     return child_path
         return None
 
-    parent_ids = set() if note_id is None else (find_parent_ids(notes_tree, note_id) or set())
+    parent_ids = (
+        set() if note_id is None else (find_parent_ids(notes_tree, note_id) or set())
+    )
 
-    def render_note(note: TreeNote, depth: int = 0, parent_of_current: bool = False) -> str:
+    def render_note(
+        note: TreeNote, depth: int = 0, parent_of_current: bool = False
+    ) -> str:
         svg = file_svg if not note.children else folder_svg
-        
+
         # Determine if this note should be open
         should_open = (
-            note.id in parent_ids or  # Open if it's a parent of current note
-            note.id == note_id or     # Open if it's the current note
-            (parent_of_current and depth < fold_level)  # Open if under current note within fold_level
+            note.id in parent_ids  # Open if it's a parent of current note
+            or note.id == note_id  # Open if it's the current note
+            or (
+                parent_of_current and depth < fold_level
+            )  # Open if under current note within fold_level
         )
-        
+
         status = "open" if should_open else "closed"
 
         # Initialize classes list for all notes
@@ -267,10 +275,10 @@ def build_notes_tree_html(
         if note.children:
             # Sort the children before rendering them
             note.children.sort(key=lambda x: x.title)
-            
+
             # Determine if children are under the current note
             is_current = note.id == note_id
-            
+
             html = f'<li class="{class_str}" draggable="true" data-note-id="{note.id}"><details {status}><summary>{hyperlink}</summary>\n<ul>'
 
             for child in note.children:
@@ -681,15 +689,14 @@ def get_asset(maybe_id):
 
         # Create a new response with the data from the API
         forwarded_response = Response(
-            response.content,
-            response.status_code,
-            dict(response.headers.items())
+            response.content, response.status_code, dict(response.headers.items())
         )
         return forwarded_response
 
     except requests.exceptions.RequestException as e:
         # If there's an issue with connecting to the API, return a 502 Bad Gateway error
         return Response(str(e), status=502)
+
 
 # NOTE The following will not work:
 # return redirect(f"{API_BASE_URL}/assets/download/{maybe_id}")
