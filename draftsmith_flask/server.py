@@ -20,6 +20,7 @@ from flask import (
     flash,
     send_from_directory,
     jsonify,
+    make_response,
 )
 from flask_wtf.csrf import CSRFProtect
 from markupsafe import Markup
@@ -29,6 +30,17 @@ import requests
 import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
+def get_theme_from_cookie():
+    """Get theme from cookie, defaulting to light if not set"""
+    return request.cookies.get('theme', 'light')
+
+
+def set_theme_cookie(response, theme):
+    """Set theme cookie with a long expiration"""
+    response.set_cookie('theme', theme, max_age=31536000)  # 1 year
+    return response
 
 
 # Inherit the API base URL from the environment variables
@@ -303,6 +315,18 @@ def build_notes_tree_html(
 @app.context_processor
 def inject_all_notes():
     return dict(all_notes=get_notes())
+
+
+@app.context_processor
+def inject_theme():
+    return {'current_theme': get_theme_from_cookie()}
+
+
+@app.route('/set-theme/<theme>')
+def set_theme(theme):
+    """Set theme cookie and redirect back to previous page"""
+    response = make_response(redirect(request.referrer or url_for('root')))
+    return set_theme_cookie(response, theme)
 
 
 @app.route("/manifest.json")
