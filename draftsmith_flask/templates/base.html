@@ -1,6 +1,6 @@
 <!-- src/templates/base.html -->
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="{{ current_theme }}">
   <head>
     {% include 'head.html' %}
     <meta
@@ -73,6 +73,7 @@
     <script src="{{ url_for('static', filename='js/keyboard-shortcuts.js') }}"></script>
     <script src="{{ url_for('static', filename='js/notes-dnd.js') }}"></script>
     <script src="{{ url_for('static', filename='js/tags-dnd.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/theme-handler.js') }}"></script>
     <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
