@@ -225,12 +225,32 @@ def build_notes_tree_html(
           d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
       </svg>"""
 
-    def render_note(note: TreeNote, i: int) -> str:
+    def find_parent_ids(tree: List[TreeNote], target_id: int, path: set[int] = None) -> set[int]:
+        if path is None:
+            path = set()
+        
+        for note in tree:
+            if note.id == target_id:
+                return path
+            if note.children:
+                child_path = find_parent_ids(note.children, target_id, path | {note.id})
+                if child_path is not None:
+                    return child_path
+        return None
+
+    parent_ids = set() if note_id is None else (find_parent_ids(notes_tree, note_id) or set())
+
+    def render_note(note: TreeNote, depth: int = 0, parent_of_current: bool = False) -> str:
         svg = file_svg if not note.children else folder_svg
-        if i < fold_level:
-            status = "open"
-        else:
-            status = "closed"
+        
+        # Determine if this note should be open
+        should_open = (
+            note.id in parent_ids or  # Open if it's a parent of current note
+            note.id == note_id or     # Open if it's the current note
+            (parent_of_current and depth < fold_level)  # Open if under current note within fold_level
+        )
+        
+        status = "open" if should_open else "closed"
 
         # Initialize classes list for all notes
         classes = ["note-item"]
@@ -247,13 +267,14 @@ def build_notes_tree_html(
         if note.children:
             # Sort the children before rendering them
             note.children.sort(key=lambda x: x.title)
-            if note.id == note_id:
-                status = "open"
-
+            
+            # Determine if children are under the current note
+            is_current = note.id == note_id
+            
             html = f'<li class="{class_str}" draggable="true" data-note-id="{note.id}"><details {status}><summary>{hyperlink}</summary>\n<ul>'
 
             for child in note.children:
-                html += render_note(child, i + 1)
+                html += render_note(child, depth + 1, is_current)
             html += "</ul>\n</details>\n</li>"
         else:
             html = f'<li class="{class_str}" draggable="true" data-note-id="{note.id}">{hyperlink}</li>'
