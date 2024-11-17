@@ -284,7 +284,7 @@ def build_notes_tree_html(
     # Sort the top-level notes
     notes_tree.sort(key=lambda x: x.title)
 
-    html = '<ul class="menu bg-base-200 rounded-box w-56">'
+    html = '<ul class="menu bg-base-200 rounded-box w-full md:w-56">'
     for note in notes_tree:
         html += render_note(note, 0)
     html += "</ul>"
