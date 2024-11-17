@@ -117,7 +117,7 @@ folder_svg = """<svg
       viewBox="0 0 24 24"
       stroke-width="1.5"
       stroke="currentColor"
-      class="h-4 w-4">
+      class="h-5 w-5 md:h-4 md:w-4">
       <path
         stroke-linecap="round"
         stroke-linejoin="round"
@@ -130,7 +130,7 @@ tag_svg = """<svg
   viewBox="0 0 24 24"
   stroke-width="1.5"
   stroke="currentColor"
-  class="h-4 w-4">
+  class="h-5 w-5 md:h-4 md:w-4">
   <path
     stroke-linecap="round"
     stroke-linejoin="round"
@@ -201,7 +201,7 @@ def build_tags_tree_html(
     # Sort top-level tags
     sorted_tags = sorted(tags_tree, key=lambda x: x.name)
 
-    html = ['<ul class="menu bg-base-200 rounded-box w-56">']
+    html = ['<ul class="menu bg-base-200 rounded-box w-full md:w-56">']
     for tag in sorted_tags:
         html.append(render_tag(tag))
     html.append("</ul>")
@@ -218,7 +218,7 @@ def build_notes_tree_html(
         viewBox="0 0 24 24"
         stroke-width="1.5"
         stroke="currentColor"
-        class="h-4 w-4">
+        class="h-5 w-5 md:h-4 md:w-4">
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
