@@ -424,17 +424,20 @@ def edit_note(note_id):
 @app.route("/notes/create/<int:parent_id>", methods=["GET", "POST"])
 def create_note_page(parent_id=None):
     if request.method == "GET":
+        print(f"DEBUG: Received GET request with parent_id: {parent_id}")  # Debug log
         notes_tree = noteapi.get_notes_tree()
         tree_html = build_notes_tree_html(notes_tree, note_id=parent_id)
         tree_html = Markup(tree_html)
 
-        return render_template("note_create.html", tree_html=tree_html, title="")
+        return render_template("note_create.html", tree_html=tree_html, title="", parent_id=parent_id)
     elif request.method == "POST":
+        print(f"DEBUG: Received POST request with parent_id: {parent_id}")  # Debug log
         content = request.form.get("content")
         title = request.form.get("title")
         try:
             # First create the note
             response = noteapi.note_create(title=title or "", content=content or "")
+            print(f"DEBUG: Created note with response: {response}")  # Debug log
 
             if "error" in response:
                 flash(f"Error creating note: {response['error']}", "error")
@@ -444,12 +447,15 @@ def create_note_page(parent_id=None):
             if new_note_id:
                 # If parent_id is provided, attach the new note as a child
                 if parent_id:
+                    print(f"DEBUG: Attempting to attach note {new_note_id} to parent {parent_id}")  # Debug log
                     try:
                         noteapi.attach_note_to_parent(
                             child_note_id=new_note_id, parent_note_id=parent_id
                         )
+                        print("DEBUG: Successfully attached note to parent")  # Debug log
                         flash("Note created and attached to parent successfully", "success")
                     except requests.exceptions.RequestException as e:
+                        print(f"DEBUG: Failed to attach note to parent: {str(e)}")  # Debug log
                         flash(
                             f"Note created but failed to attach to parent: {str(e)}",
                             "warning"
@@ -459,6 +465,7 @@ def create_note_page(parent_id=None):
                 flash("Error creating note: No ID returned", "error")
                 return redirect(url_for("create_note_page"))
         except requests.exceptions.RequestException as e:
+            print(f"DEBUG: Error creating note: {str(e)}")  # Debug log
             flash(f"Error creating note: {str(e)}", "error")
             return redirect(url_for("create_note_page"))
 
