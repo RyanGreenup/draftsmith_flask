@@ -1,11 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./src/*.{html,js}",
-    "./src/templates/**/*.{html,js}",
-    "./src/static/css/{html,js}",
-    "./src/static/styles/{html,js}",
-    "./src/static/js/{html,js}",
+    
+    "./draftsmith_flask/*.{html,js}",
+    "./draftsmith_flask/templates/**/*.{html,js}",
+    "./draftsmith_flask/static/css/{html,js}",
+    "./draftsmith_flask/static/styles/{html,js}",
+    "./draftsmith_flask/static/js/{html,js}",
   ],
   theme: {
     extend: {},

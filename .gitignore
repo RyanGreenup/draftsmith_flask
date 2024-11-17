@@ -2,3 +2,5 @@
 .aider.input.history
 .aider.tags.cache.v3
 draftsmith_flask/__pycache__
+src
+__pycache__

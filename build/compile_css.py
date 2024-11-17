@@ -7,7 +7,7 @@ from pathlib import Path
 # Change to Root Assuming this is under /build
 os.chdir(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 # Now in /
-dir = Path("src/static/css")
+dir = Path("draftsmith_flask/static/css")
 for file in dir.glob("*.css"):
     file = str(file)
     # TODO consider minifying
