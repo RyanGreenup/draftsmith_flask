@@ -1,0 +1,22 @@
+.note-item {
+    touch-action: none; /* Prevents default touch actions */
+    user-select: none; /* Prevents text selection during drag */
+    -webkit-user-select: none;
+}
+
+.note-item.dragging {
+    opacity: 0.7;
+    position: relative;
+    z-index: 1000;
+}
+.note-item {
+    touch-action: none; /* Prevents default touch actions */
+    user-select: none; /* Prevents text selection during drag */
+    -webkit-user-select: none;
+}
+
+.note-item.dragging {
+    opacity: 0.7;
+    position: relative;
+    z-index: 1000;
+}

@@ -20,6 +20,10 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/dnd.css') }}"
     />
+    <link
+      rel="stylesheet" 
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
   </head>
 
   <body>
@@ -73,6 +77,7 @@
     <script src="{{ url_for('static', filename='js/keyboard-shortcuts.js') }}"></script>
     <script src="{{ url_for('static', filename='js/notes-dnd.js') }}"></script>
     <script src="{{ url_for('static', filename='js/tags-dnd.js') }}"></script>
+    <script src="{{ url_for('static', filename='touch-drag.js') }}"></script>
     <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {

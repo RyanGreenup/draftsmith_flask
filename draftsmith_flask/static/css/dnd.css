@@ -1,8 +1,22 @@
 .dragging {
-  opacity: 0.5;
+  opacity: 0.7;
+  position: relative;
+  z-index: 1000;
+  touch-action: none;
+  -moz-user-select: none;
+       user-select: none;
+  -webkit-user-select: none;
 }
 
 .drag-over {
   border: 2px dashed #4a9eff;
   padding: 2px;
+  background-color: rgba(74, 158, 255, 0.1);
+}
+
+.note-item {
+  touch-action: none;
+  -moz-user-select: none;
+       user-select: none;
+  -webkit-user-select: none;
 }
