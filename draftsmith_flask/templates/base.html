@@ -20,6 +20,13 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/dnd.css') }}"
     />
+    <script>
+      // Immediately apply saved theme before page renders
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      }
+    </script>
   </head>
 
   <body>
@@ -73,6 +80,7 @@
     <script src="{{ url_for('static', filename='js/keyboard-shortcuts.js') }}"></script>
     <script src="{{ url_for('static', filename='js/notes-dnd.js') }}"></script>
     <script src="{{ url_for('static', filename='js/tags-dnd.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/theme-handler.js') }}"></script>
     <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
