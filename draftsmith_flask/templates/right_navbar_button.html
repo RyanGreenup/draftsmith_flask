@@ -62,19 +62,20 @@
             >
           </li>
           <li>
+            <a
+              href="#"
+              class="btn btn-ghost btn-sm justify-start"
+              onclick="event.preventDefault(); if (confirm('Are you sure you want to delete this note? This action cannot be undone.')) { document.getElementById('delete-note-form-{{ note.id }}').submit(); }"
+            >
+              Delete Note
+            </a>
             <form
+              id="delete-note-form-{{ note.id }}"
               action="{{ url_for('delete_note_page', note_id=note.id) }}"
               method="POST"
-              class="w-full"
-              onsubmit="return confirm('Are you sure you want to delete this note? This action cannot be undone.');"
+              class="hidden"
             >
               {% include 'csrf_token.html' %}
-              <button
-                type="submit"
-                class="btn btn-ghost btn-sm justify-start w-full text-left"
-              >
-                Delete Note
-              </button>
             </form>
           </li>
           {% endif %}
