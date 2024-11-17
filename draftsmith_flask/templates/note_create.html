@@ -10,7 +10,7 @@
     <div class="card-body">
       <form
         id="content-edit-form"
-        action="{{ url_for('create_note_page') }}"
+        action="{{ url_for('create_note_page', parent_id=parent_id) if parent_id else url_for('create_note_page') }}"
         method="POST"
       >
         {% include 'csrf_token.html' %}
