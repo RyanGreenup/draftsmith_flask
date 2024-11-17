@@ -7,8 +7,8 @@ serve-dev:
     CSRF_SECRET_KEY="832983289329832" API_SCHEME=http API_PORT=37240 API_HOST=vidar poetry run python server.py
 
 sass:
-    cd src/static
-    npx sass --no-source-map src/static/styles:src/static/css
+    cd draftsmith_flask/static
+    npx sass --no-source-map draftsmith_flask/static/styles:draftsmith_flask/static/css
     build/compile_css.py
 
 format:

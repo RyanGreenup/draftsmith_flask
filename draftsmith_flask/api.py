@@ -135,7 +135,6 @@ class Asset(BaseModel):
         return self.location.replace("uploads/", "")
 
     def get_encoded_location(self) -> str:
-
         return quote(self.get_stripped_location())
 
 
